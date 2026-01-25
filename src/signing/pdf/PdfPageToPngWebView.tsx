@@ -14,7 +14,12 @@ type Props = {
   pageNumber: number; // 1-based
   onRendered: (
     pngDataUrl: string,
-    meta: { width: number; height: number; pageNumber: number },
+    meta: {
+      width: number;
+      height: number;
+      pageNumber: number;
+      totalPages: number;
+    },
   ) => void;
   onError?: (message: string) => void;
 };
@@ -27,6 +32,7 @@ type Msg =
       width: number;
       height: number;
       pageNumber: number;
+      totalPages: number;
     }
   | { type: "error"; message: string };
 
@@ -111,7 +117,11 @@ export default function PdfPageToPngWebView({
         setMeta("parsing PDF…");
         var loadingTask = pdfjsLib.getDocument({ data: bytes });
         
+        var pdfDocument = null;
+        
         loadingTask.promise.then(function(pdf) {
+          pdfDocument = pdf;
+          
           if (pageNumber > pdf.numPages) {
             throw new Error("Page out of range");
           }
@@ -132,7 +142,11 @@ export default function PdfPageToPngWebView({
             canvasContext: ctx, 
             viewport: viewport 
           }).promise.then(function() {
-            return { canvas: canvas, pageNumber: pageNumber };
+            return { 
+              canvas: canvas, 
+              pageNumber: pageNumber, 
+              totalPages: pdfDocument ? pdfDocument.numPages : 1 
+            };
           });
           
         }).then(function(result) {
@@ -144,7 +158,8 @@ export default function PdfPageToPngWebView({
             pngDataUrl: pngDataUrl, 
             width: result.canvas.width, 
             height: result.canvas.height, 
-            pageNumber: result.pageNumber 
+            pageNumber: result.pageNumber,
+            totalPages: result.totalPages
           });
           
           setMeta("done!");
@@ -178,6 +193,7 @@ export default function PdfPageToPngWebView({
           width: msg.width,
           height: msg.height,
           pageNumber: msg.pageNumber,
+          totalPages: msg.totalPages,
         });
         return;
       }

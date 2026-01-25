@@ -33,7 +33,12 @@ export default function App() {
   }
 
   if (screen === "signPdf") {
-    return <SignPdfScreen onBack={() => setScreen("home")} />;
+    return (
+      <SignPdfScreen
+        onBack={() => setScreen("home")}
+        signatureUri={signatureUri}
+      />
+    );
   }
 
   return (
