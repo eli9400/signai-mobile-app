@@ -120,6 +120,59 @@ export function usePdfEditor(signatureUri: string | null) {
     }
   };
 
+  const openPdfFromUri = async (incomingUri: string, incomingName?: string) => {
+    try {
+      setIsReading(true);
+
+      // Try to copy to app cache (helps with content:// URIs)
+      let workingUri = incomingUri;
+      try {
+        const safeName =
+          incomingName ??
+          incomingUri.split("/").pop()?.split("?")[0] ??
+          "document.pdf";
+
+        const dest = `${FileSystem.cacheDirectory}incoming_${Date.now()}_${safeName}`;
+        await FileSystem.copyAsync({ from: incomingUri, to: dest });
+        workingUri = dest;
+      } catch {
+        // If copy fails, we'll try to read directly from the provided URI
+      }
+
+      setPdfUri(workingUri);
+      setPdfName(
+        incomingName ?? incomingUri.split("/").pop() ?? "document.pdf",
+      );
+
+      // Reset state (same as pickPdf)
+      setPageNumber(1);
+      setTotalPages(null);
+      setMode("idle");
+      setPngDataUrl(null);
+      setPngMeta(null);
+      setPdfBase64(null);
+      setEditedPages([]);
+
+      setName1("");
+      setName2("");
+      setSigPos({ x: 20, y: 20 });
+      setName1Pos({ x: 20, y: 140 });
+      setName2Pos({ x: 20, y: 190 });
+
+      const w = clamp(Math.round(screenW * 0.38), 140, 240);
+      setSigSize({ w, h: Math.round(w * 0.5) });
+
+      // Load and render
+      const b64 = await readPdfAsBase64(workingUri);
+      setPdfBase64(b64);
+      setMode("rendering");
+    } catch (e: any) {
+      Alert.alert("שגיאה", e?.message ?? "לא הצלחתי לטעון את ה-PDF שנפתח");
+    } finally {
+      setIsReading(false);
+    }
+  };
+
   const saveCurrentPage = useCallback(async () => {
     if (!pngMeta || !imageBoxRef.current) return null;
 
@@ -275,6 +328,7 @@ export function usePdfEditor(signatureUri: string | null) {
 
     // Actions
     pickPdf,
+    openPdfFromUri,
     prevPage,
     nextPage,
     goToPage,

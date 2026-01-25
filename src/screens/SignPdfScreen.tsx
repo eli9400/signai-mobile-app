@@ -31,10 +31,23 @@ import {
 type Props = {
   signatureUri: string | null;
   onBack: () => void;
+  initialFileUri?: string | null; // <-- חדש (Open with)
 };
 
-export default function SignPdfScreen({ signatureUri, onBack }: Props) {
+export default function SignPdfScreen({
+  signatureUri,
+  onBack,
+  initialFileUri,
+}: Props) {
   const editor = usePdfEditor(signatureUri);
+
+  useEffect(() => {
+    if (!initialFileUri) return;
+
+    // Load incoming PDF from "Open with"
+    editor.openPdfFromUri(initialFileUri);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialFileUri]);
 
   const minSigW = 90;
   const maxSigW = 240;

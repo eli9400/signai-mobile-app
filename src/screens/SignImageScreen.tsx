@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 import {
   clamp,
@@ -32,9 +33,15 @@ import TextOverlay from "../signing/components/TextOverlay";
 type Props = {
   signatureUri: string | null;
   onBack: () => void;
+  initialFileUri?: string | null; // <-- חדש (Open with)
 };
+const FS: any = FileSystem;
 
-export default function SignImageScreen({ signatureUri, onBack }: Props) {
+export default function SignImageScreen({
+  signatureUri,
+  onBack,
+  initialFileUri,
+}: Props) {
   const stageRef = useRef<View>(null);
   const imageBoxRef = useRef<View>(null);
 
@@ -75,6 +82,18 @@ export default function SignImageScreen({ signatureUri, onBack }: Props) {
     setName2Pos((p) => clampPosLoose(p, imageBox, 40));
   }, [imageBox, sigSize.w, sigSize.h]);
 
+  const loadImageUri = (uri: string) => {
+    setImageUri(uri);
+    setImgPx(null);
+
+    setSigPos({ x: 20, y: 20 });
+    setName1Pos({ x: 20, y: 140 });
+    setName2Pos({ x: 20, y: 190 });
+
+    const w = clamp(Math.round(screenW * 0.38), 140, 240);
+    setSigSize({ w, h: Math.round(w * 0.5) });
+  };
+
   const pickImage = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (perm.status !== "granted") {
@@ -91,25 +110,14 @@ export default function SignImageScreen({ signatureUri, onBack }: Props) {
     const uri = res.assets?.[0]?.uri;
     if (!uri) return;
 
-    setImageUri(uri);
-    setImgPx(null);
-
-    setSigPos({ x: 20, y: 20 });
-    setName1Pos({ x: 20, y: 140 });
-    setName2Pos({ x: 20, y: 190 });
-
-    const w = clamp(Math.round(screenW * 0.38), 140, 240);
-    setSigSize({ w, h: Math.round(w * 0.5) });
+    loadImageUri(uri);
   };
 
   useEffect(() => {
-    if (!imageUri) return;
-    Image.getSize(
-      imageUri,
-      (w, h) => setImgPx({ w, h }),
-      () => setImgPx(null),
-    );
-  }, [imageUri]);
+    if (!initialFileUri) return;
+    loadImageUri(initialFileUri);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialFileUri]);
 
   const onStageLayout = (e: any) => {
     setContainerW(e.nativeEvent.layout.width);
@@ -232,6 +240,16 @@ export default function SignImageScreen({ signatureUri, onBack }: Props) {
               source={{ uri: imageUri }}
               style={styles.image}
               resizeMode="contain"
+              onLoad={(e) => {
+                const src = e.nativeEvent?.source;
+                if (src?.width && src?.height) {
+                  setImgPx({ w: src.width, h: src.height });
+                }
+              }}
+              onError={() => {
+                setImgPx(null);
+                Alert.alert("שגיאה", "לא הצלחתי לטעון את התמונה שנפתחה");
+              }}
             />
 
             {imageBox && (
