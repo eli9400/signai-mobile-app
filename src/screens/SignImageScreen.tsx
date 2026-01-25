@@ -8,6 +8,8 @@ import {
   Alert,
   Dimensions,
   Keyboard,
+  Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
@@ -175,30 +177,54 @@ export default function SignImageScreen({ signatureUri, onBack }: Props) {
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
-      <SigningToolbar
-        name1={name1}
-        name2={name2}
-        setName1={setName1}
-        setName2={setName2}
-        isExporting={isExporting}
-        canExport={canExport}
-        onPickImage={pickImage}
-        onExport={exportAndShare}
-        onBack={onBack}
-      />
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerTop}>
+          <Text style={styles.title}>עריכת תמונה</Text>
+          <Pressable style={styles.backBtn} onPress={onBack}>
+            <Text style={styles.backBtnText}>✕</Text>
+          </Pressable>
+        </View>
+      </View>
 
+      {/* Toolbar */}
+      {imageUri ? (
+        <SigningToolbar
+          name1={name1}
+          name2={name2}
+          setName1={setName1}
+          setName2={setName2}
+          isExporting={isExporting}
+          canExport={canExport}
+          onPickImage={pickImage}
+          onExport={exportAndShare}
+          onBack={onBack}
+          mode="image"
+        />
+      ) : (
+        <View style={styles.actions}>
+          <Pressable
+            style={[styles.actionBtn, styles.primaryBtn]}
+            onPress={pickImage}
+          >
+            <Text style={styles.btnIcon}>🖼️</Text>
+            <Text style={styles.btnText}>בחר תמונה</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {/* Viewer */}
       <View
         ref={stageRef}
         collapsable={false}
-        style={styles.stage}
+        style={styles.viewer}
         onLayout={onStageLayout}
       >
         {!imageUri ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>אין תמונה עדיין</Text>
-            <Text style={styles.emptySub}>
-              בחר תמונה כדי להתחיל למקם חתימה ושמות
-            </Text>
+            <Text style={styles.emptyIcon}>🖼️</Text>
+            <Text style={styles.emptyTitle}>בחר תמונה</Text>
+            <Text style={styles.emptySub}>תוכל להוסיף חתימה ושמות ולשתף</Text>
           </View>
         ) : (
           <>
@@ -275,15 +301,70 @@ export default function SignImageScreen({ signatureUri, onBack }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0b0b0b", padding: 16 },
+  safe: { flex: 1, backgroundColor: "#000" },
 
-  stage: {
-    flex: 1,
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.1)",
+  },
+  headerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  title: {
+    color: "#fff",
+    fontSize: 28,
+    fontWeight: "800",
+    letterSpacing: -0.5,
+  },
+  backBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(255,255,255,0.1)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  backBtnText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+
+  actions: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  actionBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 16,
     borderRadius: 16,
+  },
+  primaryBtn: {
+    backgroundColor: "#007AFF",
+  },
+  btnIcon: {
+    fontSize: 20,
+  },
+  btnText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  viewer: {
+    flex: 1,
+    margin: 20,
+    borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#0f0f0f",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)",
+    backgroundColor: "#1C1C1E",
     position: "relative",
   },
 
@@ -291,11 +372,24 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
-    padding: 16,
+    gap: 12,
+    padding: 32,
   },
-  emptyTitle: { color: "white", fontSize: 18, fontWeight: "700", opacity: 0.9 },
-  emptySub: { color: "white", opacity: 0.6 },
+  emptyIcon: {
+    fontSize: 64,
+    opacity: 0.3,
+  },
+  emptyTitle: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  emptySub: {
+    color: "rgba(255,255,255,0.5)",
+    fontSize: 15,
+    textAlign: "center",
+    lineHeight: 22,
+  },
 
   image: { width: "100%", height: "100%" },
 

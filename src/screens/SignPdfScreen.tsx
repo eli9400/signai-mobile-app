@@ -203,7 +203,9 @@ export default function SignPdfScreen({ signatureUri, onBack }: Props) {
           canExport={Boolean(editor.canExport)}
           onPickImage={editor.pickPdf}
           onExport={handleExport}
-          onBack={() => {}}
+          onBack={onBack}
+          mode="pdf"
+          pickButtonLabel="טען PDF אחר"
         />
       ) : (
         <View style={styles.actions}>

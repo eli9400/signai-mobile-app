@@ -1,3 +1,4 @@
+// src/signing/components/SigningToolbar.tsx
 import React from "react";
 import {
   View,
@@ -20,6 +21,10 @@ type Props = {
   onPickImage: () => void;
   onExport: () => void;
   onBack: () => void;
+
+  // New props for PDF mode
+  mode?: "image" | "pdf";
+  pickButtonLabel?: string;
 };
 
 export default function SigningToolbar({
@@ -32,112 +37,155 @@ export default function SigningToolbar({
   onPickImage,
   onExport,
   onBack,
+  mode = "image",
+  pickButtonLabel,
 }: Props) {
+  const buttonLabel =
+    pickButtonLabel || (mode === "pdf" ? "טען PDF אחר" : "בחר תמונה");
+
   return (
-    <>
-      <View style={styles.header}>
-        <Text style={styles.title}>חתימה + שמות</Text>
-        <Text style={styles.sub}>
-          אצבע אחת = הזזה | שתי אצבעות = שינוי גודל
-        </Text>
+    <View style={styles.container}>
+      <View style={styles.inputsRow}>
+        <View style={styles.inputWrap}>
+          <Text style={styles.inputLabel}>שם 1</Text>
+          <TextInput
+            value={name1}
+            onChangeText={setName1}
+            placeholder="שם מלא"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            style={styles.input}
+            editable={!isExporting}
+          />
+        </View>
+
+        <View style={styles.inputWrap}>
+          <Text style={styles.inputLabel}>שם 2</Text>
+          <TextInput
+            value={name2}
+            onChangeText={setName2}
+            placeholder="תפקיד/מחלקה"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            style={styles.input}
+            editable={!isExporting}
+          />
+        </View>
       </View>
 
       <View style={styles.actions}>
         <Pressable
-          style={styles.btn}
+          style={[styles.btn, styles.btnSecondary]}
           onPress={onPickImage}
           disabled={isExporting}
         >
-          <Text style={styles.btnText}>בחר תמונה</Text>
+          <Text style={styles.btnIcon}>📄</Text>
+          <Text style={styles.btnText}>{buttonLabel}</Text>
         </Pressable>
 
         <Pressable
           style={[
             styles.btn,
-            styles.exportBtn,
+            styles.btnPrimary,
             (!canExport || isExporting) && styles.btnDisabled,
           ]}
           onPress={onExport}
           disabled={!canExport || isExporting}
         >
           {isExporting ? (
-            <View style={styles.exportLoading}>
-              <ActivityIndicator />
+            <View style={styles.row}>
+              <ActivityIndicator color="#fff" size="small" />
               <Text style={styles.btnText}>מייצא…</Text>
             </View>
           ) : (
-            <Text style={styles.btnText}>ייצא ושתף</Text>
+            <>
+              <Text style={styles.btnIcon}>📤</Text>
+              <Text style={styles.btnText}>ייצא</Text>
+            </>
           )}
         </Pressable>
-
-        <Pressable
-          style={[styles.btn, styles.backBtn]}
-          onPress={onBack}
-          disabled={isExporting}
-        >
-          <Text style={styles.btnText}>חזרה</Text>
-        </Pressable>
       </View>
 
-      <View style={styles.inputsRow}>
-        <View style={styles.inputWrap}>
-          <Text style={styles.inputLabel}>שם1</Text>
-          <TextInput
-            value={name1}
-            onChangeText={setName1}
-            placeholder="לדוגמה: שם מלא"
-            placeholderTextColor="rgba(255,255,255,0.35)"
-            style={styles.input}
-            editable={!isExporting}
-          />
-        </View>
-
-        <View style={styles.inputWrap}>
-          <Text style={styles.inputLabel}>שם2</Text>
-          <TextInput
-            value={name2}
-            onChangeText={setName2}
-            placeholder="לדוגמה: תפקיד/מחלקה"
-            placeholderTextColor="rgba(255,255,255,0.35)"
-            style={styles.input}
-            editable={!isExporting}
-          />
-        </View>
-      </View>
-    </>
+      <Text style={styles.hint}>
+        💡 אצבע אחת = הזזה | שתי אצבעות = שינוי גודל
+      </Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { gap: 6, marginBottom: 12 },
-  title: { color: "white", fontSize: 22, fontWeight: "700" },
-  sub: { color: "white", opacity: 0.7, lineHeight: 18 },
+  container: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.1)",
+  },
 
-  actions: { flexDirection: "row", gap: 10, marginBottom: 12 },
+  inputsRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 16,
+  },
+  inputWrap: {
+    flex: 1,
+    gap: 6,
+  },
+  inputLabel: {
+    color: "rgba(255,255,255,0.6)",
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  input: {
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "500",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
+  },
+
+  actions: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 12,
+  },
   btn: {
     flex: 1,
-    backgroundColor: "#2a2a2a",
-    paddingVertical: 14,
-    borderRadius: 14,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-  },
-  exportBtn: { backgroundColor: "#3a3a3a" },
-  backBtn: { backgroundColor: "#1b1b1b" },
-  btnDisabled: { opacity: 0.45 },
-  btnText: { color: "white", fontWeight: "700" },
-  exportLoading: { flexDirection: "row", gap: 8, alignItems: "center" },
-
-  inputsRow: { flexDirection: "row", gap: 10, marginBottom: 12 },
-  inputWrap: { flex: 1, gap: 6 },
-  inputLabel: { color: "white", opacity: 0.75, fontSize: 12 },
-  input: {
-    backgroundColor: "#161616",
+    gap: 6,
+    paddingVertical: 14,
     borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    color: "white",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.10)",
+  },
+  btnSecondary: {
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+  btnPrimary: {
+    backgroundColor: "#007AFF",
+  },
+  btnDisabled: {
+    opacity: 0.4,
+  },
+  btnIcon: {
+    fontSize: 16,
+  },
+  btnText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  row: {
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center",
+  },
+
+  hint: {
+    color: "rgba(255,255,255,0.5)",
+    fontSize: 13,
+    textAlign: "center",
+    fontWeight: "500",
   },
 });
