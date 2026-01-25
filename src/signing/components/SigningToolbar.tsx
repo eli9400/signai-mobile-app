@@ -36,7 +36,7 @@ export default function SigningToolbar({
   canExport,
   onPickImage,
   onExport,
-  onBack,
+ 
   mode = "image",
   pickButtonLabel,
 }: Props) {
@@ -51,7 +51,7 @@ export default function SigningToolbar({
           <TextInput
             value={name1}
             onChangeText={setName1}
-            placeholder="שם מלא"
+            placeholder="שם "
             placeholderTextColor="rgba(255,255,255,0.3)"
             style={styles.input}
             editable={!isExporting}
@@ -63,7 +63,7 @@ export default function SigningToolbar({
           <TextInput
             value={name2}
             onChangeText={setName2}
-            placeholder="תפקיד/מחלקה"
+            placeholder="שם נוסף (אופציונלי)"
             placeholderTextColor="rgba(255,255,255,0.3)"
             style={styles.input}
             editable={!isExporting}

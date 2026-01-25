@@ -20,8 +20,8 @@ export default function HomeScreen({
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>SignAI</Text>
-          <Text style={styles.subtitle}>חתימה דיגיטלית</Text>
+          <Text style={styles.title}>QuickSign</Text>
+          <Text style={styles.subtitle}>חתימה דיגיטלית מהירה</Text>
         </View>
 
         <View style={styles.card}>
