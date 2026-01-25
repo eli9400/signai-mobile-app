@@ -27,44 +27,23 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
+
       "intentFilters": [
         {
           "action": "VIEW",
           "category": ["DEFAULT", "BROWSABLE"],
           "data": [
-            {
-              "scheme": "file",
-              "mimeType": "application/pdf"
-            },
-            {
-              "scheme": "content",
-              "mimeType": "application/pdf"
-            }
+            { "scheme": "file", "mimeType": "application/pdf" },
+            { "scheme": "content", "mimeType": "application/pdf" }
           ]
         },
         {
           "action": "VIEW",
           "category": ["DEFAULT", "BROWSABLE"],
           "data": [
-            {
-              "scheme": "file",
-              "mimeType": "image/*"
-            },
-            {
-              "scheme": "content",
-              "mimeType": "image/*"
-            }
+            { "scheme": "file", "mimeType": "image/*" },
+            { "scheme": "content", "mimeType": "image/*" }
           ]
-        },
-        {
-          "action": "SEND",
-          "category": ["DEFAULT"],
-          "data": [{ "mimeType": "*/*" }]
-        },
-        {
-          "action": "SEND_MULTIPLE",
-          "category": ["DEFAULT"],
-          "data": [{ "mimeType": "*/*" }]
         }
       ]
     },
@@ -77,6 +56,14 @@
       }
     },
     "owner": "eli9400457",
-    "plugins": ["expo-share-intent"]
+    "plugins": [
+      [
+        "expo-share-intent",
+        {
+          "androidIntentFilters": ["image/*", "application/pdf"],
+          "androidMultiIntentFilters": ["image/*"]
+        }
+      ]
+    ]
   }
 }
