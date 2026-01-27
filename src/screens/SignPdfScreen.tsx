@@ -1,5 +1,5 @@
 // src/screens/SignPdfScreen.tsx
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   Keyboard,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import SizeControls from "../signing/components/SizeControls";
 import PdfPageToPngWebView from "../signing/pdf/PdfPageToPngWebView";
 import MultiPagePdfConverter from "../signing/pdf/MultiPagePdfConverter";
 import PageSelectorModal from "../signing/components/PageSelectorModal";
@@ -27,19 +27,42 @@ import {
   clampPosLoose,
   type Rect,
 } from "../signing/geometry";
+import PdfEditorHeader from "../signing/components/PdfEditorHeader";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  buildAllPagesForSelector,
+  makeExportQueue,
+  nextMissing,
+  progress,
+  toggleSelectorPage,
+  updateQueueWithRenderedPage,
+  type ExportPage,
+} from "../signing/pdf/multiPageExportPrep";
 
 type Props = {
   signatureUri: string | null;
   onBack: () => void;
   initialFileUri?: string | null; // <-- חדש (Open with)
+  onFileLoaded?: () => void;
 };
 
 export default function SignPdfScreen({
   signatureUri,
   onBack,
   initialFileUri,
+  onFileLoaded,
 }: Props) {
   const editor = usePdfEditor(signatureUri);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [selectorPages, setSelectorPages] = useState<ExportPage[]>([]);
+  const [exportPages, setExportPages] = useState<ExportPage[]>([]);
+  const exportQueueRef = useRef<ExportPage[]>([]);
+
+  const [isPreparingExport, setIsPreparingExport] = useState(false);
+  const [preparePageNumber, setPreparePageNumber] = useState<number | null>(
+    null,
+  );
+  const [prepareProgress, setPrepareProgress] = useState({ done: 0, total: 0 });
 
   useEffect(() => {
     if (!initialFileUri) return;
@@ -49,10 +72,45 @@ export default function SignPdfScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFileUri]);
 
-  const minSigW = 90;
-  const maxSigW = 240;
-  const minFont = 12;
+  useEffect(() => {
+    if (editor.pdfUri) onFileLoaded?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor.pdfUri]);
+
+  const minSigW = 45;
+  const maxSigW = 260;
+  const minFont = 10;
   const maxFont = 54;
+
+  const resizeSignature = (dir: -1 | 1) => {
+    const step = 10;
+    const nextW = Math.max(
+      minSigW,
+      Math.min(maxSigW, editor.sigSize.w + dir * step),
+    );
+
+    const ratio =
+      editor.sigSize.w > 0 ? editor.sigSize.h / editor.sigSize.w : 0.5;
+    const nextH = nextW * ratio;
+
+    editor.setSigSize({ w: nextW, h: nextH });
+  };
+
+  const resizeText = (dir: -1 | 1) => {
+    const step = 1;
+
+    const next1 = Math.max(
+      minFont,
+      Math.min(maxFont, editor.name1Font + dir * step),
+    );
+    const next2 = Math.max(
+      minFont,
+      Math.min(maxFont, editor.name2Font + dir * step),
+    );
+
+    editor.setName1Font(next1);
+    editor.setName2Font(next2);
+  };
 
   const imageBox: Rect | null = useMemo(() => {
     if (!editor.pngMeta) return null;
@@ -72,6 +130,7 @@ export default function SignPdfScreen({
     editor.setName1Pos((p) => clampPosLoose(p, imageBox, 40));
     editor.setName2Pos((p) => clampPosLoose(p, imageBox, 40));
   }, [imageBox, editor.sigSize.w, editor.sigSize.h]);
+  const insets = useSafeAreaInsets();
 
   const {
     pinch,
@@ -84,6 +143,7 @@ export default function SignPdfScreen({
   } = useOverlayGestures({
     imageBox,
     isDisabled: editor.isExporting || editor.mode !== "editing",
+    isPinchEnabled: false,
 
     sigSize: editor.sigSize,
     setSigSize: editor.setSigSize,
@@ -144,7 +204,23 @@ export default function SignPdfScreen({
         editor.setIsConverting(true);
         // Will be handled by MultiPagePdfConverter
       } else {
-        // Show page selector for multi-page
+        // ✅ Multi-page: show selector with ALL pages by default
+        const total = editor.totalPages ?? 0;
+
+        // combine current page (just saved) + existing editedPages
+        const mergedEdited = [
+          ...(editor.editedPages as any),
+          currentPage as any,
+        ];
+
+        // remove duplicates by pageNumber (keep latest)
+        const byNum = new Map<number, any>();
+        for (const p of mergedEdited) byNum.set(p.pageNumber, p);
+        const uniqueEdited = Array.from(byNum.values());
+
+        const allPages = buildAllPagesForSelector(total, uniqueEdited);
+
+        setSelectorPages(allPages);
         editor.setShowPageSelector(true);
         editor.setIsExporting(false);
       }
@@ -155,16 +231,35 @@ export default function SignPdfScreen({
   };
 
   const handleMultiPageExport = () => {
-    const selectedCount = editor.editedPages.filter((p) => p.selected).length;
+    const selected = selectorPages
+      .filter((p) => p.selected)
+      .sort((a, b) => a.pageNumber - b.pageNumber);
 
-    if (selectedCount === 0) {
+    if (selected.length === 0) {
       Alert.alert("שגיאה", "בחר לפחות עמוד אחד לייצוא");
       return;
     }
 
+    // ניצור תור ייצוא (כולל עמודים לא-ערוכים)
+    exportQueueRef.current = selected.map((p) => ({ ...p }));
+
+    const done = exportQueueRef.current.filter((p) => p.imageBase64).length;
+    setPrepareProgress({ done, total: exportQueueRef.current.length });
+
     editor.setShowPageSelector(false);
     editor.setIsExporting(true);
-    editor.setIsConverting(true);
+
+    const missing = exportQueueRef.current.find((p) => !p.imageBase64);
+    if (!missing) {
+      // הכל כבר מוכן (למשל המשתמש ערך את כולם)
+      setExportPages(exportQueueRef.current);
+      editor.setIsConverting(true);
+      return;
+    }
+
+    // מתחילים להכין עמודים חסרים אחד-אחד
+    setIsPreparingExport(true);
+    setPreparePageNumber(missing.pageNumber);
   };
 
   const handlePdfReady = async (pdfBase64: string) => {
@@ -190,58 +285,97 @@ export default function SignPdfScreen({
     editor.setIsExporting(false);
   };
 
+  const cleanFileLabel = useMemo(() => {
+    if (!editor.fileLabel) return null;
+
+    // remove any existing "עמוד X מתוך Y" from fileLabel to avoid duplicates
+    return editor.fileLabel.replace(/\s*\|\s*עמוד\s+\d+\s+מתוך\s+\d+\s*$/g, "");
+  }, [editor.fileLabel]);
+
+  const onToggleSelectorPage = (pageNum: number) => {
+    setSelectorPages((prev) =>
+      prev.map((p) =>
+        p.pageNumber === pageNum ? { ...p, selected: !p.selected } : p,
+      ),
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Text style={styles.title}>עריכת PDF</Text>
-          <Pressable style={styles.backBtn} onPress={onBack}>
-            <Text style={styles.backBtnText}>✕</Text>
-          </Pressable>
-        </View>
-        {!!editor.fileLabel && (
-          <Text style={styles.fileName}>{editor.fileLabel}</Text>
-        )}
-      </View>
+      <PdfEditorHeader
+        title="עריכת PDF"
+        subtitle={
+          cleanFileLabel
+            ? `${cleanFileLabel}${
+                editor.totalPages
+                  ? ` | עמוד ${editor.pageNumber} מתוך ${editor.totalPages}`
+                  : ""
+              }`
+            : null
+        }
+        isFullScreen={isFullScreen}
+        onToggleFullScreen={() => setIsFullScreen((v) => !v)}
+        onClose={onBack}
+      />
 
       {/* Toolbar or Actions */}
-      {editor.mode === "editing" ? (
-        <SigningToolbar
-          name1={editor.name1}
-          name2={editor.name2}
-          setName1={editor.setName1}
-          setName2={editor.setName2}
-          isExporting={editor.isExporting}
-          canExport={Boolean(editor.canExport)}
-          onPickImage={editor.pickPdf}
-          onExport={handleExport}
-          onBack={onBack}
-          mode="pdf"
-          pickButtonLabel="טען PDF אחר"
-        />
-      ) : (
-        <View style={styles.actions}>
-          <Pressable
-            style={[styles.actionBtn, styles.primaryBtn]}
-            onPress={editor.pickPdf}
-            disabled={editor.isPicking || editor.isReading}
-          >
-            {editor.isPicking || editor.isReading ? (
-              <View style={styles.row}>
-                <ActivityIndicator color="#fff" size="small" />
-                <Text style={styles.btnText}>
-                  {editor.isPicking ? "פותח..." : "טוען..."}
-                </Text>
+      {!isFullScreen && (
+        <>
+          {editor.mode === "editing" ? (
+            <>
+              <SigningToolbar
+                name1={editor.name1}
+                name2={editor.name2}
+                setName1={editor.setName1}
+                setName2={editor.setName2}
+                isExporting={editor.isExporting}
+                canExport={Boolean(editor.canExport)}
+                onPickImage={editor.pickPdf}
+                onExport={handleExport}
+                onBack={onBack}
+                mode="pdf"
+                pickButtonLabel="טען PDF אחר"
+              />
+
+              <View style={styles.sizeRow}>
+                <View style={styles.sizeChip}>
+                  <Text style={styles.sizeChipText}>גודל</Text>
+                </View>
+
+                <SizeControls
+                  disabled={editor.isExporting}
+                  onSigMinus={() => resizeSignature(-1)}
+                  onSigPlus={() => resizeSignature(1)}
+                  onTextMinus={() => resizeText(-1)}
+                  onTextPlus={() => resizeText(1)}
+                />
               </View>
-            ) : (
-              <>
-                <Text style={styles.btnIcon}>📄</Text>
-                <Text style={styles.btnText}>בחר PDF</Text>
-              </>
-            )}
-          </Pressable>
-        </View>
+            </>
+          ) : (
+            <View style={styles.actions}>
+              <Pressable
+                style={[styles.actionBtn, styles.primaryBtn]}
+                onPress={editor.pickPdf}
+                disabled={editor.isPicking || editor.isReading}
+              >
+                {editor.isPicking || editor.isReading ? (
+                  <View style={styles.row}>
+                    <ActivityIndicator color="#fff" size="small" />
+                    <Text style={styles.btnText}>
+                      {editor.isPicking ? "פותח..." : "טוען..."}
+                    </Text>
+                  </View>
+                ) : (
+                  <>
+                    <Text style={styles.btnIcon}>📄</Text>
+                    <Text style={styles.btnText}>בחר PDF</Text>
+                  </>
+                )}
+              </Pressable>
+            </View>
+          )}
+        </>
       )}
 
       {/* Page Navigation */}
@@ -285,7 +419,7 @@ export default function SignPdfScreen({
 
       {/* Viewer */}
       <View
-        style={styles.viewer}
+        style={[styles.viewer, isFullScreen && styles.viewerFull]}
         onLayout={editor.onStageLayout}
         collapsable={false}
       >
@@ -404,10 +538,56 @@ export default function SignPdfScreen({
         )}
       </View>
 
+      {isPreparingExport && editor.pdfBase64 && preparePageNumber && (
+        <View style={{ position: "absolute", width: 1, height: 1, opacity: 0 }}>
+          <PdfPageToPngWebView
+            pdfBase64={editor.pdfBase64}
+            pageNumber={preparePageNumber}
+            onRendered={(dataUrl, m) => {
+              const b64 = String(dataUrl).split(",")[1] ?? "";
+
+              exportQueueRef.current = exportQueueRef.current.map((p) =>
+                p.pageNumber === m.pageNumber
+                  ? { ...p, imageBase64: b64, width: m.width, height: m.height }
+                  : p,
+              );
+
+              const doneNow = exportQueueRef.current.filter(
+                (p) => p.imageBase64,
+              ).length;
+              setPrepareProgress({
+                done: doneNow,
+                total: exportQueueRef.current.length,
+              });
+
+              const nextMissing = exportQueueRef.current.find(
+                (p) => !p.imageBase64,
+              );
+
+              if (!nextMissing) {
+                setExportPages(exportQueueRef.current);
+                editor.setIsConverting(true);
+                setIsPreparingExport(false);
+                setPreparePageNumber(null);
+                return;
+              }
+
+              setPreparePageNumber(nextMissing.pageNumber);
+            }}
+            onError={(message) => {
+              Alert.alert("שגיאת הכנה", message);
+              setIsPreparingExport(false);
+              editor.setIsExporting(false);
+              setPreparePageNumber(null);
+            }}
+          />
+        </View>
+      )}
+
       {/* Multi-Page PDF Converter */}
-      {editor.isConverting && editor.editedPages.length > 0 && (
+      {editor.isConverting && exportPages.length > 0 && (
         <MultiPagePdfConverter
-          pages={editor.editedPages}
+          pages={exportPages}
           onPdfReady={handlePdfReady}
           onError={handlePdfError}
         />
@@ -416,8 +596,8 @@ export default function SignPdfScreen({
       {/* Page Selector Modal */}
       <PageSelectorModal
         visible={editor.showPageSelector}
-        pages={editor.editedPages}
-        onTogglePage={editor.togglePageSelection}
+        pages={selectorPages}
+        onTogglePage={onToggleSelectorPage}
         onCancel={() => {
           editor.setShowPageSelector(false);
           editor.setIsExporting(false);
@@ -431,9 +611,24 @@ export default function SignPdfScreen({
           <View style={styles.conversionBox}>
             <ActivityIndicator size="large" color="#fff" />
             <Text style={styles.conversionText}>
-              ממיר {editor.editedPages.filter((p) => p.selected).length} עמודים
-              ל-PDF...
+              {isPreparingExport
+                ? `מכין עמודים לייצוא... (${prepareProgress.done}/${prepareProgress.total})`
+                : `ממיר ${exportPages.filter((p) => p.selected).length} עמודים ל-PDF...`}
             </Text>
+          </View>
+        </View>
+      )}
+
+      {isFullScreen && editor.mode === "editing" && (
+        <View pointerEvents="box-none" style={styles.fullOverlay}>
+          <View style={styles.fullOverlayBox}>
+            <SizeControls
+              disabled={editor.isExporting}
+              onSigMinus={() => resizeSignature(-1)}
+              onSigPlus={() => resizeSignature(1)}
+              onTextMinus={() => resizeText(-1)}
+              onTextPlus={() => resizeText(1)}
+            />
           </View>
         </View>
       )}
@@ -656,5 +851,51 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     textAlign: "center",
+  },
+  sizeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+    gap: 12,
+  },
+
+  sizeChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+  },
+  sizeChipText: {
+    color: "rgba(255,255,255,0.75)",
+    fontSize: 12,
+    fontWeight: "800",
+  },
+
+  viewerFull: {
+    margin: 0,
+    borderRadius: 0,
+  },
+  fullOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  fullOverlayBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
   },
 });

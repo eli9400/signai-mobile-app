@@ -1,9 +1,8 @@
 // src/AppInner.tsx
 import React, { useEffect, useRef, useState } from "react";
-import { I18nManager, Platform } from "react-native";
+import { I18nManager, Platform, BackHandler, Alert } from "react-native";
 import * as Linking from "expo-linking";
 import { useShareIntentContext } from "expo-share-intent";
-
 import { loadSignaturePngUri } from "./storage/signatureStore";
 import SignPdfScreen from "./screens/SignPdfScreen";
 import HomeScreen from "./screens/HomeScreen";
@@ -52,6 +51,8 @@ export default function AppInner() {
   const { hasShareIntent, shareIntent, resetShareIntent } =
     useShareIntentContext();
 
+  const [hasLoadedFile, setHasLoadedFile] = useState(false);
+
   // prevent Linking fallback from overriding a share we already handled
   const handledIncomingRef = useRef(false);
 
@@ -71,6 +72,44 @@ export default function AppInner() {
     })();
   }, [screen]);
 
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+
+    const onBackPress = () => {
+      // במסכי עריכה
+      if (screen === "signPdf" || screen === "signImage") {
+        // אם עוד לא נטען קובץ – חזרה שקטה למסך הבית
+        if (!hasLoadedFile) {
+          clearOpen();
+          setScreen("home");
+          return true;
+        }
+
+        // אם יש קובץ – דיאלוג אישור
+        Alert.alert("יציאה מהמסמך", "האם לחזור למסך הראשי?", [
+          { text: "ביטול", style: "cancel" },
+          {
+            text: "חזרה למסך הראשי",
+            style: "destructive",
+            onPress: () => {
+              clearOpen();
+              setScreen("home");
+            },
+          },
+        ]);
+
+        return true; // חוסם יציאה מהאפליקציה
+      }
+
+      // במסך הבית – Back רגיל (יציאה)
+      return false;
+    };
+
+    const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+    return () => sub.remove();
+  }, [screen, hasLoadedFile]);
+
   const routeIncoming = (uri: string, kind?: OpenKind, mime?: string) => {
     const decoded = decodeURI(uri);
     const finalKind: OpenKind =
@@ -85,6 +124,7 @@ export default function AppInner() {
 
     setOpenUri(decoded);
     setOpenKind(finalKind);
+    setHasLoadedFile(true);
     setScreen(finalKind === "pdf" ? "signPdf" : "signImage");
   };
 
@@ -220,6 +260,7 @@ export default function AppInner() {
     handledIncomingRef.current = false;
     setOpenUri(null);
     setOpenKind(null);
+    setHasLoadedFile(false);
   };
 
   if (screen === "signature") {
@@ -231,6 +272,7 @@ export default function AppInner() {
       <SignImageScreen
         signatureUri={signatureUri}
         initialFileUri={openKind === "image" ? openUri : null}
+        onFileLoaded={() => setHasLoadedFile(true)}
         onBack={() => {
           clearOpen();
           setScreen("home");
@@ -244,6 +286,7 @@ export default function AppInner() {
       <SignPdfScreen
         signatureUri={signatureUri}
         initialFileUri={openKind === "pdf" ? openUri : null}
+        onFileLoaded={() => setHasLoadedFile(true)}
         onBack={() => {
           clearOpen();
           setScreen("home");
@@ -256,8 +299,14 @@ export default function AppInner() {
     <HomeScreen
       signatureUri={signatureUri}
       onGoSignature={() => setScreen("signature")}
-      onGoSignImage={() => setScreen("signImage")}
-      onGoSignPdf={() => setScreen("signPdf")}
+      onGoSignImage={() => {
+        setHasLoadedFile(false);
+        setScreen("signImage");
+      }}
+      onGoSignPdf={() => {
+        setHasLoadedFile(false);
+        setScreen("signPdf");
+      }}
     />
   );
 }

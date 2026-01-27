@@ -9,7 +9,6 @@ import {
   Dimensions,
   Keyboard,
   Pressable,
-  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
@@ -29,11 +28,15 @@ import { exportAndSharePng } from "../signing/export/exportAndSharePng";
 import SigningToolbar from "../signing/components/SigningToolbar";
 import SignatureOverlay from "../signing/components/SignatureOverlay";
 import TextOverlay from "../signing/components/TextOverlay";
+import PdfEditorHeader from "../signing/components/PdfEditorHeader";
+import SizeControls from "../signing/components/SizeControls";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Props = {
   signatureUri: string | null;
   onBack: () => void;
   initialFileUri?: string | null; // <-- חדש (Open with)
+  onFileLoaded?: () => void;
 };
 const FS: any = FileSystem;
 
@@ -41,35 +44,31 @@ export default function SignImageScreen({
   signatureUri,
   onBack,
   initialFileUri,
+  onFileLoaded,
 }: Props) {
   const stageRef = useRef<View>(null);
   const imageBoxRef = useRef<View>(null);
-
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [containerW, setContainerW] = useState(0);
   const [containerH, setContainerH] = useState(0);
   const [imgPx, setImgPx] = useState<{ w: number; h: number } | null>(null);
-
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const insets = useSafeAreaInsets();
   const [sigSize, setSigSize] = useState({ w: 180, h: 90 });
   const [sigPos, setSigPos] = useState<Point>({ x: 20, y: 20 });
-
   const [name1, setName1] = useState("");
   const [name2, setName2] = useState("");
   const [name1Pos, setName1Pos] = useState<Point>({ x: 20, y: 140 });
   const [name2Pos, setName2Pos] = useState<Point>({ x: 20, y: 190 });
   const [name1Font, setName1Font] = useState(22);
   const [name2Font, setName2Font] = useState(22);
-
   const [isExporting, setIsExporting] = useState(false);
-
   const { width: screenW } = Dimensions.get("window");
   const canSign = Boolean(signatureUri);
-
-  const minSigW = 90;
+  const minSigW = 45;
   const maxSigW = Math.max(140, Math.round(screenW * 0.75));
-  const minFont = 12;
+  const minFont = 10;
   const maxFont = 54;
-
   const imageBox: Rect | null = useMemo(() => {
     if (!imgPx) return null;
     return calcImageBox(containerW, containerH, imgPx.w, imgPx.h);
@@ -119,6 +118,11 @@ export default function SignImageScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFileUri]);
 
+  useEffect(() => {
+    if (imageUri) onFileLoaded?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageUri]);
+
   const onStageLayout = (e: any) => {
     setContainerW(e.nativeEvent.layout.width);
     setContainerH(e.nativeEvent.layout.height);
@@ -135,6 +139,7 @@ export default function SignImageScreen({
   } = useOverlayGestures({
     imageBox,
     isDisabled: isExporting,
+    isPinchEnabled: false,
 
     sigSize,
     setSigSize,
@@ -186,46 +191,83 @@ export default function SignImageScreen({
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Text style={styles.title}>עריכת תמונה</Text>
-          <Pressable style={styles.backBtn} onPress={onBack}>
-            <Text style={styles.backBtnText}>✕</Text>
-          </Pressable>
-        </View>
-      </View>
+      <PdfEditorHeader
+        title="עריכת תמונה"
+        subtitle={imageUri ? "תמונה נטענה" : null}
+        isFullScreen={isFullScreen}
+        onToggleFullScreen={() => setIsFullScreen((v) => !v)}
+        onClose={onBack}
+      />
 
-      {/* Toolbar */}
-      {imageUri ? (
-        <SigningToolbar
-          name1={name1}
-          name2={name2}
-          setName1={setName1}
-          setName2={setName2}
-          isExporting={isExporting}
-          canExport={canExport}
-          onPickImage={pickImage}
-          onExport={exportAndShare}
-          onBack={onBack}
-          mode="image"
-        />
-      ) : (
-        <View style={styles.actions}>
-          <Pressable
-            style={[styles.actionBtn, styles.primaryBtn]}
-            onPress={pickImage}
-          >
-            <Text style={styles.btnIcon}>🖼️</Text>
-            <Text style={styles.btnText}>בחר תמונה</Text>
-          </Pressable>
-        </View>
+      {!isFullScreen && (
+        <>
+          {/* Toolbar */}
+          {imageUri ? (
+            <>
+              <SigningToolbar
+                name1={name1}
+                name2={name2}
+                setName1={setName1}
+                setName2={setName2}
+                isExporting={isExporting}
+                canExport={canExport}
+                onPickImage={pickImage}
+                onExport={exportAndShare}
+                onBack={onBack}
+                mode="image"
+              />
+
+              <View style={styles.sizeRow}>
+                <View style={styles.sizeChip}>
+                  <Text style={styles.sizeChipText}>גודל</Text>
+                </View>
+
+                <SizeControls
+                  disabled={isExporting}
+                  onSigMinus={() =>
+                    setSigSize((s) => {
+                      const nextW = Math.max(minSigW, s.w - 10);
+                      const ratio = s.w > 0 ? s.h / s.w : 0.5;
+                      return { w: nextW, h: Math.max(1, nextW * ratio) };
+                    })
+                  }
+                  onSigPlus={() =>
+                    setSigSize((s) => {
+                      const nextW = Math.min(maxSigW, s.w + 10);
+                      const ratio = s.w > 0 ? s.h / s.w : 0.5;
+                      return { w: nextW, h: Math.max(1, nextW * ratio) };
+                    })
+                  }
+                  onTextMinus={() => {
+                    setName1Font((f) => Math.max(minFont, f - 2));
+                    setName2Font((f) => Math.max(minFont, f - 2));
+                  }}
+                  onTextPlus={() => {
+                    setName1Font((f) => Math.min(maxFont, f + 2));
+                    setName2Font((f) => Math.min(maxFont, f + 2));
+                  }}
+                />
+              </View>
+            </>
+          ) : (
+            <View style={styles.actions}>
+              <Pressable
+                style={[styles.actionBtn, styles.primaryBtn]}
+                onPress={pickImage}
+              >
+                <Text style={styles.btnIcon}>🖼️</Text>
+                <Text style={styles.btnText}>בחר תמונה</Text>
+              </Pressable>
+            </View>
+          )}
+        </>
       )}
 
       {/* Viewer */}
       <View
         ref={stageRef}
         collapsable={false}
-        style={styles.viewer}
+        style={[styles.viewer, isFullScreen && styles.viewerFull]}
         onLayout={onStageLayout}
       >
         {!imageUri ? (
@@ -314,6 +356,40 @@ export default function SignImageScreen({
           </>
         )}
       </View>
+      {isFullScreen && imageUri && (
+        <View
+          pointerEvents="box-none"
+          style={[styles.fullOverlay, { bottom: insets.bottom + 16 }]}
+        >
+          <View style={styles.fullOverlayBox}>
+            <SizeControls
+              disabled={isExporting}
+              onSigMinus={() =>
+                setSigSize((s) => {
+                  const nextW = Math.max(minSigW, s.w - 10);
+                  const ratio = s.w > 0 ? s.h / s.w : 0.5;
+                  return { w: nextW, h: Math.max(1, nextW * ratio) };
+                })
+              }
+              onSigPlus={() =>
+                setSigSize((s) => {
+                  const nextW = Math.min(maxSigW, s.w + 10);
+                  const ratio = s.w > 0 ? s.h / s.w : 0.5;
+                  return { w: nextW, h: Math.max(1, nextW * ratio) };
+                })
+              }
+              onTextMinus={() => {
+                setName1Font((f) => Math.max(minFont, f - 2));
+                setName2Font((f) => Math.max(minFont, f - 2));
+              }}
+              onTextPlus={() => {
+                setName1Font((f) => Math.min(maxFont, f + 2));
+                setName2Font((f) => Math.min(maxFont, f + 2));
+              }}
+            />
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -417,4 +493,47 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   imageBoxImg: { width: "100%", height: "100%" },
+  fullOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  fullOverlayBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
+  },
+  viewerFull: {
+    margin: 0,
+    borderRadius: 0,
+  },
+  sizeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+    gap: 12,
+  },
+  sizeChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+  },
+  sizeChipText: {
+    color: "rgba(255,255,255,0.75)",
+    fontSize: 12,
+    fontWeight: "800",
+  },
 });

@@ -56,7 +56,7 @@ export default function TextOverlay({
       {!isExporting && isInteracting && (
         <View style={styles.hintBubble}>
           <Text style={styles.hintText}>
-            {isPinching ? "שנה גודל" : "גרור / צבט"}
+            {isPinching ? "שנה גודל" : "גרור "}
           </Text>
         </View>
       )}

@@ -14,6 +14,7 @@ export type ActiveTarget = "sig" | "name1" | "name2" | null;
 type UseOverlayGesturesArgs = {
   imageBox: Rect | null;
   isDisabled?: boolean;
+  isPinchEnabled?: boolean;
 
   // signature
   sigSize: { w: number; h: number };
@@ -65,6 +66,7 @@ export function useOverlayGestures({
 
   minFont,
   maxFont,
+  isPinchEnabled = true,
 
   textClampPadding = 40,
 }: UseOverlayGesturesArgs) {
@@ -127,7 +129,7 @@ export function useOverlayGestures({
     setActive(target);
 
     const touches = evt.nativeEvent.touches ?? [];
-    if (touches.length >= 2) {
+    if (isPinchEnabled && touches.length >= 2) {
       setPinch({
         isPinching: true,
         startDist: dist(touches[0], touches[1]),
@@ -158,9 +160,15 @@ export function useOverlayGestures({
     const touches = evt.nativeEvent.touches ?? [];
 
     // pinch
-    if (touches.length >= 2) {
+    if (isPinchEnabled && touches.length >= 2) {
       const target = pinch.target ?? drag.target ?? active;
       if (!target) return;
+
+      // if user puts 2 fingers but pinch is disabled, cancel current drag
+      if (!isPinchEnabled && touches.length >= 2) {
+        setDrag((d) => ({ ...d, isDragging: false, target: null }));
+        return;
+      }
 
       if (!pinch.isPinching) {
         setPinch({

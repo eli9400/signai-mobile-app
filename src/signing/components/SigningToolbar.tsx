@@ -36,7 +36,7 @@ export default function SigningToolbar({
   canExport,
   onPickImage,
   onExport,
- 
+
   mode = "image",
   pickButtonLabel,
 }: Props) {
@@ -104,9 +104,7 @@ export default function SigningToolbar({
         </Pressable>
       </View>
 
-      <Text style={styles.hint}>
-        💡 אצבע אחת = הזזה | שתי אצבעות = שינוי גודל
-      </Text>
+      <Text style={styles.hint}>💡 גרור עם אצבע אחת כדי להזיז </Text>
     </View>
   );
 }
