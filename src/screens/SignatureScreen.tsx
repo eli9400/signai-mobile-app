@@ -4,6 +4,7 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { saveSignaturePng, clearSignature } from "../storage/signatureStore";
+import { theme } from "../ui/theme";
 
 export default function SignatureScreen({ onDone }: { onDone: () => void }) {
   const webRef = useRef<WebView>(null);
@@ -18,38 +19,43 @@ export default function SignatureScreen({ onDone }: { onDone: () => void }) {
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <style>
-    html, body { margin:0; padding:0; height:100%; background:#0f0f0f; }
-    #wrap { height:100%; padding:12px; box-sizing:border-box; }
+   html, body { margin:0; padding:0; height:100%; background:#F3F6FF; }
+#wrap { height:100%; padding:12px; box-sizing:border-box; }
 
-    .hint {
-      color: rgba(255,255,255,0.65);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
-      font-size: 14px;
-      margin: 0 0 10px 2px;
-    }
+.hint {
+  color: rgba(15,23,42,0.85);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0 0 10px 2px;
+}
 
-    .panel {
-      background: #0b0b0b;
-      border: 2px dashed rgba(255,255,255,0.28);
-      border-radius: 16px;
-      padding: 10px;
-    }
+.panel {
+  background: #FFFFFF;
+  border: 2px dashed rgba(37,99,235,0.25);
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 10px 24px rgba(15,23,42,0.10);
+}
 
-    canvas {
-      width: 100%;
-      height: 42vh;
-      background: #ffffff; /* רק לתצוגה: כדי שתראה חתימה שחורה */
-      touch-action: none;
-      border-radius: 12px;
-      display:block;
-    }
+canvas {
+  width: 100%;
+  height: 200px;
+  background: #ffffff;
+  touch-action: none;
+  border-radius: 12px;
+  display:block;
+}
 
-    .subhint {
-      color: rgba(255,255,255,0.45);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
-      font-size: 12px;
-      margin: 10px 0 0 2px;
-    }
+.subhint {
+  color: rgba(15,23,42,0.55);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 10px 0 0 2px;
+  text-align: center;
+}
+
   </style>
 </head>
 <body>
@@ -188,101 +194,210 @@ export default function SignatureScreen({ onDone }: { onDone: () => void }) {
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
-      <View style={styles.header}>
-        <Text style={styles.title}>חתימה</Text>
-        <Text style={styles.sub}>{status}</Text>
+      <View style={styles.container}>
+        {/* Top bar */}
+        <View style={styles.topBar}>
+          <Text style={styles.appTitle}>חתימה</Text>
+
+          <Pressable style={styles.closeBtn} onPress={onDone}>
+            <Text style={styles.closeBtnText}>✕</Text>
+          </Pressable>
+        </View>
+
+        {/* Hero / hint */}
+        <View style={styles.hero}>
+          <Text style={styles.heroTitle}>צור חתימה</Text>
+          <Text style={styles.heroSub}>{status}</Text>
+        </View>
+
+        {/* Canvas card */}
+        <View style={styles.card}>
+          <View style={styles.canvasWrap}>
+            <WebView
+              ref={webRef}
+              originWhitelist={["*"]}
+              source={{ html }}
+              onMessage={onMessage}
+              javaScriptEnabled
+              domStorageEnabled
+              scrollEnabled={false}
+              setSupportMultipleWindows={false}
+              allowsBackForwardNavigationGestures={false}
+              androidLayerType="software"
+              onError={(e) => {
+                setStatus(
+                  "WebView error: " +
+                    (e?.nativeEvent?.description ?? "unknown"),
+                );
+              }}
+              onHttpError={(e) => {
+                setStatus(
+                  "WebView HTTP error: " +
+                    (e?.nativeEvent?.statusCode ?? "unknown"),
+                );
+              }}
+              onContentProcessDidTerminate={() => {
+                setStatus("WebView process terminated (iOS)");
+              }}
+              style={styles.web}
+            />
+          </View>
+
+          {/* Buttons row */}
+          <View style={styles.row}>
+            <Pressable
+              style={[styles.btn, styles.btnSecondary]}
+              onPress={() => webRef.current?.injectJavaScript(jsClear)}
+            >
+              <Text style={styles.btnSecondaryText}>נקה</Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.btn, styles.btnPrimary]}
+              onPress={() => webRef.current?.injectJavaScript(jsExport)}
+            >
+              <Text style={styles.btnPrimaryText}>שמור</Text>
+            </Pressable>
+          </View>
+
+          <Pressable
+            style={[styles.btn, styles.btnDanger]}
+            onPress={async () => {
+              await clearSignature();
+              onDone();
+            }}
+          >
+            <Text style={styles.btnDangerText}>מחק חתימה שמורה</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.spacerBottom} />
       </View>
-
-      <View style={styles.canvasWrap}>
-        <WebView
-          ref={webRef}
-          originWhitelist={["*"]}
-          source={{ html }}
-          onMessage={onMessage}
-          javaScriptEnabled
-          domStorageEnabled
-          scrollEnabled={false}
-          setSupportMultipleWindows={false}
-          allowsBackForwardNavigationGestures={false}
-          androidLayerType="software"
-          onError={(e) => {
-            setStatus(
-              "WebView error: " + (e?.nativeEvent?.description ?? "unknown"),
-            );
-          }}
-          onHttpError={(e) => {
-            setStatus(
-              "WebView HTTP error: " +
-                (e?.nativeEvent?.statusCode ?? "unknown"),
-            );
-          }}
-          onContentProcessDidTerminate={() => {
-            setStatus("WebView process terminated (iOS)");
-          }}
-          style={styles.web}
-        />
-      </View>
-
-      <View style={styles.row}>
-        <Pressable
-          style={styles.btn}
-          onPress={() => webRef.current?.injectJavaScript(jsClear)}
-        >
-          <Text style={styles.btnText}>נקה</Text>
-        </Pressable>
-
-        <Pressable
-          style={styles.btn}
-          onPress={() => webRef.current?.injectJavaScript(jsExport)}
-        >
-          <Text style={styles.btnText}>שמור</Text>
-        </Pressable>
-      </View>
-
-      <Pressable
-        style={[styles.btn, styles.deleteBtn]}
-        onPress={async () => {
-          await clearSignature();
-          onDone();
-        }}
-      >
-        <Text style={styles.btnText}>מחק חתימה שמורה</Text>
-      </Pressable>
-
-      <Pressable style={styles.link} onPress={onDone}>
-        <Text style={styles.linkText}>חזרה</Text>
-      </Pressable>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0b0b0b", padding: 16 },
-  header: { gap: 6, marginBottom: 12 },
-  title: { color: "white", fontSize: 22, fontWeight: "700" },
-  sub: { color: "white", opacity: 0.7 },
-
-  canvasWrap: {
+  safe: { flex: 1, backgroundColor: theme.colors.appBg },
+  container: {
     flex: 1,
+    paddingHorizontal: theme.spacing.pagePadding,
+    paddingTop: 6,
+    gap: 14,
+  },
+
+  // Top bar
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+  },
+  appTitle: {
+    color: theme.colors.textPrimary,
+    fontWeight: "800",
+    fontSize: 18,
+  },
+  closeBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: theme.colors.cardBg,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    alignItems: "center",
+    justifyContent: "center",
+    ...theme.shadow.card,
+  },
+  closeBtnText: {
+    color: theme.colors.textPrimary,
+    fontSize: 16,
+    fontWeight: "800",
+  },
+
+  // Hero
+  hero: {
+    backgroundColor: "rgba(37, 99, 235, 0.06)",
+    borderRadius: theme.radius.xl,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(37, 99, 235, 0.10)",
+  },
+  heroTitle: {
+    color: theme.colors.textPrimary,
+    fontSize: 22,
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  heroSub: {
+    marginTop: 6,
+    color: theme.colors.textSecondary,
+    fontSize: 13,
+    fontWeight: "600",
+    textAlign: "center",
+    lineHeight: 18,
+  },
+
+  // Card
+  card: {
+    backgroundColor: theme.colors.cardBg,
+    borderRadius: theme.radius.xl,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    padding: 14,
+    gap: 12,
+    ...theme.shadow.card,
+  },
+
+  // Canvas area
+  canvasWrap: {
+    height: 320,
     borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "#0f0f0f",
+    backgroundColor: "#F3F6FF", // ✅ תואם לרקע הבהיר של ה-HTML
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)",
+    borderColor: "rgba(15,23,42,0.10)",
   },
-  web: { backgroundColor: "#0f0f0f" },
+  web: { flex: 1, backgroundColor: "#F3F6FF" },
 
-  row: { flexDirection: "row", gap: 10, marginTop: 12 },
+  // Buttons
+  row: { flexDirection: "row", gap: 10 },
   btn: {
-    flex: 1,
-    backgroundColor: "#2a2a2a",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 14,
     borderRadius: 14,
-    alignItems: "center",
   },
-  deleteBtn: { marginTop: 10, backgroundColor: "#1b1b1b" },
-  btnText: { color: "white", fontWeight: "700" },
 
-  link: { marginTop: 12, alignItems: "center", paddingVertical: 10 },
-  linkText: { color: "white", opacity: 0.7 },
+  btnSecondary: {
+    flex: 1,
+    backgroundColor: theme.colors.buttonSecondaryBg,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+  },
+  btnSecondaryText: {
+    color: theme.colors.buttonSecondaryText,
+    fontWeight: "900",
+  },
+
+  btnPrimary: {
+    flex: 1,
+    backgroundColor: theme.colors.brand,
+  },
+  btnPrimaryText: {
+    color: "#fff",
+    fontWeight: "900",
+  },
+
+  btnDanger: {
+    backgroundColor: "rgba(239, 68, 68, 0.10)",
+    borderWidth: 1,
+    borderColor: "rgba(239, 68, 68, 0.25)",
+  },
+  btnDangerText: {
+    color: "rgba(239, 68, 68, 1)",
+    fontWeight: "900",
+  },
+
+  spacerBottom: { flex: 1 },
 });

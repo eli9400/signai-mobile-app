@@ -9,9 +9,19 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 
+type Quality = "high" | "thumb";
+
 type Props = {
   pdfBase64: string; // base64 WITHOUT prefix
   pageNumber: number; // 1-based
+
+  /**
+   * ✅ חדש: איכות רנדר
+   * - "high" (ברירת מחדל): לעריכה — חד
+   * - "thumb": לתצוגה מקדימה — מהיר
+   */
+  quality?: Quality;
+
   onRendered: (
     pngDataUrl: string,
     meta: {
@@ -19,8 +29,10 @@ type Props = {
       height: number;
       pageNumber: number;
       totalPages: number;
+      quality: Quality;
     },
   ) => void;
+
   onError?: (message: string) => void;
 };
 
@@ -33,12 +45,14 @@ type Msg =
       height: number;
       pageNumber: number;
       totalPages: number;
+      quality: Quality;
     }
   | { type: "error"; message: string };
 
 export default function PdfPageToPngWebView({
   pdfBase64,
   pageNumber,
+  quality = "high",
   onRendered,
   onError,
 }: Props) {
@@ -47,6 +61,14 @@ export default function PdfPageToPngWebView({
 
   const html = useMemo(() => {
     const p = Math.max(1, pageNumber);
+
+    // ✅ high לעריכה, thumb לגריד (מהיר יותר)
+    const scale = quality === "thumb" ? 1.0 : 2.0;
+
+    // לתמונות מקדימות: מגבילים גודל פלט כדי לקצר זמן + זיכרון
+    // (לא משפיע על high)
+    const maxThumbW = 520;
+    const maxThumbH = 720;
 
     const safeB64 = (pdfBase64 ?? "")
       .replace(/\\/g, "\\\\")
@@ -70,21 +92,26 @@ export default function PdfPageToPngWebView({
   <div class="wrap"><canvas id="c"></canvas></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  
+
   <script>
     (function() {
       var RN = window.ReactNativeWebView;
-      var send = function(obj) { 
-        if (RN) RN.postMessage(JSON.stringify(obj)); 
+      var send = function(obj) {
+        if (RN) RN.postMessage(JSON.stringify(obj));
       };
-      
-      var setMeta = function(t) { 
+
+      var setMeta = function(t) {
         var el = document.getElementById("meta");
         if (el) el.textContent = t;
       };
 
       var pageNumber = ${p};
       var b64 = \`${safeB64}\`;
+      var quality = "${quality}";
+      var scale = ${scale};
+
+      var maxThumbW = ${maxThumbW};
+      var maxThumbH = ${maxThumbH};
 
       function base64ToUint8Array(base64) {
         var raw = atob(base64);
@@ -99,15 +126,19 @@ export default function PdfPageToPngWebView({
         if (typeof pdfjsLib !== 'undefined') {
           run();
         } else {
-          setTimeout(checkPdfJs, 100);
+          setTimeout(checkPdfJs, 80);
         }
+      }
+
+      function clamp(n, a, b) {
+        return Math.max(a, Math.min(b, n));
       }
 
       function run() {
         send({ type: "ready" });
 
         try {
-          pdfjsLib.GlobalWorkerOptions.workerSrc = 
+          pdfjsLib.GlobalWorkerOptions.workerSrc =
             'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         } catch (e) {}
 
@@ -116,69 +147,86 @@ export default function PdfPageToPngWebView({
 
         setMeta("parsing PDF…");
         var loadingTask = pdfjsLib.getDocument({ data: bytes });
-        
+
         var pdfDocument = null;
-        
+
         loadingTask.promise.then(function(pdf) {
           pdfDocument = pdf;
-          
+
           if (pageNumber > pdf.numPages) {
             throw new Error("Page out of range");
           }
 
           setMeta("rendering page " + pageNumber + "…");
           return pdf.getPage(pageNumber);
-          
+
         }).then(function(page) {
           var canvas = document.getElementById("c");
-          var ctx = canvas.getContext("2d");
-          var scale = 2;
+          var ctx = canvas.getContext("2d", { alpha: false });
+
           var viewport = page.getViewport({ scale: scale });
+
+          // ✅ לתמונות מקדימות: אם יוצא גדול מדי — מנמיכים scale בפועל כדי להישאר בתוך max
+          if (quality === "thumb") {
+            var w = viewport.width;
+            var h = viewport.height;
+
+            var fitScaleW = maxThumbW / w;
+            var fitScaleH = maxThumbH / h;
+            var fitScale = Math.min(1, fitScaleW, fitScaleH);
+
+            // לא נעלה מעבר ל-scale המקורי, רק נוריד אם צריך
+            fitScale = clamp(fitScale, 0.5, 1);
+
+            if (fitScale < 1) {
+              viewport = page.getViewport({ scale: scale * fitScale });
+            }
+          }
 
           canvas.width = Math.floor(viewport.width);
           canvas.height = Math.floor(viewport.height);
 
-          return page.render({ 
-            canvasContext: ctx, 
-            viewport: viewport 
+          return page.render({
+            canvasContext: ctx,
+            viewport: viewport
           }).promise.then(function() {
-            return { 
-              canvas: canvas, 
-              pageNumber: pageNumber, 
-              totalPages: pdfDocument ? pdfDocument.numPages : 1 
+            return {
+              canvas: canvas,
+              pageNumber: pageNumber,
+              totalPages: pdfDocument ? pdfDocument.numPages : 1
             };
           });
-          
+
         }).then(function(result) {
           setMeta("converting to PNG…");
           var pngDataUrl = result.canvas.toDataURL("image/png");
 
-          send({ 
-            type: "rendered", 
-            pngDataUrl: pngDataUrl, 
-            width: result.canvas.width, 
-            height: result.canvas.height, 
+          send({
+            type: "rendered",
+            pngDataUrl: pngDataUrl,
+            width: result.canvas.width,
+            height: result.canvas.height,
             pageNumber: result.pageNumber,
-            totalPages: result.totalPages
+            totalPages: result.totalPages,
+            quality: quality
           });
-          
+
           setMeta("done!");
-          
+
         }).catch(function(err) {
-          send({ 
-            type: "error", 
-            message: err && err.message ? err.message : String(err) 
+          send({
+            type: "error",
+            message: err && err.message ? err.message : String(err)
           });
         });
       }
 
-      setTimeout(checkPdfJs, 500);
-      
+      setTimeout(checkPdfJs, 250);
     })();
   </script>
 </body>
 </html>`;
-  }, [pdfBase64, pageNumber]);
+  }, [pdfBase64, pageNumber, quality]);
 
   const onMessage = (e: any) => {
     try {
@@ -194,6 +242,7 @@ export default function PdfPageToPngWebView({
           height: msg.height,
           pageNumber: msg.pageNumber,
           totalPages: msg.totalPages,
+          quality: msg.quality,
         });
         return;
       }
@@ -221,9 +270,9 @@ export default function PdfPageToPngWebView({
         source={{ html }}
         onMessage={onMessage}
         javaScriptEnabled
-        domStorageEnabled={true}
-        allowFileAccess={true}
-        allowUniversalAccessFromFileURLs={true}
+        domStorageEnabled
+        allowFileAccess
+        allowUniversalAccessFromFileURLs
         mixedContentMode="always"
         onError={(syntheticEvent) => {
           onError?.("WebView error: " + syntheticEvent.nativeEvent.description);
@@ -234,7 +283,9 @@ export default function PdfPageToPngWebView({
       {isLoading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator />
-          <Text style={styles.loadingText}>מרנדר עמוד ל־PNG…</Text>
+          <Text style={styles.loadingText}>
+            {quality === "thumb" ? "מכין תצוגה מקדימה…" : "מרנדר עמוד ל־PNG…"}
+          </Text>
           <Pressable style={styles.retryBtn} onPress={retry}>
             <Text style={styles.retryText}>נסה שוב</Text>
           </Pressable>

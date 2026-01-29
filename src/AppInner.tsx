@@ -72,33 +72,42 @@ export default function AppInner() {
     })();
   }, [screen]);
 
+  const requestCloseDocumentToHome = () => {
+    // אם אנחנו לא בתוך מסך מסמך – חזרה רגילה
+    if (screen !== "signPdf" && screen !== "signImage") {
+      return false;
+    }
+
+    // אם עוד לא נטען קובץ – חזרה שקטה לבית
+    if (!hasLoadedFile) {
+      clearOpen();
+      setScreen("home");
+      return true;
+    }
+
+    // אם יש קובץ – דיאלוג אישור
+    Alert.alert("יציאה מהמסמך", "האם לחזור למסך הראשי?", [
+      { text: "ביטול", style: "cancel" },
+      {
+        text: "חזרה למסך הראשי",
+        style: "destructive",
+        onPress: () => {
+          clearOpen();
+          setScreen("home");
+        },
+      },
+    ]);
+
+    return true; // חסימה של יציאה מהאפליקציה
+  };
+
   useEffect(() => {
     if (Platform.OS !== "android") return;
 
     const onBackPress = () => {
-      // במסכי עריכה
+      // במסכי מסמך: ננהל חזרה דרך הפונקציה המרכזית (כולל דיאלוג)
       if (screen === "signPdf" || screen === "signImage") {
-        // אם עוד לא נטען קובץ – חזרה שקטה למסך הבית
-        if (!hasLoadedFile) {
-          clearOpen();
-          setScreen("home");
-          return true;
-        }
-
-        // אם יש קובץ – דיאלוג אישור
-        Alert.alert("יציאה מהמסמך", "האם לחזור למסך הראשי?", [
-          { text: "ביטול", style: "cancel" },
-          {
-            text: "חזרה למסך הראשי",
-            style: "destructive",
-            onPress: () => {
-              clearOpen();
-              setScreen("home");
-            },
-          },
-        ]);
-
-        return true; // חוסם יציאה מהאפליקציה
+        return requestCloseDocumentToHome();
       }
 
       // במסך הבית – Back רגיל (יציאה)
@@ -106,9 +115,9 @@ export default function AppInner() {
     };
 
     const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
-
     return () => sub.remove();
   }, [screen, hasLoadedFile]);
+  
 
   const routeIncoming = (uri: string, kind?: OpenKind, mime?: string) => {
     const decoded = decodeURI(uri);
