@@ -1,44 +1,46 @@
 // src/screens/SignImageScreen.tsx
-import React, { useMemo, useRef, useState, useEffect } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import {
   View,
-  Text,
-  StyleSheet,
-  Image,
+  Platform,
+  BackHandler,
   Alert,
-  Dimensions,
-  Keyboard,
-  Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
 
-import {
-  clamp,
-  calcImageBox,
-  clampPosInsideBox,
-  clampPosLoose,
-  type Point,
-  type Rect,
-} from "../signing/geometry";
-import { useOverlayGestures } from "../signing/hooks/useOverlayGestures";
-import { exportAndSharePng } from "../signing/export/exportAndSharePng";
-
-import SigningToolbar from "../signing/components/SigningToolbar";
-import SignatureOverlay from "../signing/components/SignatureOverlay";
-import TextOverlay from "../signing/components/TextOverlay";
-import PdfEditorHeader from "../signing/components/PdfEditorHeader";
-import SizeControls from "../signing/components/SizeControls";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ImageEditor from "../signing/imageFlow/ImageEditor";
 
 type Props = {
   signatureUri: string | null;
   onBack: () => void;
-  initialFileUri?: string | null; // <-- חדש (Open with)
+  initialFileUri?: string | null;
   onFileLoaded?: () => void;
 };
-const FS: any = FileSystem;
+
+type Point = { x: number; y: number };
+type Size = { w: number; h: number };
+
+export type ImageEditState = {
+  sigEnabled: boolean;
+  sigItems: { id: string; pos: Point; size: Size }[];
+  activeSigId: string | null;
+
+  name1: string;
+  name1Pos: Point;
+  name1Font: number;
+
+  name2: string;
+  name2Pos: Point;
+  name2Font: number;
+};
 
 export default function SignImageScreen({
   signatureUri,
@@ -46,494 +48,140 @@ export default function SignImageScreen({
   initialFileUri,
   onFileLoaded,
 }: Props) {
-  const stageRef = useRef<View>(null);
-  const imageBoxRef = useRef<View>(null);
+  const autoPickedRef = useRef(false);
+
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [containerW, setContainerW] = useState(0);
-  const [containerH, setContainerH] = useState(0);
-  const [imgPx, setImgPx] = useState<{ w: number; h: number } | null>(null);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const insets = useSafeAreaInsets();
-  const [sigSize, setSigSize] = useState({ w: 180, h: 90 });
-  const [sigPos, setSigPos] = useState<Point>({ x: 20, y: 20 });
-  const [name1, setName1] = useState("");
-  const [name2, setName2] = useState("");
-  const [name1Pos, setName1Pos] = useState<Point>({ x: 20, y: 140 });
-  const [name2Pos, setName2Pos] = useState<Point>({ x: 20, y: 190 });
-  const [name1Font, setName1Font] = useState(22);
-  const [name2Font, setName2Font] = useState(22);
-  const [isExporting, setIsExporting] = useState(false);
-  const { width: screenW } = Dimensions.get("window");
-  const canSign = Boolean(signatureUri);
-  const minSigW = 45;
-  const maxSigW = Math.max(140, Math.round(screenW * 0.75));
-  const minFont = 10;
-  const maxFont = 54;
-  const imageBox: Rect | null = useMemo(() => {
-    if (!imgPx) return null;
-    return calcImageBox(containerW, containerH, imgPx.w, imgPx.h);
-  }, [imgPx, containerW, containerH]);
+  const [imageSize, setImageSize] = useState<{ w: number; h: number } | null>(
+    null,
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
+  const [editState, setEditState] = useState<ImageEditState>({
+    sigEnabled: false,
+    sigItems: [],
+    activeSigId: null,
+    name1: "",
+    name1Pos: { x: 20, y: 140 },
+    name1Font: 28,
+    name2: "",
+    name2Pos: { x: 20, y: 210 },
+    name2Font: 28,
+  });
+
+  // Auto-pick image on mount (like PDF does with picker)
   useEffect(() => {
-    if (!imageBox) return;
-    setSigPos((p) => clampPosInsideBox(p, imageBox, sigSize.w, sigSize.h));
-    setName1Pos((p) => clampPosLoose(p, imageBox, 40));
-    setName2Pos((p) => clampPosLoose(p, imageBox, 40));
-  }, [imageBox, sigSize.w, sigSize.h]);
+    if (Platform.OS !== "android" && Platform.OS !== "ios") return;
+    if (initialFileUri) return;
+    if (imageUri) return;
+    if (autoPickedRef.current) return;
+    if (isLoading) return;
 
-  const loadImageUri = (uri: string) => {
-    setImageUri(uri);
-    setImgPx(null);
+    autoPickedRef.current = true;
+    setTimeout(() => {
+      pickImage();
+    }, 50);
+  }, [initialFileUri, imageUri, isLoading]);
 
-    setSigPos({ x: 20, y: 20 });
-    setName1Pos({ x: 20, y: 140 });
-    setName2Pos({ x: 20, y: 190 });
-
-    const w = clamp(Math.round(screenW * 0.38), 140, 240);
-    setSigSize({ w, h: Math.round(w * 0.5) });
-  };
-
-  const pickImage = async () => {
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (perm.status !== "granted") {
-      Alert.alert("אין הרשאה", "צריך הרשאת גישה לגלריה כדי לבחור תמונה.");
-      return;
-    }
-
-    const res = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      quality: 1,
-    });
-
-    if (res.canceled) return;
-    const uri = res.assets?.[0]?.uri;
-    if (!uri) return;
-
-    loadImageUri(uri);
-  };
-
+  // Load incoming image from "Open with"
   useEffect(() => {
     if (!initialFileUri) return;
     loadImageUri(initialFileUri);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFileUri]);
 
+  // When image loaded: notify home
   useEffect(() => {
-    if (imageUri) onFileLoaded?.();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageUri]);
+    if (!imageUri) return;
+    onFileLoaded?.();
+  }, [imageUri, onFileLoaded]);
 
-  const onStageLayout = (e: any) => {
-    setContainerW(e.nativeEvent.layout.width);
-    setContainerH(e.nativeEvent.layout.height);
+  const loadImageUri = (uri: string) => {
+    setImageUri(uri);
+    setImageSize(null);
+    setEditState({
+      sigEnabled: false,
+      sigItems: [],
+      activeSigId: null,
+      name1: "",
+      name1Pos: { x: 20, y: 140 },
+      name1Font: 28,
+      name2: "",
+      name2Pos: { x: 20, y: 210 },
+      name2Font: 28,
+    });
   };
 
-  const {
-    pinch,
-    onOverlayGrant,
-    onOverlayMove,
-    onOverlayEnd,
-    isInteractingSig,
-    isInteractingName1,
-    isInteractingName2,
-  } = useOverlayGestures({
-    imageBox,
-    isDisabled: isExporting,
-    isPinchEnabled: false,
+  const pickImage = async () => {
+    try {
+      setIsLoading(true);
 
-    sigSize,
-    setSigSize,
-    sigPos,
-    setSigPos,
-    minSigW,
-    maxSigW,
+      const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (perm.status !== "granted") {
+        Alert.alert("אין הרשאה", "צריך הרשאת גישה לגלריה כדי לבחור תמונה.");
+        return;
+      }
 
-    name1Pos,
-    setName1Pos,
-    name1Font,
-    setName1Font,
+      const res = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        quality: 1,
+      });
 
-    name2Pos,
-    setName2Pos,
-    name2Font,
-    setName2Font,
+      if (res.canceled) return;
+      const uri = res.assets?.[0]?.uri;
+      if (!uri) return;
 
-    minFont,
-    maxFont,
+      loadImageUri(uri);
+    } catch (e: any) {
+      Alert.alert("שגיאה", e?.message ?? "לא הצלחתי לבחור תמונה");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    textClampPadding: 40,
-  });
-
-  const canExport = Boolean(imageUri && imageBox);
-
-  const exportAndShare = async () => {
-    if (!canExport) {
-      Alert.alert("אין תמונה", "בחר תמונה וחכה שתיטען לפני ייצוא.");
+  const confirmExitToHome = useCallback(() => {
+    if (!imageUri) {
+      onBack();
       return;
     }
 
-    try {
-      Keyboard.dismiss();
-      setIsExporting(true);
+    Alert.alert("יציאה מהמסמך", "האם לחזור למסך הראשי?", [
+      { text: "ביטול", style: "cancel" },
+      {
+        text: "חזרה למסך הראשי",
+        style: "destructive",
+        onPress: onBack,
+      },
+    ]);
+  }, [imageUri, onBack]);
 
-      await exportAndSharePng({
-        viewRef: imageBoxRef,
-        beforeCaptureDelayMs: 60,
-        dialogTitle: "שתף תמונה חתומה",
-      });
-    } catch (e: any) {
-      Alert.alert("שגיאה בייצוא", e?.message ?? "לא הצלחתי לייצא את התמונה");
-    } finally {
-      setIsExporting(false);
-    }
-  };
+  // Android hardware back
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+
+    const onHardwareBack = () => {
+      // Let parent handle it (dialog + home)
+      return false;
+    };
+
+    const sub = BackHandler.addEventListener(
+      "hardwareBackPress",
+      onHardwareBack,
+    );
+    return () => sub.remove();
+  }, []);
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
-      {/* Header */}
-      <PdfEditorHeader
-        title="עריכת תמונה"
-        subtitle={imageUri ? "תמונה נטענה" : null}
-        isFullScreen={isFullScreen}
-        onToggleFullScreen={() => setIsFullScreen((v) => !v)}
-        onClose={onBack}
+    <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
+      <ImageEditor
+        imageUri={imageUri}
+        imageSize={imageSize}
+        setImageSize={setImageSize}
+        isLoading={isLoading}
+        onClose={confirmExitToHome}
+        onPickImage={pickImage}
+        signatureUri={signatureUri}
+        editState={editState}
+        setEditState={setEditState}
       />
-
-      {!isFullScreen && (
-        <>
-          {/* Toolbar */}
-          {imageUri ? (
-            <>
-              <SigningToolbar
-                name1={name1}
-                name2={name2}
-                setName1={setName1}
-                setName2={setName2}
-                isExporting={isExporting}
-                canExport={canExport}
-                onPickImage={pickImage}
-                onExport={exportAndShare}
-                onBack={onBack}
-                mode="image"
-              />
-
-              <View style={styles.sizeRow}>
-                <View style={styles.sizeChip}>
-                  <Text style={styles.sizeChipText}>גודל</Text>
-                </View>
-
-                <SizeControls
-                  disabled={isExporting}
-                  onSigMinus={() =>
-                    setSigSize((s) => {
-                      const nextW = Math.max(minSigW, s.w - 10);
-                      const ratio = s.w > 0 ? s.h / s.w : 0.5;
-                      return { w: nextW, h: Math.max(1, nextW * ratio) };
-                    })
-                  }
-                  onSigPlus={() =>
-                    setSigSize((s) => {
-                      const nextW = Math.min(maxSigW, s.w + 10);
-                      const ratio = s.w > 0 ? s.h / s.w : 0.5;
-                      return { w: nextW, h: Math.max(1, nextW * ratio) };
-                    })
-                  }
-                  onTextMinus={() => {
-                    setName1Font((f) => Math.max(minFont, f - 2));
-                    setName2Font((f) => Math.max(minFont, f - 2));
-                  }}
-                  onTextPlus={() => {
-                    setName1Font((f) => Math.min(maxFont, f + 2));
-                    setName2Font((f) => Math.min(maxFont, f + 2));
-                  }}
-                />
-              </View>
-            </>
-          ) : (
-            <View style={styles.actions}>
-              <Pressable
-                style={[styles.actionBtn, styles.primaryBtn]}
-                onPress={pickImage}
-              >
-                <Text style={styles.btnIcon}>🖼️</Text>
-                <Text style={styles.btnText}>בחר תמונה</Text>
-              </Pressable>
-            </View>
-          )}
-        </>
-      )}
-
-      {/* Viewer */}
-      <View
-        ref={stageRef}
-        collapsable={false}
-        style={[styles.viewer, isFullScreen && styles.viewerFull]}
-        onLayout={onStageLayout}
-      >
-        {!imageUri ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>🖼️</Text>
-            <Text style={styles.emptyTitle}>בחר תמונה</Text>
-            <Text style={styles.emptySub}>תוכל להוסיף חתימה ושמות ולשתף</Text>
-          </View>
-        ) : (
-          <>
-            <Image
-              source={{ uri: imageUri }}
-              style={styles.image}
-              resizeMode="contain"
-              onLoad={(e) => {
-                const src = e.nativeEvent?.source;
-                if (src?.width && src?.height) {
-                  setImgPx({ w: src.width, h: src.height });
-                }
-              }}
-              onError={() => {
-                setImgPx(null);
-                Alert.alert("שגיאה", "לא הצלחתי לטעון את התמונה שנפתחה");
-              }}
-            />
-
-            {imageBox && (
-              <View
-                ref={imageBoxRef}
-                collapsable={false}
-                style={[
-                  styles.imageBox,
-                  {
-                    left: imageBox.x,
-                    top: imageBox.y,
-                    width: imageBox.w,
-                    height: imageBox.h,
-                  },
-                ]}
-              >
-                <Image
-                  source={{ uri: imageUri }}
-                  style={styles.imageBoxImg}
-                  resizeMode="cover"
-                />
-
-                {canSign && signatureUri ? (
-                  <SignatureOverlay
-                    signatureUri={signatureUri}
-                    pos={sigPos}
-                    size={sigSize}
-                    isExporting={isExporting}
-                    isInteracting={isInteractingSig}
-                    isPinching={pinch.isPinching}
-                    onGrant={onOverlayGrant("sig")}
-                    onMove={onOverlayMove}
-                    onEnd={onOverlayEnd}
-                  />
-                ) : null}
-
-                <TextOverlay
-                  text={name1}
-                  pos={name1Pos}
-                  fontSize={name1Font}
-                  isExporting={isExporting}
-                  isInteracting={isInteractingName1}
-                  isPinching={pinch.isPinching}
-                  onGrant={onOverlayGrant("name1")}
-                  onMove={onOverlayMove}
-                  onEnd={onOverlayEnd}
-                />
-
-                <TextOverlay
-                  text={name2}
-                  pos={name2Pos}
-                  fontSize={name2Font}
-                  isExporting={isExporting}
-                  isInteracting={isInteractingName2}
-                  isPinching={pinch.isPinching}
-                  onGrant={onOverlayGrant("name2")}
-                  onMove={onOverlayMove}
-                  onEnd={onOverlayEnd}
-                />
-              </View>
-            )}
-          </>
-        )}
-      </View>
-      {isFullScreen && imageUri && (
-        <View
-          pointerEvents="box-none"
-          style={[styles.fullOverlay, { bottom: insets.bottom + 16 }]}
-        >
-          <View style={styles.fullOverlayBox}>
-            <SizeControls
-              disabled={isExporting}
-              onSigMinus={() =>
-                setSigSize((s) => {
-                  const nextW = Math.max(minSigW, s.w - 10);
-                  const ratio = s.w > 0 ? s.h / s.w : 0.5;
-                  return { w: nextW, h: Math.max(1, nextW * ratio) };
-                })
-              }
-              onSigPlus={() =>
-                setSigSize((s) => {
-                  const nextW = Math.min(maxSigW, s.w + 10);
-                  const ratio = s.w > 0 ? s.h / s.w : 0.5;
-                  return { w: nextW, h: Math.max(1, nextW * ratio) };
-                })
-              }
-              onTextMinus={() => {
-                setName1Font((f) => Math.max(minFont, f - 2));
-                setName2Font((f) => Math.max(minFont, f - 2));
-              }}
-              onTextPlus={() => {
-                setName1Font((f) => Math.min(maxFont, f + 2));
-                setName2Font((f) => Math.min(maxFont, f + 2));
-              }}
-            />
-          </View>
-        </View>
-      )}
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#000" },
-
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.1)",
-  },
-  headerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  title: {
-    color: "#fff",
-    fontSize: 28,
-    fontWeight: "800",
-    letterSpacing: -0.5,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backBtnText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-
-  actions: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  actionBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 16,
-    borderRadius: 16,
-  },
-  primaryBtn: {
-    backgroundColor: "#007AFF",
-  },
-  btnIcon: {
-    fontSize: 20,
-  },
-  btnText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-
-  viewer: {
-    flex: 1,
-    margin: 20,
-    borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: "#1C1C1E",
-    position: "relative",
-  },
-
-  empty: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-    padding: 32,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    opacity: 0.3,
-  },
-  emptyTitle: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "700",
-  },
-  emptySub: {
-    color: "rgba(255,255,255,0.5)",
-    fontSize: 15,
-    textAlign: "center",
-    lineHeight: 22,
-  },
-
-  image: { width: "100%", height: "100%" },
-
-  imageBox: {
-    position: "absolute",
-    overflow: "hidden",
-    backgroundColor: "transparent",
-  },
-  imageBoxImg: { width: "100%", height: "100%" },
-  fullOverlay: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  fullOverlayBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: "rgba(0,0,0,0.55)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.15)",
-  },
-  viewerFull: {
-    margin: 0,
-    borderRadius: 0,
-  },
-  sizeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingBottom: 10,
-    gap: 12,
-  },
-  sizeChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)",
-  },
-  sizeChipText: {
-    color: "rgba(255,255,255,0.75)",
-    fontSize: 12,
-    fontWeight: "800",
-  },
-});
