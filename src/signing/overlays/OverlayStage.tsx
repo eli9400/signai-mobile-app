@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import { useOverlayGestures } from "../hooks/useOverlayGestures";
+import { useOverlayGestures, type SigItem } from "../hooks/useOverlayGestures";
 import type { Point, Rect } from "../geometry";
 
 type Size = { w: number; h: number };
@@ -10,12 +10,20 @@ type Props = {
   imageSize: Size;
   isDisabled?: boolean;
 
-  signatureUri: string | null;
-  sigPos: Point;
-  setSigPos: (p: Point) => void;
-  sigSize: Size;
-  setSigSize: (s: Size) => void;
+  // whether to render signatures at all
+  sigEnabled?: boolean;
 
+  // signature image source (same image for all sig items for now)
+  signatureUri: string | null;
+
+  // multi signatures
+  sigItems: SigItem[];
+  setSigItems: Dispatch<SetStateAction<SigItem[]>>;
+
+  activeSigId: string | null;
+  setActiveSigId: (id: string | null) => void;
+
+  // text 1
   name1: string;
   setName1: (s: string) => void;
   name1Pos: Point;
@@ -23,6 +31,7 @@ type Props = {
   name1Font: number;
   setName1Font: (n: number) => void;
 
+  // text 2
   name2: string;
   setName2: (s: string) => void;
   name2Pos: Point;
@@ -68,31 +77,39 @@ export default function OverlayStage({
   imageUri,
   imageSize,
   isDisabled,
+
   signatureUri,
-  sigPos,
-  setSigPos,
-  sigSize,
-  setSigSize,
+
+  sigEnabled = false,
+  sigItems,
+  setSigItems,
+  activeSigId,
+  setActiveSigId,
+
   minSigW,
   maxSigW,
+
   name1,
   setName1,
   name1Pos,
   setName1Pos,
   name1Font,
   setName1Font,
+
   name2,
   setName2,
   name2Pos,
   setName2Pos,
   name2Font,
   setName2Font,
+
   minFont,
   maxFont,
   isPinchEnabled = true,
   textClampPadding = 40,
   onInteractionStart,
   onInteractionEnd,
+
   pageScale = 1,
 }: Props) {
   const [stageSize, setStageSize] = useState<Size>({ w: 0, h: 0 });
@@ -110,22 +127,28 @@ export default function OverlayStage({
     imageBox: imageBoxForGestures,
     isDisabled,
     isPinchEnabled,
-    sigSize,
-    setSigSize,
-    sigPos,
-    setSigPos,
+
+    sigItems,
+    setSigItems,
+    activeSigId,
+    setActiveSigId,
+
     minSigW,
     maxSigW,
+
     name1Pos,
     setName1Pos,
     name1Font,
     setName1Font,
+
     name2Pos,
     setName2Pos,
     name2Font,
     setName2Font,
+
     minFont,
     maxFont,
+
     textClampPadding,
     onInteractionStart,
     onInteractionEnd,
@@ -137,7 +160,10 @@ export default function OverlayStage({
     top: imageRectInStage.y + p.y,
   });
 
-  const canShowSig = Boolean(signatureUri);
+  const canShowSigs =
+    Boolean(signatureUri) && sigEnabled && (sigItems?.length ?? 0) > 0;
+
+  const canShowSigImage = Boolean(signatureUri);
 
   return (
     <View
@@ -155,39 +181,56 @@ export default function OverlayStage({
         resizeMode="contain"
       />
 
-      {canShowSig && (
-        <View
-          style={[
-            styles.sigWrap,
-            {
-              ...abs(sigPos),
-              width: sigSize.w,
-              height: sigSize.h,
-              opacity: isDisabled ? 0.6 : 1,
-            },
-          ]}
-          onStartShouldSetResponder={() => true}
-          onMoveShouldSetResponder={() => true}
-          onResponderGrant={gestures.onOverlayGrant("sig")}
-          onResponderMove={gestures.onOverlayMove}
-          onResponderRelease={gestures.onOverlayEnd}
-          onResponderTerminate={gestures.onOverlayEnd}
-        >
-          <Image
-            source={{ uri: String(signatureUri) }}
-            style={StyleSheet.absoluteFill}
-            resizeMode="contain"
-          />
-          <View
-            pointerEvents="none"
-            style={[
-              styles.grabBorder,
-              gestures.isInteractingSig && styles.grabBorderActive,
-            ]}
-          />
-        </View>
-      )}
+      {/* ✅ signatures: render all */}
+      {canShowSigs &&
+        sigItems.map((sig) => {
+          const isActive = sig.id === activeSigId;
 
+          return (
+            <View
+              key={sig.id}
+              style={[
+                styles.sigWrap,
+                {
+                  ...abs(sig.pos),
+                  width: sig.size.w,
+                  height: sig.size.h,
+                  opacity: isDisabled ? 0.6 : 1,
+                },
+              ]}
+              onStartShouldSetResponder={() => true}
+              onMoveShouldSetResponder={() => true}
+              onResponderGrant={gestures.onOverlayGrant({
+                kind: "sig",
+                id: sig.id,
+              })}
+              onResponderMove={gestures.onOverlayMove}
+              onResponderRelease={gestures.onOverlayEnd}
+              onResponderTerminate={gestures.onOverlayEnd}
+            >
+              {canShowSigImage && (
+                <Image
+                  source={{ uri: String(signatureUri) }}
+                  style={StyleSheet.absoluteFill}
+                  resizeMode="contain"
+                />
+              )}
+
+              <View
+                pointerEvents="none"
+                style={[
+                  styles.grabBorder,
+                  isActive && styles.grabBorderSelected,
+                  gestures.isInteractingSig &&
+                    isActive &&
+                    styles.grabBorderActive,
+                ]}
+              />
+            </View>
+          );
+        })}
+
+      {/* text 1 */}
       {Boolean(name1?.trim()) && (
         <View
           style={[
@@ -215,6 +258,7 @@ export default function OverlayStage({
         </View>
       )}
 
+      {/* text 2 */}
       {Boolean(name2?.trim()) && (
         <View
           style={[
@@ -252,9 +296,11 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: "#111",
   },
+
   sigWrap: {
     position: "absolute",
   },
+
   textWrap: {
     position: "absolute",
     paddingHorizontal: 10,
@@ -262,17 +308,26 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "rgba(255,255,255,0.92)",
   },
+
   text: {
     color: "#111",
     fontWeight: "900",
   },
+
   grabBorder: {
     ...StyleSheet.absoluteFillObject,
     borderWidth: 2,
     borderColor: "rgba(109,40,217,0.25)",
     borderRadius: 14,
   },
+
+  // active touch
   grabBorderActive: {
     borderColor: "rgba(109,40,217,0.85)",
+  },
+
+  // selected signature (even when not dragging)
+  grabBorderSelected: {
+    borderColor: "rgba(109,40,217,0.55)",
   },
 });

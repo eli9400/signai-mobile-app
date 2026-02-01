@@ -17,34 +17,28 @@ import {
 
 import { Ionicons } from "@expo/vector-icons";
 import PdfPageToPngWebView from "../pdf/PdfPageToPngWebView";
-import { BackIconButton } from "../../ui/icons";
+import { BackIconButton, ExportPdfPillButton } from "../../ui/icons";
 
 type Props = {
-  title: string;
   subtitle?: string | null;
-
   pdfReady: boolean;
   isLoading: boolean;
-
   onClose: () => void;
   onPickPdf: () => void;
-
   totalPages: number;
-
   selectedPages: Set<number>;
   setSelectedPages: (s: Set<number>) => void;
-
   onOpenPage: (pageNumber: number) => void;
-
   pdfBase64?: string;
-
   // ✅ Receive thumbnails from parent to persist between views
   thumbnails: Record<number, string>;
   setThumbnails: React.Dispatch<React.SetStateAction<Record<number, string>>>;
+  onExportPdf?: () => void;
+  exportDisabled?: boolean;
+  exportLabel?: string;
 };
 
 export default function PdfPagesGrid({
-  title,
   subtitle,
   pdfReady,
   isLoading,
@@ -57,6 +51,9 @@ export default function PdfPagesGrid({
   pdfBase64,
   thumbnails,
   setThumbnails,
+  onExportPdf,
+  exportDisabled,
+  exportLabel,
 }: Props) {
   const pages = useMemo(
     () => Array.from({ length: totalPages }, (_, i) => i + 1),
@@ -216,9 +213,20 @@ export default function PdfPagesGrid({
       <View style={styles.top}>
         <BackIconButton onPress={onClose} />
 
-        <View style={styles.centerTitle}>
-          <Text style={styles.title}>{title}</Text>
-        </View>
+        <View style={styles.centerTitle} />
+
+        <ExportPdfPillButton
+          onPress={() => onExportPdf?.()}
+          disabled={false}
+          size={26}
+          color="#7c3aed"
+          style={{
+            backgroundColor: "#fff",
+            borderColor: "#7c3aed",
+            borderWidth: 2,
+          }}
+          label={exportLabel || "ייצא PDF"}
+        />
 
         <Pressable
           style={[
@@ -422,4 +430,16 @@ const styles = StyleSheet.create({
   selectAllTextOn: {
     color: "#6d28d9",
   },
+  exportBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 16,
+    backgroundColor: "#6d28d9",
+    elevation: 4,
+  },
+  exportBtnDis: { opacity: 0.45 },
+  exportBtnText: { color: "#fff", fontWeight: "900" },
 });

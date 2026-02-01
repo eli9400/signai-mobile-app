@@ -13,6 +13,7 @@ import PdfPageToPngWebView from "../pdf/PdfPageToPngWebView";
 import OverlayStage from "../overlays/OverlayStage";
 import { BackIconButton } from "../../ui/icons";
 import type { PageEditState } from "../../screens/SignPdfScreen";
+import type { SigItem } from "../hooks/useOverlayGestures";
 
 function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
   const dx = a.x - b.x;
@@ -53,10 +54,14 @@ export default function PdfPageEditor({
   );
   const [name1Font, setName1Font] = useState(initialEdit?.name1Font ?? 28);
   const [name2Font, setName2Font] = useState(initialEdit?.name2Font ?? 28);
-  const [sigPos, setSigPos] = useState(initialEdit?.sigPos ?? { x: 20, y: 20 });
-  const [sigSize, setSigSize] = useState(
-    initialEdit?.sigSize ?? { w: 180, h: 90 },
+  const [sigItems, setSigItems] = useState<SigItem[]>(
+    (initialEdit as any)?.sigItems ?? [],
   );
+  const [activeSigId, setActiveSigId] = useState<string | null>(
+    (initialEdit as any)?.activeSigId ?? null,
+  );
+
+  const [sigEnabled, setSigEnabled] = useState(false);
 
   const [addTextOpen, setAddTextOpen] = useState(false);
   const [addTextValue, setAddTextValue] = useState("");
@@ -112,8 +117,10 @@ export default function PdfPageEditor({
     setName2Pos(initialEdit.name2Pos);
     setName1Font(initialEdit.name1Font);
     setName2Font(initialEdit.name2Font);
-    setSigPos(initialEdit.sigPos);
-    setSigSize(initialEdit.sigSize);
+    setSigItems(((initialEdit as any).sigItems ?? []) as SigItem[]);
+    setActiveSigId(((initialEdit as any).activeSigId ?? null) as string | null);
+
+    setSigEnabled(initialEdit.sigEnabled ?? false);
   }, [initialEdit]);
 
   const clamp = (v: number, a: number, b: number) =>
@@ -125,6 +132,24 @@ export default function PdfPageEditor({
     setPageTy(0);
     pinchRef.current.isPinching = false;
     panRef.current.isPanning = false;
+  };
+
+  const addSignature = () => {
+    if (!signatureUri) return;
+
+    // אם עד עכשיו הסתרנו חתימות – מפעילים
+    if (!sigEnabled) setSigEnabled(true);
+
+    const id = `sig_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+    const next: SigItem = {
+      id,
+      pos: { x: 24, y: 24 },
+      size: { w: 180, h: 90 },
+    };
+
+    setSigItems((prev) => [...prev, next]);
+    setActiveSigId(id);
   };
 
   const openAddText = () => {
@@ -156,8 +181,9 @@ export default function PdfPageEditor({
   const handleBackToGrid = () => {
     const editState: PageEditState = {
       pageNumber,
-      sigPos,
-      sigSize,
+      sigItems: sigItems as any,
+      activeSigId: activeSigId as any,
+      sigEnabled,
       name1,
       name1Pos,
       name1Font,
@@ -302,10 +328,10 @@ export default function PdfPageEditor({
                 imageUri={pngDataUrl!}
                 imageSize={pngSize!}
                 signatureUri={signatureUri ?? null}
-                sigPos={sigPos}
-                setSigPos={setSigPos}
-                sigSize={sigSize}
-                setSigSize={setSigSize}
+                sigItems={sigItems}
+                setSigItems={setSigItems}
+                activeSigId={activeSigId}
+                setActiveSigId={setActiveSigId}
                 name1={name1}
                 setName1={setName1}
                 name1Pos={name1Pos}
@@ -319,6 +345,7 @@ export default function PdfPageEditor({
                 name2Font={name2Font}
                 setName2Font={setName2Font}
                 pageScale={pageScale}
+                sigEnabled={sigEnabled}
                 onInteractionStart={() => {
                   isOverlayInteractingRef.current = true;
                 }}
@@ -352,8 +379,17 @@ export default function PdfPageEditor({
           </Text>
         </Pressable>
 
-        <Pressable style={styles.secondaryBtn} onPress={resetZoom}>
-          <Text style={styles.secondaryText}>איפוס זום</Text>
+        <Pressable
+          onPress={addSignature}
+          disabled={!signatureUri}
+          style={[
+            styles.secondaryBtn,
+            !signatureUri && styles.secondaryBtnDisabled,
+          ]}
+        >
+          <Text style={styles.secondaryText}>
+            {!signatureUri ? "אין חתימה" : "הוסף חתימה"}
+          </Text>
         </Pressable>
       </View>
 
@@ -537,4 +573,7 @@ const styles = StyleSheet.create({
   modalCancelText: { fontWeight: "900", opacity: 0.85 },
   modalOkText: { fontWeight: "900", color: "white" },
   modalHint: { opacity: 0.65, fontWeight: "700" },
+  secondaryBtnDisabled: {
+    opacity: 0.5,
+  },
 });
