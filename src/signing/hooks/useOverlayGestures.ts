@@ -21,8 +21,8 @@ type UseOverlayGesturesArgs = {
   setSigSize: (v: { w: number; h: number }) => void;
   sigPos: Point;
   setSigPos: (p: Point) => void;
-  minSigW: number;
-  maxSigW: number;
+  minSigW?: number;
+  maxSigW?: number;
 
   // text 1
   name1Pos: Point;
@@ -37,12 +37,24 @@ type UseOverlayGesturesArgs = {
   setName2Font: (n: number) => void;
 
   // font bounds
-  minFont: number;
-  maxFont: number;
+  minFont?: number;
+  maxFont?: number;
 
   // clamp padding for text
   textClampPadding?: number;
+
+  // callbacks for parent to know when overlay is interacting
+  onInteractionStart?: () => void;
+  onInteractionEnd?: () => void;
+
+  // ✅ NEW: parent's page scale for coordinate correction
+  pageScale?: number;
 };
+
+const DEFAULT_MIN_SIG_W = 50;
+const DEFAULT_MAX_SIG_W = 600;
+const DEFAULT_MIN_FONT = 8;
+const DEFAULT_MAX_FONT = 100;
 
 export function useOverlayGestures({
   imageBox,
@@ -51,8 +63,8 @@ export function useOverlayGestures({
   setSigSize,
   sigPos,
   setSigPos,
-  minSigW,
-  maxSigW,
+  minSigW = DEFAULT_MIN_SIG_W,
+  maxSigW = DEFAULT_MAX_SIG_W,
 
   name1Pos,
   setName1Pos,
@@ -64,18 +76,23 @@ export function useOverlayGestures({
   name2Font,
   setName2Font,
 
-  minFont,
-  maxFont,
+  minFont = DEFAULT_MIN_FONT,
+  maxFont = DEFAULT_MAX_FONT,
   isPinchEnabled = true,
 
   textClampPadding = 40,
+
+  onInteractionStart,
+  onInteractionEnd,
+
+  pageScale = 1,
 }: UseOverlayGesturesArgs) {
   const [active, setActive] = useState<ActiveTarget>(null);
 
   const [drag, setDrag] = useState<{
     isDragging: boolean;
-    startTouch: Point; // page coords
-    startPos: Point; // overlay coords (imageBox coords)
+    startTouch: Point;
+    startPos: Point;
     target: ActiveTarget;
   }>({
     isDragging: false,
@@ -128,6 +145,8 @@ export function useOverlayGestures({
     if (isDisabled) return;
     setActive(target);
 
+    onInteractionStart?.();
+
     const touches = evt.nativeEvent.touches ?? [];
     if (isPinchEnabled && touches.length >= 2) {
       setPinch({
@@ -163,12 +182,6 @@ export function useOverlayGestures({
     if (isPinchEnabled && touches.length >= 2) {
       const target = pinch.target ?? drag.target ?? active;
       if (!target) return;
-
-      // if user puts 2 fingers but pinch is disabled, cancel current drag
-      if (!isPinchEnabled && touches.length >= 2) {
-        setDrag((d) => ({ ...d, isDragging: false, target: null }));
-        return;
-      }
 
       if (!pinch.isPinching) {
         setPinch({
@@ -212,8 +225,10 @@ export function useOverlayGestures({
     if (!drag.isDragging || !drag.target) return;
 
     const { pageX, pageY } = evt.nativeEvent;
-    const dx = pageX - drag.startTouch.x;
-    const dy = pageY - drag.startTouch.y;
+
+    // ✅ Adjust delta by pageScale - when page is zoomed, same pixel movement = smaller logical movement
+    const dx = (pageX - drag.startTouch.x) / pageScale;
+    const dy = (pageY - drag.startTouch.y) / pageScale;
 
     const next = { x: drag.startPos.x + dx, y: drag.startPos.y + dy };
 
@@ -229,6 +244,8 @@ export function useOverlayGestures({
     setDrag((d) => ({ ...d, isDragging: false, target: null }));
     setPinch((p) => ({ ...p, isPinching: false, target: null }));
     setActive(null);
+
+    onInteractionEnd?.();
   };
 
   const isInteractingSig =
@@ -277,6 +294,7 @@ export function useOverlayGestures({
       minFont,
       maxFont,
       textClampPadding,
+      pageScale,
     ],
   );
 }

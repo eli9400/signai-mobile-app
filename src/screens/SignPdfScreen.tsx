@@ -172,7 +172,8 @@ export default function SignPdfScreen({
           onBackToGrid={() => setView("grid")} // ✅ חץ בתוך עורך יחזיר לגריד
           pdfBase64={pdfBase64}
           pageNumber={activePage}
-          // signatureUri={signatureUri}
+          signatureUri={signatureUri}
+          onClose={() => {}}
         />
       )}
 
