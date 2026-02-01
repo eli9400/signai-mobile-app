@@ -23,6 +23,7 @@ type Props = {
   onBack: () => void;
   initialFileUri?: string | null;
   onFileLoaded?: () => void;
+  useCamera?: boolean;
 };
 
 type Point = { x: number; y: number };
@@ -47,6 +48,7 @@ export default function SignImageScreen({
   onBack,
   initialFileUri,
   onFileLoaded,
+  useCamera = false,
 }: Props) {
   const autoPickedRef = useRef(false);
 
@@ -68,7 +70,7 @@ export default function SignImageScreen({
     name2Font: 28,
   });
 
-  // Auto-pick image on mount (like PDF does with picker)
+  // Auto-pick image on mount (or take photo if useCamera)
   useEffect(() => {
     if (Platform.OS !== "android" && Platform.OS !== "ios") return;
     if (initialFileUri) return;
@@ -78,9 +80,13 @@ export default function SignImageScreen({
 
     autoPickedRef.current = true;
     setTimeout(() => {
-      pickImage();
+      if (useCamera) {
+        takePhoto();
+      } else {
+        pickImage();
+      }
     }, 50);
-  }, [initialFileUri, imageUri, isLoading]);
+  }, [initialFileUri, imageUri, isLoading, useCamera]);
 
   // Load incoming image from "Open with"
   useEffect(() => {
@@ -132,6 +138,33 @@ export default function SignImageScreen({
       loadImageUri(uri);
     } catch (e: any) {
       Alert.alert("שגיאה", e?.message ?? "לא הצלחתי לבחור תמונה");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const takePhoto = async () => {
+    try {
+      setIsLoading(true);
+
+      const perm = await ImagePicker.requestCameraPermissionsAsync();
+      if (perm.status !== "granted") {
+        Alert.alert("אין הרשאה", "צריך הרשאת גישה למצלמה כדי לצלם תמונה.");
+        return;
+      }
+
+      const res = await ImagePicker.launchCameraAsync({
+        quality: 1,
+        allowsEditing: false,
+      });
+
+      if (res.canceled) return;
+      const uri = res.assets?.[0]?.uri;
+      if (!uri) return;
+
+      loadImageUri(uri);
+    } catch (e: any) {
+      Alert.alert("שגיאה", e?.message ?? "לא הצלחתי לצלם תמונה");
     } finally {
       setIsLoading(false);
     }

@@ -48,6 +48,9 @@ export default function AppInner() {
   const [openUri, setOpenUri] = useState<string | null>(null);
   const [openKind, setOpenKind] = useState<OpenKind | null>(null);
 
+  // camera mode for SignImageScreen
+  const [useCamera, setUseCamera] = useState(false);
+
   const { hasShareIntent, shareIntent, resetShareIntent } =
     useShareIntentContext();
 
@@ -117,7 +120,6 @@ export default function AppInner() {
     const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
     return () => sub.remove();
   }, [screen, hasLoadedFile]);
-  
 
   const routeIncoming = (uri: string, kind?: OpenKind, mime?: string) => {
     const decoded = decodeURI(uri);
@@ -270,6 +272,7 @@ export default function AppInner() {
     setOpenUri(null);
     setOpenKind(null);
     setHasLoadedFile(false);
+    setUseCamera(false);
   };
 
   if (screen === "signature") {
@@ -282,6 +285,7 @@ export default function AppInner() {
         signatureUri={signatureUri}
         initialFileUri={openKind === "image" ? openUri : null}
         onFileLoaded={() => setHasLoadedFile(true)}
+        useCamera={useCamera}
         onBack={() => {
           clearOpen();
           setScreen("home");
@@ -310,6 +314,12 @@ export default function AppInner() {
       onGoSignature={() => setScreen("signature")}
       onGoSignImage={() => {
         setHasLoadedFile(false);
+        setUseCamera(false);
+        setScreen("signImage");
+      }}
+      onGoCamera={() => {
+        setHasLoadedFile(false);
+        setUseCamera(true);
         setScreen("signImage");
       }}
       onGoSignPdf={() => {

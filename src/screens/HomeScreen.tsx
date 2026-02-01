@@ -9,11 +9,7 @@ type Props = {
   onGoSignature: () => void;
   onGoSignImage: () => void;
   onGoSignPdf: () => void;
-
-  // NOTE:
-  // We'll add later:
-  // onGoCamera?: () => void;
-  // onOpenHistory?: () => void;
+  onGoCamera: () => void;
 };
 
 function Card({ children, style }: { children: React.ReactNode; style?: any }) {
@@ -72,6 +68,7 @@ export default function HomeScreen({
   onGoSignature,
   onGoSignImage,
   onGoSignPdf,
+  onGoCamera,
 }: Props) {
   const canSign = Boolean(signatureUri);
 
@@ -145,8 +142,8 @@ export default function HomeScreen({
             subtitle="פתח מצלמה לצילום"
             icon="📷"
             accent="green"
-            disabled
-            onPress={() => {}}
+            disabled={!canSign}
+            onPress={() => canSign && onGoCamera()}
           />
 
           <ActionCard
