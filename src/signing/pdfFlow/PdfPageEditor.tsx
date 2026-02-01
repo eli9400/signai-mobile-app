@@ -12,6 +12,7 @@ import {
 import PdfPageToPngWebView from "../pdf/PdfPageToPngWebView";
 import OverlayStage from "../overlays/OverlayStage";
 import { BackIconButton } from "../../ui/icons";
+import type { PageEditState } from "../../screens/SignPdfScreen";
 
 function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
   const dx = a.x - b.x;
@@ -21,11 +22,12 @@ function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
 
 type Props = {
   title: string;
-  onBackToGrid: () => void;
+  onBackToGrid: (editState: PageEditState) => void;
   onClose: () => void;
   pdfBase64: string | null;
   pageNumber: number;
   signatureUri?: string | null;
+  initialEdit?: PageEditState;
 };
 
 export default function PdfPageEditor({
@@ -35,19 +37,26 @@ export default function PdfPageEditor({
   pdfBase64,
   pageNumber,
   signatureUri = null,
+  initialEdit,
 }: Props) {
   const [isRendering, setIsRendering] = useState(true);
   const [pngDataUrl, setPngDataUrl] = useState<string | null>(null);
   const [pngSize, setPngSize] = useState<{ w: number; h: number } | null>(null);
 
-  const [name1, setName1] = useState("");
-  const [name2, setName2] = useState("");
-  const [name1Pos, setName1Pos] = useState({ x: 20, y: 140 });
-  const [name2Pos, setName2Pos] = useState({ x: 20, y: 210 });
-  const [name1Font, setName1Font] = useState(28);
-  const [name2Font, setName2Font] = useState(28);
-  const [sigPos, setSigPos] = useState({ x: 20, y: 20 });
-  const [sigSize, setSigSize] = useState({ w: 180, h: 90 });
+  const [name1, setName1] = useState(initialEdit?.name1 ?? "");
+  const [name2, setName2] = useState(initialEdit?.name2 ?? "");
+  const [name1Pos, setName1Pos] = useState(
+    initialEdit?.name1Pos ?? { x: 20, y: 140 },
+  );
+  const [name2Pos, setName2Pos] = useState(
+    initialEdit?.name2Pos ?? { x: 20, y: 210 },
+  );
+  const [name1Font, setName1Font] = useState(initialEdit?.name1Font ?? 28);
+  const [name2Font, setName2Font] = useState(initialEdit?.name2Font ?? 28);
+  const [sigPos, setSigPos] = useState(initialEdit?.sigPos ?? { x: 20, y: 20 });
+  const [sigSize, setSigSize] = useState(
+    initialEdit?.sigSize ?? { w: 180, h: 90 },
+  );
 
   const [addTextOpen, setAddTextOpen] = useState(false);
   const [addTextValue, setAddTextValue] = useState("");
@@ -95,6 +104,18 @@ export default function PdfPageEditor({
     setPngSize(null);
   }, [pageNumber, pdfBase64]);
 
+  useEffect(() => {
+    if (!initialEdit) return;
+    setName1(initialEdit.name1);
+    setName2(initialEdit.name2);
+    setName1Pos(initialEdit.name1Pos);
+    setName2Pos(initialEdit.name2Pos);
+    setName1Font(initialEdit.name1Font);
+    setName2Font(initialEdit.name2Font);
+    setSigPos(initialEdit.sigPos);
+    setSigSize(initialEdit.sigSize);
+  }, [initialEdit]);
+
   const clamp = (v: number, a: number, b: number) =>
     Math.max(a, Math.min(b, v));
 
@@ -130,6 +151,21 @@ export default function PdfPageEditor({
     }
 
     setAddTextOpen(false);
+  };
+
+  const handleBackToGrid = () => {
+    const editState: PageEditState = {
+      pageNumber,
+      sigPos,
+      sigSize,
+      name1,
+      name1Pos,
+      name1Font,
+      name2,
+      name2Pos,
+      name2Font,
+    };
+    onBackToGrid(editState);
   };
 
   const onStageStart = (evt: any) => {
@@ -229,7 +265,7 @@ export default function PdfPageEditor({
   return (
     <View style={styles.root}>
       <View style={styles.top}>
-        <BackIconButton onPress={onBackToGrid} />
+        <BackIconButton onPress={handleBackToGrid} />
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={styles.title}>{title}</Text>
         </View>

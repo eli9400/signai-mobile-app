@@ -27,7 +27,7 @@ type Props = {
   isLoading: boolean;
 
   onClose: () => void;
-  onPickPdf: () => void; // נשאר בחתימה (לא חייבים להשתמש בו כאן)
+  onPickPdf: () => void;
 
   totalPages: number;
 
@@ -37,6 +37,10 @@ type Props = {
   onOpenPage: (pageNumber: number) => void;
 
   pdfBase64?: string;
+
+  // ✅ Receive thumbnails from parent to persist between views
+  thumbnails: Record<number, string>;
+  setThumbnails: React.Dispatch<React.SetStateAction<Record<number, string>>>;
 };
 
 export default function PdfPagesGrid({
@@ -45,12 +49,14 @@ export default function PdfPagesGrid({
   pdfReady,
   isLoading,
   onClose,
-  onPickPdf: _onPickPdf, // לא משתמשים בו כרגע (מכוון)
+  onPickPdf: _onPickPdf,
   totalPages,
   selectedPages,
   setSelectedPages,
   onOpenPage,
   pdfBase64,
+  thumbnails,
+  setThumbnails,
 }: Props) {
   const pages = useMemo(
     () => Array.from({ length: totalPages }, (_, i) => i + 1),
@@ -71,15 +77,14 @@ export default function PdfPagesGrid({
     }
   }, [allSelected, setSelectedPages, totalPages]);
 
-  // ---- thumbnails state ----
-  const [thumbs, setThumbs] = useState<Record<number, string>>({});
+  // ✅ Queue management remains in this component
   const queueRef = useRef<number[]>([]);
   const renderingRef = useRef(false);
   const [renderPage, setRenderPage] = useState<number | null>(null);
 
-  // reset thumbs when pdf changes
+  // ✅ Don't reset thumbs when component mounts - they persist in parent
+  // Only reset the queue
   useEffect(() => {
-    setThumbs({});
     queueRef.current = [];
     renderingRef.current = false;
     setRenderPage(null);
@@ -92,8 +97,8 @@ export default function PdfPagesGrid({
       const next = [...queueRef.current];
       for (const p of pageNums) {
         if (p < 1 || p > totalPages) continue;
-        if (thumbs[p]) continue; // already have thumb
-        if (next.includes(p)) continue; // already queued
+        if (thumbnails[p]) continue; // ✅ Skip if already have thumbnail
+        if (next.includes(p)) continue;
         next.push(p);
       }
       queueRef.current = next;
@@ -106,16 +111,15 @@ export default function PdfPagesGrid({
         }
       }
     },
-    [pdfBase64, totalPages, thumbs],
+    [pdfBase64, totalPages, thumbnails],
   );
 
-  // load first 6 immediately
+  // Load first 6 immediately
   useEffect(() => {
-    if (!pdfBase64 || totalPages <= 0) return;
+    if (!pdfReady || totalPages <= 0) return;
     enqueuePages(pages.slice(0, 6));
-  }, [pdfBase64, totalPages, enqueuePages, pages]);
+  }, [pdfReady, totalPages, enqueuePages, pages]);
 
-  // FlatList viewability (lazy-load on scroll)
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
     const visible: number[] = [];
     for (const vi of viewableItems) {
@@ -123,7 +127,6 @@ export default function PdfPagesGrid({
       if (typeof p === "number") visible.push(p);
     }
 
-    // prefetch: visible + next 4 pages
     const extra: number[] = [];
     for (const p of visible) {
       for (let k = 0; k < 4; k++) extra.push(p + k);
@@ -134,7 +137,7 @@ export default function PdfPagesGrid({
   const onEndReached = useCallback(() => {
     if (!totalPages) return;
 
-    const loadedNums = Object.keys(thumbs)
+    const loadedNums = Object.keys(thumbnails)
       .map((x) => Number(x))
       .filter(Boolean);
     const maxLoaded = loadedNums.length ? Math.max(...loadedNums) : 0;
@@ -146,7 +149,7 @@ export default function PdfPagesGrid({
     }
 
     enqueuePages(nextBatch);
-  }, [enqueuePages, thumbs, totalPages]);
+  }, [enqueuePages, thumbnails, totalPages]);
 
   const viewabilityConfig = useRef({
     itemVisiblePercentThreshold: 10,
@@ -160,11 +163,9 @@ export default function PdfPagesGrid({
     setSelectedPages(next);
   };
 
-  // בתוך PdfPagesGrid.tsx
-
   const renderItem = ({ item: p }: { item: number }) => {
     const isSel = selectedPages.has(p);
-    const thumb = thumbs[p];
+    const thumb = thumbnails[p];
 
     return (
       <Pressable style={styles.card} onPress={() => onOpenPage(p)}>
@@ -181,11 +182,9 @@ export default function PdfPagesGrid({
             </View>
           )}
 
-          {/* ✅ checkbox - גדול יותר, בפינה, ועוצר bubbling */}
           <Pressable
             onPress={(e) => {
-              // לעצור את לחיצת ה-Card מאחורי זה
-              // @ts-ignore - RN event has stopPropagation at runtime
+              // @ts-ignore
               e?.stopPropagation?.();
               toggle(p);
             }}
@@ -221,7 +220,6 @@ export default function PdfPagesGrid({
           <Text style={styles.title}>{title}</Text>
         </View>
 
-        {/* Toggle select all */}
         <Pressable
           style={[
             styles.selectAllChip,
@@ -288,7 +286,10 @@ export default function PdfPagesGrid({
             pdfBase64={pdfBase64}
             pageNumber={renderPage}
             onRendered={(dataUrl) => {
-              setThumbs((prev) => ({ ...prev, [renderPage]: String(dataUrl) }));
+              setThumbnails((prev) => ({
+                ...prev,
+                [renderPage]: String(dataUrl),
+              }));
 
               const next = queueRef.current.shift() ?? null;
               if (next) setRenderPage(next);
