@@ -24,7 +24,6 @@ function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
 type Props = {
   title: string;
   onBackToGrid: (editState: PageEditState) => void;
-  onClose: () => void;
   pdfBase64: string | null;
   pageNumber: number;
   signatureUri?: string | null;
@@ -34,7 +33,6 @@ type Props = {
 export default function PdfPageEditor({
   title,
   onBackToGrid,
-  onClose,
   pdfBase64,
   pageNumber,
   signatureUri = null,
@@ -295,9 +293,6 @@ export default function PdfPageEditor({
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={styles.title}>{title}</Text>
         </View>
-        <Pressable style={styles.closeBtn} onPress={onClose} hitSlop={10}>
-          <Text style={styles.closeText}>✕</Text>
-        </Pressable>
       </View>
 
       <View style={styles.stageWrap}>
@@ -462,16 +457,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   title: { fontSize: 20, fontWeight: "900" },
-  closeBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.85)",
-    borderWidth: 1,
-    borderColor: "rgba(15,23,42,0.10)",
-  },
   closeText: { fontSize: 18, fontWeight: "900", opacity: 0.8 },
   stageWrap: {
     flex: 1,
