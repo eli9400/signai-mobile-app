@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+// src/signing/pdfFlow/PdfPageEditor.tsx
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -7,12 +8,18 @@ import {
   ActivityIndicator,
   Modal,
   TextInput,
+  Alert,
+  BackHandler,
 } from "react-native";
 
 import PdfPageToPngWebView from "../pdf/PdfPageToPngWebView";
 import OverlayStage from "../overlays/OverlayStage";
 import { BackIconButton } from "../../ui/icons";
-import type { PageEditState } from "../../screens/SignPdfScreen";
+import type {
+  PageEditState,
+  NormPoint,
+  NormSize,
+} from "../../screens/SignPdfScreen";
 import type { SigItem } from "../hooks/useOverlayGestures";
 
 function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
@@ -30,6 +37,8 @@ type Props = {
   initialEdit?: PageEditState;
 };
 
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
 export default function PdfPageEditor({
   title,
   onBackToGrid,
@@ -42,24 +51,27 @@ export default function PdfPageEditor({
   const [pngDataUrl, setPngDataUrl] = useState<string | null>(null);
   const [pngSize, setPngSize] = useState<{ w: number; h: number } | null>(null);
 
+  // Local (pixel) state for OverlayStage interactions
   const [name1, setName1] = useState(initialEdit?.name1 ?? "");
   const [name2, setName2] = useState(initialEdit?.name2 ?? "");
-  const [name1Pos, setName1Pos] = useState(
-    initialEdit?.name1Pos ?? { x: 20, y: 140 },
-  );
-  const [name2Pos, setName2Pos] = useState(
-    initialEdit?.name2Pos ?? { x: 20, y: 210 },
-  );
-  const [name1Font, setName1Font] = useState(initialEdit?.name1Font ?? 28);
-  const [name2Font, setName2Font] = useState(initialEdit?.name2Font ?? 28);
-  const [sigItems, setSigItems] = useState<SigItem[]>(
-    (initialEdit as any)?.sigItems ?? [],
-  );
-  const [activeSigId, setActiveSigId] = useState<string | null>(
-    (initialEdit as any)?.activeSigId ?? null,
-  );
 
-  const [sigEnabled, setSigEnabled] = useState(false);
+  const [name1Pos, setName1Pos] = useState<{ x: number; y: number }>({
+    x: 20,
+    y: 140,
+  });
+  const [name2Pos, setName2Pos] = useState<{ x: number; y: number }>({
+    x: 20,
+    y: 210,
+  });
+
+  const [name1Font, setName1Font] = useState(28);
+  const [name2Font, setName2Font] = useState(28);
+
+  const [sigItems, setSigItems] = useState<SigItem[]>([]);
+  const [activeSigId, setActiveSigId] = useState<string | null>(null);
+  const [sigEnabled, setSigEnabled] = useState(
+    initialEdit?.sigEnabled ?? false,
+  );
 
   const [addTextOpen, setAddTextOpen] = useState(false);
   const [addTextValue, setAddTextValue] = useState("");
@@ -69,11 +81,9 @@ export default function PdfPageEditor({
   const [pageTy, setPageTy] = useState(0);
 
   const canShowStage = Boolean(pngDataUrl && pngSize);
-  const nextTextTarget = !name1.trim()
-    ? "name1"
-    : !name2.trim()
-      ? "name2"
-      : null;
+  const nextTextTarget = useMemo(() => {
+    return !name1.trim() ? "name1" : !name2.trim() ? "name2" : null;
+  }, [name1, name2]);
 
   const pinchRef = useRef<{
     isPinching: boolean;
@@ -101,25 +111,63 @@ export default function PdfPageEditor({
 
   const isOverlayInteractingRef = useRef(false);
 
+  // Reset render when page/pdf changes
   useEffect(() => {
     setIsRendering(true);
     setPngDataUrl(null);
     setPngSize(null);
+
+    // Reset zoom/pan
+    setPageScale(1);
+    setPageTx(0);
+    setPageTy(0);
+    pinchRef.current.isPinching = false;
+    panRef.current.isPanning = false;
   }, [pageNumber, pdfBase64]);
 
+  // When pngSize + initialEdit available: load normalized edit into pixel state
   useEffect(() => {
     if (!initialEdit) return;
-    setName1(initialEdit.name1);
-    setName2(initialEdit.name2);
-    setName1Pos(initialEdit.name1Pos);
-    setName2Pos(initialEdit.name2Pos);
-    setName1Font(initialEdit.name1Font);
-    setName2Font(initialEdit.name2Font);
-    setSigItems(((initialEdit as any).sigItems ?? []) as SigItem[]);
-    setActiveSigId(((initialEdit as any).activeSigId ?? null) as string | null);
+    if (!pngSize?.w || !pngSize?.h) return;
 
-    setSigEnabled(initialEdit.sigEnabled ?? false);
-  }, [initialEdit]);
+    const W = pngSize.w;
+    const H = pngSize.h;
+
+    const fromNormPoint = (p: NormPoint) => ({
+      x: clamp01(p.x) * W,
+      y: clamp01(p.y) * H,
+    });
+
+    const fromNormSize = (s: NormSize) => ({
+      w: clamp01(s.w) * W,
+      h: clamp01(s.h) * H,
+    });
+
+    setName1(initialEdit.name1 ?? "");
+    setName2(initialEdit.name2 ?? "");
+
+    setName1Pos(fromNormPoint(initialEdit.name1Pos ?? { x: 0.03, y: 0.16 }));
+    setName2Pos(fromNormPoint(initialEdit.name2Pos ?? { x: 0.03, y: 0.24 }));
+
+    // fontN is relative to width
+    setName1Font(
+      Math.max(8, Math.round(clamp01(initialEdit.name1FontN ?? 0.03) * W)),
+    );
+    setName2Font(
+      Math.max(8, Math.round(clamp01(initialEdit.name2FontN ?? 0.03) * W)),
+    );
+
+    setSigEnabled(Boolean(initialEdit.sigEnabled));
+
+    const pxSigItems: SigItem[] = (initialEdit.sigItems ?? []).map((s) => ({
+      id: s.id,
+      pos: fromNormPoint(s.pos),
+      size: fromNormSize(s.size),
+    }));
+
+    setSigItems(pxSigItems);
+    setActiveSigId(initialEdit.activeSigId ?? null);
+  }, [initialEdit, pngSize?.w, pngSize?.h]);
 
   const clamp = (v: number, a: number, b: number) =>
     Math.max(a, Math.min(b, v));
@@ -135,7 +183,6 @@ export default function PdfPageEditor({
   const addSignature = () => {
     if (!signatureUri) return;
 
-    // אם עד עכשיו הסתרנו חתימות – מפעילים
     if (!sigEnabled) setSigEnabled(true);
 
     const id = `sig_${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -176,21 +223,74 @@ export default function PdfPageEditor({
     setAddTextOpen(false);
   };
 
+  // Convert pixel state -> normalized edit state and go back
   const handleBackToGrid = () => {
+    if (!pngSize?.w || !pngSize?.h) {
+      Alert.alert("שגיאה", "העמוד עדיין נטען. נסה שוב בעוד רגע.");
+      return;
+    }
+
+    const W = pngSize.w;
+    const H = pngSize.h;
+
+    const toNormPoint = (p: { x: number; y: number }): NormPoint => ({
+      x: clamp01(p.x / (W || 1)),
+      y: clamp01(p.y / (H || 1)),
+    });
+
+    const toNormSize = (s: { w: number; h: number }): NormSize => ({
+      w: clamp01(s.w / (W || 1)),
+      h: clamp01(s.h / (H || 1)),
+    });
+
     const editState: PageEditState = {
       pageNumber,
-      sigItems: sigItems as any,
-      activeSigId: activeSigId as any,
-      sigEnabled,
-      name1,
-      name1Pos,
-      name1Font,
-      name2,
-      name2Pos,
-      name2Font,
+
+      sigEnabled: Boolean(sigEnabled),
+      sigItems: (sigItems ?? []).map((s) => ({
+        id: s.id,
+        pos: toNormPoint(s.pos),
+        size: toNormSize(s.size),
+      })),
+      activeSigId: activeSigId ?? null,
+
+      name1: name1 ?? "",
+      name1Pos: toNormPoint(name1Pos),
+      name1FontN: clamp01((name1Font ?? 28) / (W || 1)),
+
+      name2: name2 ?? "",
+      name2Pos: toNormPoint(name2Pos),
+      name2FontN: clamp01((name2Font ?? 28) / (W || 1)),
     };
+
     onBackToGrid(editState);
   };
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      // בזמן עריכת עמוד – תמיד נשמור ונחזור לגריד
+      handleBackToGrid();
+      return true; // עצרנו את ברירת המחדל
+    });
+
+    return () => sub.remove();
+  }, [
+    handleBackToGrid,
+    // תלותים שמרכיבים את ה-editState
+    pageNumber,
+    sigItems,
+    activeSigId,
+    sigEnabled,
+    name1,
+    name1Pos,
+    name1Font,
+    name2,
+    name2Pos,
+    name2Font,
+    pngSize?.w,
+    pngSize?.h,
+  ]);
+
 
   const onStageStart = (evt: any) => {
     if (isOverlayInteractingRef.current) return;
@@ -457,7 +557,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   title: { fontSize: 20, fontWeight: "900" },
-  closeText: { fontSize: 18, fontWeight: "900", opacity: 0.8 },
   stageWrap: {
     flex: 1,
     paddingHorizontal: 14,

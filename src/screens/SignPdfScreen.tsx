@@ -13,7 +13,6 @@ import {
   Alert,
   Text,
   ActivityIndicator,
-  Pressable,
   StyleSheet,
 } from "react-native";
 
@@ -22,10 +21,10 @@ import { usePdfDocument } from "../signing/hooks/usePdfDocument";
 import PdfPageToPngWebView from "../signing/pdf/PdfPageToPngWebView";
 import PdfPagesGrid from "../signing/pdfFlow/PdfPagesGrid";
 import PdfPageEditor from "../signing/pdfFlow/PdfPageEditor";
-import { Dimensions, Image } from "react-native";
 import * as FileSystem from "expo-file-system/legacy";
-import MultiPagePdfConverter from "../signing/pdf/MultiPagePdfConverter";
 import { savePdfAndShare } from "../signing/export/exportAndSharePdf";
+
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 type Props = {
   signatureUri: string | null;
@@ -34,32 +33,62 @@ type Props = {
   onFileLoaded?: () => void;
 };
 
-type Point = { x: number; y: number };
-type Size = { w: number; h: number };
+// Normalized coordinates (0..1) relative to the PAGE content box
+export type NormPoint = { x: number; y: number };
+export type NormSize = { w: number; h: number };
 
 export type PageEditState = {
   pageNumber: number;
 
   sigEnabled: boolean;
-  sigItems: { id: string; pos: Point; size: Size }[];
+  sigItems: { id: string; pos: NormPoint; size: NormSize }[];
   activeSigId: string | null;
 
   name1: string;
-  name1Pos: Point;
-  name1Font: number;
+  name1Pos: NormPoint;
+  name1FontN: number; // normalized relative to page width (e.g., 0.03)
 
   name2: string;
-  name2Pos: Point;
-  name2Font: number;
+  name2Pos: NormPoint;
+  name2FontN: number;
 };
 
-type ExportPageData = {
-  pageNumber: number;
-  imageBase64: string; // filled after capture
-  width: number;
-  height: number;
-  selected: boolean;
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
+// Base64 helpers (Expo/RN usually have atob/btoa)
+const base64ToUint8 = (b64: string) => {
+  const bin = globalThis.atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
 };
+
+const uint8ToBase64 = (bytes: Uint8Array) => {
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return globalThis.btoa(bin);
+};
+
+function extractBase64FromDataUrl(dataUrl: string) {
+  // data:image/png;base64,AAAA...
+  const idx = dataUrl.indexOf("base64,");
+  if (idx === -1) throw new Error("Invalid data URL");
+  return dataUrl.slice(idx + "base64,".length);
+}
+
+async function readUriAsBase64(uriOrDataUrl: string) {
+  if (!uriOrDataUrl) throw new Error("Empty uri");
+
+  // If it's already a data URL, just extract base64 directly
+  if (uriOrDataUrl.startsWith("data:")) {
+    return extractBase64FromDataUrl(uriOrDataUrl);
+  }
+
+  // Otherwise, assume it's a file uri (file://, content:// etc.)
+  return FileSystem.readAsStringAsync(uriOrDataUrl, {
+    encoding: "base64" as any,
+  });
+}
 
 export default function SignPdfScreen({
   signatureUri,
@@ -70,32 +99,28 @@ export default function SignPdfScreen({
   const doc = usePdfDocument();
   const autoPickedRef = useRef(false);
 
+  const [view, setView] = useState<"grid" | "editor">("grid");
+  const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
+  const [activePage, setActivePage] = useState<number>(1);
+  const [pageEdits, setPageEdits] = useState<Record<number, PageEditState>>({});
+  const [totalPages, setTotalPages] = useState<number>(0);
+
+  // thumbnails state persists between grid/editor views
+  const [thumbnails, setThumbnails] = useState<Record<number, string>>({});
+
   const [isExportingPdf, setIsExportingPdf] = useState(false);
-  const [exportPages, setExportPages] = useState<ExportPageData[]>([]);
-  const [exportActivePage, setExportActivePage] = useState<number | null>(null);
 
-  const [exportPngDataUrl, setExportPngDataUrl] = useState<string | null>(null);
-  const [exportPngMeta, setExportPngMeta] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
+  const pdfBase64 = doc.pdf?.base64 ?? null;
+  const pdfName = doc.pdf?.name ?? null;
+  const hasPdf = Boolean(doc.pdf?.uri);
+  const [exportTotal, setExportTotal] = useState(0);
+  const [exportDone, setExportDone] = useState(0);
 
-  const [exportStageSize, setExportStageSize] = useState<{
-    w: number;
-    h: number;
-  } | null>(null);
-
-  const exportStageRef = useRef<View>(null);
-
-  const exportTotal = exportPages.length;
-  const exportDone = useMemo(
-    () => exportPages.filter((p) => !!p.imageBase64).length,
-    [exportPages],
-  );
   const exportPct = exportTotal
     ? Math.round((exportDone / exportTotal) * 100)
     : 0;
 
+  // Auto-pick PDF on mobile (if no initial file)
   useEffect(() => {
     if (Platform.OS !== "android" && Platform.OS !== "ios") return;
     if (initialFileUri) return;
@@ -109,28 +134,7 @@ export default function SignPdfScreen({
     }, 50);
   }, [initialFileUri, doc.pdf?.uri, doc.isBusy, doc.pickPdf]);
 
-  const [view, setView] = useState<"grid" | "editor">("grid");
-  const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
-  const [activePage, setActivePage] = useState<number>(1);
-  const [pageEdits, setPageEdits] = useState<Record<number, PageEditState>>({});
-  const [totalPages, setTotalPages] = useState<number>(0);
-
-  // ✅ Lift thumbnails state here so it persists between grid/editor views
-  const [thumbnails, setThumbnails] = useState<Record<number, string>>({});
-
-  const pdfBase64 = doc.pdf?.base64 ?? null;
-  const pdfName = doc.pdf?.name ?? null;
-  const hasPdf = Boolean(doc.pdf?.uri);
-  const [readyPdfBase64, setReadyPdfBase64] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isExportingPdf) return;
-    if (exportActivePage !== null) return;
-
-    // finished capturing all pages => render converter
-    // MultiPagePdfConverter will call onPdfReady
-  }, [isExportingPdf, exportActivePage]);
-
+  // Select all pages once total is known
   useEffect(() => {
     if (!totalPages) return;
     setSelectedPages(
@@ -138,11 +142,13 @@ export default function SignPdfScreen({
     );
   }, [totalPages]);
 
+  // Open initial file if passed
   useEffect(() => {
     if (!initialFileUri) return;
     doc.openPdfFromUri(initialFileUri);
-  }, [initialFileUri]);
+  }, [initialFileUri, doc.openPdfFromUri]);
 
+  // Reset state when PDF changes
   useEffect(() => {
     if (!doc.pdf?.uri) return;
     onFileLoaded?.();
@@ -151,8 +157,8 @@ export default function SignPdfScreen({
     setSelectedPages(new Set());
     setTotalPages(0);
     setPageEdits({});
-    setThumbnails({}); // ✅ Reset thumbnails only when PDF changes
-  }, [doc.pdf?.uri]);
+    setThumbnails({});
+  }, [doc.pdf?.uri, onFileLoaded]);
 
   const subtitle = useMemo(() => {
     if (!pdfName) return null;
@@ -162,6 +168,30 @@ export default function SignPdfScreen({
   const isLoading = doc.isBusy;
   const shouldDiscoverTotal = Boolean(pdfBase64) && totalPages === 0;
 
+  const getPageEdit = useCallback(
+    (pageNumber: number): PageEditState => {
+      // Defaults in normalized units (roughly matches your old px defaults)
+      return (
+        pageEdits[pageNumber] ?? {
+          pageNumber,
+
+          sigEnabled: true,
+          sigItems: [],
+          activeSigId: null,
+
+          name1: "",
+          name1Pos: { x: 0.03, y: 0.16 },
+          name1FontN: 0.03, // ~30px if page width ~1000px
+
+          name2: "",
+          name2Pos: { x: 0.03, y: 0.24 },
+          name2FontN: 0.03,
+        }
+      );
+    },
+    [pageEdits],
+  );
+
   const handleBackToGrid = useCallback((editState: PageEditState) => {
     setPageEdits((prev) => ({
       ...prev,
@@ -170,38 +200,9 @@ export default function SignPdfScreen({
     setView("grid");
   }, []);
 
-  const getPageEdit = useCallback(
-    (pageNumber: number): PageEditState => {
-      return (
-        pageEdits[pageNumber] ?? {
-          pageNumber,
-          sigPos: { x: 20, y: 20 },
-          sigSize: { w: 180, h: 90 },
-          name1: "",
-          name1Pos: { x: 20, y: 140 },
-          name1Font: 28,
-          name2: "",
-          name2Pos: { x: 20, y: 210 },
-          name2Font: 28,
-        }
-      );
-    },
-    [pageEdits],
-  );
-
-  const getImageSize = useCallback((uri: string) => {
-    return new Promise<{ width: number; height: number }>((resolve, reject) => {
-      Image.getSize(
-        uri,
-        (width, height) => resolve({ width, height }),
-        (err) => reject(err),
-      );
-    });
-  }, []);
-
   const confirmExitToHome = useCallback(() => {
     if (isExportingPdf) {
-      Alert.alert("ייצוא פעיל", "אנחנו באמצע ייצוא. חכה שיסתיים או בטל.", [
+      Alert.alert("ייצוא פעיל", "אנחנו באמצע ייצוא. חכה שיסתיים.", [
         { text: "אוקי" },
       ]);
       return;
@@ -211,43 +212,14 @@ export default function SignPdfScreen({
       onBack();
       return;
     }
+
     Alert.alert("יציאה מהמסמך", "האם לחזור למסך הראשי?", [
       { text: "ביטול", style: "cancel" },
-      {
-        text: "חזרה למסך הראשי",
-        style: "destructive",
-        onPress: onBack,
-      },
+      { text: "חזרה למסך הראשי", style: "destructive", onPress: onBack },
     ]);
-  }, [hasPdf, onBack]);
+  }, [hasPdf, onBack, isExportingPdf]);
 
-  const startExportPdf = useCallback(() => {
-    if (isExportingPdf) return;
-    if (!pdfBase64) return;
-
-    const pages = Array.from(selectedPages)
-      .slice()
-      .sort((a, b) => a - b)
-      .map((pageNumber) => ({
-        pageNumber,
-        imageBase64: "",
-        width: 0,
-        height: 0,
-        selected: true,
-      }));
-
-    if (pages.length === 0) {
-      Alert.alert("ייצוא PDF", "לא נבחרו עמודים לייצוא.");
-      return;
-    }
-
-    setIsExportingPdf(true);
-    setExportPages(pages);
-    setExportActivePage(pages[0].pageNumber);
-    setExportPngDataUrl(null);
-    setExportPngMeta(null);
-  }, [pdfBase64, selectedPages, isExportingPdf]);
-
+  // Android hardware back
   useEffect(() => {
     if (Platform.OS !== "android") return;
 
@@ -266,88 +238,129 @@ export default function SignPdfScreen({
       onHardwareBack,
     );
     return () => sub.remove();
-  }, [view]);
+  }, [view, isExportingPdf]);
 
-  useEffect(() => {
-    if (!isExportingPdf) return;
-    if (!exportActivePage) return;
-    if (!exportPngDataUrl || !exportPngMeta) return;
-    if (!exportStageSize) return;
-    if (!exportStageRef.current) return;
+  // --------- PDF stamping export (Route B) ---------
+  const exportStampedPdf = useCallback(
+    async (
+      pagesToExport: number[],
+      onProgress?: (done: number, total: number) => void,
+    ) => {
+      if (!pdfBase64) throw new Error("PDF not loaded");
 
-    let cancelled = false;
+      const pdfDoc = await PDFDocument.load(base64ToUint8(pdfBase64));
+      const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+      const textColor = rgb(0.06, 0.09, 0.16);
 
-    const run = async () => {
-      try {
-        // 1) capture composed stage to PNG file
-        const { captureRef } = await import("react-native-view-shot");
+      const total = pagesToExport.length;
+      let done = 0;
 
-        if (!exportStageRef.current) throw new Error("export stage not ready");
+      // Embed signature image once (optional)
+      let sigImg: any = null;
+      if (signatureUri) {
+        const sigB64 = await readUriAsBase64(signatureUri); // supports data: + file:
+        const sigBytes = base64ToUint8(sigB64);
 
-        const uri = await captureRef(exportStageRef.current, {
-          format: "png",
-          quality: 1,
-          result: "tmpfile",
-        } as any);
-
-        if (cancelled) return;
-
-        // 2) read base64 + size
-        const base64 = await FileSystem.readAsStringAsync(uri, {
-          encoding: "base64" as any,
-        });
-
-        const size = await getImageSize(uri);
-
-        if (cancelled) return;
-
-        // 3) update exportPages
-        setExportPages((prev) =>
-          prev.map((p) =>
-            p.pageNumber === exportActivePage
-              ? {
-                  ...p,
-                  imageBase64: base64,
-                  width: size.width,
-                  height: size.height,
-                }
-              : p,
-          ),
-        );
-
-        // 4) move to next page
-        const idx = exportPages.findIndex(
-          (p) => p.pageNumber === exportActivePage,
-        );
-        const next = exportPages[idx + 1]?.pageNumber ?? null;
-
-        setExportPngDataUrl(null);
-        setExportPngMeta(null);
-        setExportActivePage(next);
-      } catch (e: any) {
-        Alert.alert("ייצוא PDF", e?.message ?? "שגיאה בזמן ייצוא");
-        setIsExportingPdf(false);
-        setExportActivePage(null);
-        setExportPages([]);
-        setExportPngDataUrl(null);
-        setExportPngMeta(null);
+        try {
+          sigImg = await pdfDoc.embedPng(sigBytes);
+        } catch {
+          sigImg = await pdfDoc.embedJpg(sigBytes);
+        }
       }
-    };
 
-    run();
+      for (const pageNo of pagesToExport) {
+        const pageIndex = pageNo - 1;
+        const page = pdfDoc.getPage(pageIndex);
+        const { width: pw, height: ph } = page.getSize();
 
-    return () => {
-      cancelled = true;
-    };
-    // חשוב: אנחנו מסתמכים על exportPages בשביל next
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    isExportingPdf,
-    exportActivePage,
-    exportPngDataUrl,
-    exportPngMeta,
-    exportStageSize,
-  ]);
+        const edit = pageEdits[pageNo];
+        if (edit) {
+          // --- Signatures ---
+          if (sigImg && edit.sigEnabled) {
+            for (const s of edit.sigItems ?? []) {
+              const w = clamp01(s.size.w) * pw;
+              const h = clamp01(s.size.h) * ph;
+
+              const x = clamp01(s.pos.x) * pw;
+              const yTop = clamp01(s.pos.y) * ph; // top-origin
+              const y = ph - yTop - h; // -> PDF origin (bottom-left)
+
+              page.drawImage(sigImg, { x, y, width: w, height: h });
+            }
+          }
+
+          // --- Text helper ---
+          const drawName = (txt: string, pos: NormPoint, fontN: number) => {
+            const t = (txt ?? "").trim();
+            if (!t) return;
+
+            const fontSize = Math.max(8, Math.round(clamp01(fontN) * pw));
+            const x = clamp01(pos.x) * pw;
+            const yTop = clamp01(pos.y) * ph;
+            const y = ph - yTop;
+
+            page.drawText(t, {
+              x,
+              y: y - fontSize, // baseline nudge
+              size: fontSize,
+              font,
+              color: textColor,
+            });
+          };
+
+          if (edit.name1?.trim()) {
+            drawName(edit.name1, edit.name1Pos, edit.name1FontN);
+          }
+          if (edit.name2?.trim()) {
+            drawName(edit.name2, edit.name2Pos, edit.name2FontN);
+          }
+        }
+
+        // progress + allow UI to repaint
+        done += 1;
+        onProgress?.(done, total);
+        await new Promise<void>((r) => requestAnimationFrame(() => r()));
+      }
+
+      const outBytes = await pdfDoc.save();
+      return uint8ToBase64(outBytes);
+    },
+    [pdfBase64, pageEdits, signatureUri],
+  );
+
+  const startExportPdf = useCallback(async () => {
+    if (isExportingPdf) return;
+    if (!pdfBase64) return;
+
+    const pages = Array.from(selectedPages)
+      .slice()
+      .sort((a, b) => a - b);
+
+    if (pages.length === 0) {
+      Alert.alert("ייצוא PDF", "לא נבחרו עמודים לייצוא.");
+      return;
+    }
+
+    try {
+      setIsExportingPdf(true);
+      setExportTotal(pages.length);
+      setExportDone(0);
+
+      const outB64 = await exportStampedPdf(pages, (d, t) => {
+        setExportDone(d);
+        setExportTotal(t);
+      });
+
+      const base = (pdfName || "signed-document").replace(/\.(pdf)$/i, "");
+      const outName = `${base}-signed.pdf`;
+
+      await savePdfAndShare(outB64, outName, "שתף PDF");
+    } catch (e: any) {
+      Alert.alert("ייצוא PDF", e?.message ?? "שגיאה בזמן ייצוא");
+    } finally {
+      setIsExportingPdf(false);
+    }
+  }, [isExportingPdf, pdfBase64, selectedPages, exportStampedPdf, pdfName]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
@@ -377,11 +390,11 @@ export default function SignPdfScreen({
           pdfBase64={pdfBase64}
           pageNumber={activePage}
           signatureUri={signatureUri}
-          onClose={() => {}}
           initialEdit={getPageEdit(activePage)}
         />
       )}
 
+      {/* Discover total pages (hidden render of page 1) */}
       {shouldDiscoverTotal && pdfBase64 && (
         <View style={{ position: "absolute", width: 1, height: 1, opacity: 0 }}>
           <PdfPageToPngWebView
@@ -395,166 +408,8 @@ export default function SignPdfScreen({
           />
         </View>
       )}
-      {/* ===== PDF Export Hidden Pipeline ===== */}
-      {isExportingPdf && pdfBase64 && exportActivePage && (
-        <View style={{ position: "absolute", width: 1, height: 1, opacity: 0 }}>
-          <PdfPageToPngWebView
-            pdfBase64={pdfBase64}
-            pageNumber={exportActivePage}
-            onRendered={(dataUrl, meta) => {
-              setExportPngDataUrl(String(dataUrl));
-              setExportPngMeta({ width: meta.width, height: meta.height });
-            }}
-            onError={(m) => {
-              Alert.alert("ייצוא PDF", m || "שגיאה ברינדור עמוד");
-              setIsExportingPdf(false);
-            }}
-          />
-        </View>
-      )}
 
-      {isExportingPdf && exportPngDataUrl && exportPngMeta && (
-        <View
-          style={{
-            position: "absolute",
-            left: -9999,
-            top: -9999,
-            width: Dimensions.get("window").width,
-            height: Dimensions.get("window").height,
-            opacity: 1,
-          }}
-        >
-          {/* זה ה-stage שאנחנו מצלמים */}
-          <View
-            ref={exportStageRef}
-            collapsable={false}
-            style={{
-              flex: 1,
-              paddingHorizontal: 14,
-              paddingTop: 8,
-              paddingBottom: 10,
-            }}
-            onLayout={(e) => {
-              setExportStageSize({
-                w: e.nativeEvent.layout.width,
-                h: e.nativeEvent.layout.height,
-              });
-            }}
-          >
-            {/* רקע העמוד */}
-            <Image
-              source={{ uri: exportPngDataUrl }}
-              style={{ flex: 1 }}
-              resizeMode="contain"
-            />
-
-            {/* overlays – לפי מצב עריכה ששמור לעמוד */}
-            {(() => {
-              const pageNo = exportActivePage;
-              if (!pageNo) return null;
-
-              const edit = getPageEdit(pageNo);
-
-              // מחשבים rect של contain כדי למקם overlays בדיוק כמו במצב עריכה
-              const stageW = exportStageSize?.w ?? 0;
-              const stageH = exportStageSize?.h ?? 0;
-              const imgW = exportPngMeta.width;
-              const imgH = exportPngMeta.height;
-
-              if (!stageW || !stageH || !imgW || !imgH) return null;
-
-              const s = Math.min(stageW / imgW, stageH / imgH);
-              const rw = imgW * s;
-              const rh = imgH * s;
-              const rx = (stageW - rw) / 2;
-              const ry = (stageH - rh) / 2;
-
-              const abs = (p: { x: number; y: number }) => ({
-                position: "absolute" as const,
-                left: rx + p.x,
-                top: ry + p.y,
-              });
-
-              return (
-                <>
-                  {Boolean(signatureUri) &&
-                    edit.sigEnabled &&
-                    (edit.sigItems ?? []).map((s) => (
-                      <Image
-                        key={s.id}
-                        source={{ uri: signatureUri! }}
-                        style={[
-                          abs(s.pos),
-                          { width: s.size.w, height: s.size.h },
-                        ]}
-                        resizeMode="contain"
-                      />
-                    ))}
-
-                  {!!edit.name1?.trim() && (
-                    <View style={abs(edit.name1Pos)}>
-                      <Text
-                        style={{
-                          fontSize: edit.name1Font,
-                          fontWeight: "800",
-                          color: "#0f172a",
-                        }}
-                      >
-                        {edit.name1}
-                      </Text>
-                    </View>
-                  )}
-
-                  {!!edit.name2?.trim() && (
-                    <View style={abs(edit.name2Pos)}>
-                      <Text
-                        style={{
-                          fontSize: edit.name2Font,
-                          fontWeight: "800",
-                          color: "#0f172a",
-                        }}
-                      >
-                        {edit.name2}
-                      </Text>
-                    </View>
-                  )}
-                </>
-              );
-            })()}
-          </View>
-        </View>
-      )}
-
-      {isExportingPdf &&
-        exportActivePage === null &&
-        exportPages.length > 0 && (
-          <MultiPagePdfConverter
-            pages={exportPages}
-            onPdfReady={async (b64) => {
-              try {
-                const base = (pdfName || "signed-document").replace(
-                  /\.(pdf)$/i,
-                  "",
-                );
-                const outName = `${base}-signed.pdf`;
-
-                await savePdfAndShare(b64, outName, "שתף PDF");
-
-                setIsExportingPdf(false);
-                setExportPages([]);
-              } catch (e: any) {
-                Alert.alert("ייצוא PDF", e?.message ?? "שגיאה בשיתוף PDF");
-                setIsExportingPdf(false);
-                setExportPages([]);
-              }
-            }}
-            onError={(err) => {
-              Alert.alert("ייצוא PDF", err || "שגיאה בהמרה ל-PDF");
-              setIsExportingPdf(false);
-              setExportPages([]);
-            }}
-          />
-        )}
+      {/* Export overlay */}
       {isExportingPdf && (
         <View style={styles.exportOverlay} pointerEvents="auto">
           <View style={styles.exportCard}>
@@ -570,30 +425,11 @@ export default function SignPdfScreen({
               עמודים: {exportDone} / {exportTotal} ({exportPct}%)
             </Text>
 
-            <View style={{ height: 14 }} />
+            <View style={{ height: 6 }} />
 
-            <Pressable
-              style={styles.exportCancelBtn}
-              onPress={() => {
-                Alert.alert("ביטול ייצוא", "לבטל את הייצוא הנוכחי?", [
-                  { text: "המשך ייצוא", style: "cancel" },
-                  {
-                    text: "בטל ייצוא",
-                    style: "destructive",
-                    onPress: () => {
-                      setIsExportingPdf(false);
-                      setExportPages([]);
-                      setExportActivePage(null);
-                      setExportPngDataUrl(null);
-                      setExportPngMeta(null);
-                      setExportStageSize(null);
-                    },
-                  },
-                ]);
-              }}
-            >
-              <Text style={styles.exportCancelText}>ביטול</Text>
-            </Pressable>
+            <Text style={[styles.exportSub, { opacity: 0.7 }]}>
+              הפעולה מתבצעת…
+            </Text>
           </View>
         </View>
       )}
@@ -633,18 +469,5 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#334155",
     textAlign: "right",
-  },
-  exportCancelBtn: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 14,
-    backgroundColor: "rgba(239,68,68,0.12)",
-    borderWidth: 1,
-    borderColor: "rgba(239,68,68,0.25)",
-  },
-  exportCancelText: {
-    color: "#b91c1c",
-    fontWeight: "900",
   },
 });
