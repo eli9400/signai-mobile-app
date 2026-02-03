@@ -1,6 +1,5 @@
 // src/signing/imageFlow/ImageEditor.tsx
 import React, {
-  useEffect,
   useRef,
   useState,
   useMemo,
@@ -17,6 +16,8 @@ import {
   TextInput,
   Image,
 } from "react-native";
+
+import { useTranslation } from "react-i18next";
 
 import OverlayStage from "../overlays/OverlayStage";
 import { BackIconButton, ExportPngPillButton } from "../../ui/icons";
@@ -55,10 +56,12 @@ export default function ImageEditor({
   editState,
   setEditState,
 }: Props) {
-  const [containerSize, setContainerSize] = useState<{
-    w: number;
-    h: number;
-  }>({ w: 0, h: 0 });
+  const { t } = useTranslation();
+
+  const [containerSize, setContainerSize] = useState<{ w: number; h: number }>({
+    w: 0,
+    h: 0,
+  });
 
   const [addTextOpen, setAddTextOpen] = useState(false);
   const [addTextValue, setAddTextValue] = useState("");
@@ -155,8 +158,8 @@ export default function ImageEditor({
   };
 
   const confirmAddText = () => {
-    const t = (addTextValue ?? "").trim();
-    if (!t || !nextTextTarget) {
+    const txt = (addTextValue ?? "").trim();
+    if (!txt || !nextTextTarget) {
       setAddTextOpen(false);
       return;
     }
@@ -164,14 +167,14 @@ export default function ImageEditor({
     if (nextTextTarget === "name1") {
       setEditState((prev) => ({
         ...prev,
-        name1: t,
+        name1: txt,
         name1Pos: { x: 24, y: 160 },
         name1Font: 30,
       }));
     } else {
       setEditState((prev) => ({
         ...prev,
-        name2: t,
+        name2: txt,
         name2Pos: { x: 24, y: 240 },
         name2Font: 30,
       }));
@@ -181,9 +184,7 @@ export default function ImageEditor({
   };
 
   const exportImage = async () => {
-    if (!canShowImage) {
-      return;
-    }
+    if (!canShowImage) return;
 
     try {
       setIsExporting(true);
@@ -200,7 +201,7 @@ export default function ImageEditor({
       await exportAndSharePng({
         viewRef: imageBoxRef,
         beforeCaptureDelayMs: 100,
-        dialogTitle: "שתף תמונה חתומה",
+        dialogTitle: t("imageEditor.export.shareTitle"),
       });
     } catch (e: any) {
       console.error("Export error:", e);
@@ -314,13 +315,13 @@ export default function ImageEditor({
       <View style={styles.top}>
         <BackIconButton onPress={onClose} />
         <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={styles.title}>עריכת תמונה</Text>
+          <Text style={styles.title}>{t("imageEditor.title")}</Text>
         </View>
         {imageUri && (
           <ExportPngPillButton
             onPress={exportImage}
             disabled={!canShowImage || isExporting}
-            label="ייצא"
+            label={t("imageEditor.actions.export")}
           />
         )}
       </View>
@@ -328,7 +329,7 @@ export default function ImageEditor({
       {!imageUri ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyIcon}>🖼️</Text>
-          <Text style={styles.emptyText}>בוחר תמונה...</Text>
+          <Text style={styles.emptyText}>{t("imageEditor.empty.picking")}</Text>
           {isLoading && <ActivityIndicator color="#6d28d9" />}
         </View>
       ) : (
@@ -355,9 +356,7 @@ export default function ImageEditor({
                       setImageSize({ w: src.width, h: src.height });
                     }
                   }}
-                  onError={() => {
-                    // Image load failed
-                  }}
+                  onError={() => {}}
                 />
 
                 {imageBox && imageSize && !isExporting && (
@@ -468,7 +467,9 @@ export default function ImageEditor({
               {!imageSize && !isExporting && (
                 <View style={styles.loadingOverlay}>
                   <ActivityIndicator color="#ffffff" size="large" />
-                  <Text style={styles.loadingText}>טוען תמונה…</Text>
+                  <Text style={styles.loadingText}>
+                    {t("imageEditor.loadingImage")}
+                  </Text>
                 </View>
               )}
             </View>
@@ -494,7 +495,6 @@ export default function ImageEditor({
                   resizeMode="contain"
                 />
 
-                {/* Calculate scale factor between actual image and displayed image */}
                 {(() => {
                   if (!imageBox) return null;
 
@@ -503,7 +503,6 @@ export default function ImageEditor({
 
                   return (
                     <>
-                      {/* Render signatures without borders */}
                       {editState.sigEnabled &&
                         signatureUri &&
                         editState.sigItems.map((sig) => (
@@ -521,7 +520,6 @@ export default function ImageEditor({
                           />
                         ))}
 
-                      {/* Render text without borders */}
                       {editState.name1.trim() && (
                         <Text
                           style={{
@@ -569,7 +567,9 @@ export default function ImageEditor({
             >
               <Ionicons name="text-outline" size={18} color="white" />
               <Text style={styles.actionText}>
-                {nextTextTarget ? "הוסף טקסט" : "כבר יש 2 טקסטים"}
+                {nextTextTarget
+                  ? t("imageEditor.actions.addText")
+                  : t("imageEditor.actions.textsLimitReached")}
               </Text>
             </Pressable>
 
@@ -579,7 +579,9 @@ export default function ImageEditor({
               disabled={!signatureUri}
             >
               <Ionicons name="create-outline" size={18} color="#6d28d9" />
-              <Text style={styles.sigBtnText}>הוסף חתימה</Text>
+              <Text style={styles.sigBtnText}>
+                {t("imageEditor.actions.addSignature")}
+              </Text>
             </Pressable>
           </View>
         </>
@@ -592,8 +594,12 @@ export default function ImageEditor({
             <View style={styles.exportLoadingSpinner}>
               <ActivityIndicator size="large" color="#6d28d9" />
             </View>
-            <Text style={styles.exportLoadingText}>מייצא תמונה...</Text>
-            <Text style={styles.exportLoadingHint}>אנא המתן</Text>
+            <Text style={styles.exportLoadingText}>
+              {t("imageEditor.export.exporting")}
+            </Text>
+            <Text style={styles.exportLoadingHint}>
+              {t("imageEditor.export.pleaseWait")}
+            </Text>
           </View>
         </View>
       )}
@@ -606,11 +612,13 @@ export default function ImageEditor({
       >
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>הוסף טקסט</Text>
+            <Text style={styles.modalTitle}>
+              {t("imageEditor.modal.addTextTitle")}
+            </Text>
             <TextInput
               value={addTextValue}
               onChangeText={setAddTextValue}
-              placeholder="הקלד טקסט…"
+              placeholder={t("imageEditor.modal.addTextPlaceholder")}
               placeholderTextColor="#777"
               autoFocus
               multiline
@@ -621,19 +629,20 @@ export default function ImageEditor({
                 style={[styles.modalBtn, styles.modalCancel]}
                 onPress={() => setAddTextOpen(false)}
               >
-                <Text style={styles.modalCancelText}>ביטול</Text>
+                <Text style={styles.modalCancelText}>
+                  {t("common.actions.cancel")}
+                </Text>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, styles.modalOk]}
                 onPress={confirmAddText}
               >
-                <Text style={styles.modalOkText}>הוסף</Text>
+                <Text style={styles.modalOkText}>
+                  {t("common.actions.add")}
+                </Text>
               </Pressable>
             </View>
-            <Text style={styles.modalHint}>
-              טיפ: תעשה זום על התמונה ואז יהיה הרבה יותר קל לדייק גרירה/צביטה של
-              טקסטים וחתימה.
-            </Text>
+            <Text style={styles.modalHint}>{t("imageEditor.modal.tip")}</Text>
           </View>
         </View>
       </Modal>

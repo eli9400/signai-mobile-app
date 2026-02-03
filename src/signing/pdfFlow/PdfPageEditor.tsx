@@ -11,6 +11,7 @@ import {
   Alert,
   BackHandler,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import PdfPageToPngWebView from "../pdf/PdfPageToPngWebView";
 import OverlayStage from "../overlays/OverlayStage";
@@ -47,6 +48,7 @@ export default function PdfPageEditor({
   signatureUri = null,
   initialEdit,
 }: Props) {
+  const { t } = useTranslation();
   const [isRendering, setIsRendering] = useState(true);
   const [pngDataUrl, setPngDataUrl] = useState<string | null>(null);
   const [pngSize, setPngSize] = useState<{ w: number; h: number } | null>(null);
@@ -226,7 +228,10 @@ export default function PdfPageEditor({
   // Convert pixel state -> normalized edit state and go back
   const handleBackToGrid = () => {
     if (!pngSize?.w || !pngSize?.h) {
-      Alert.alert("שגיאה", "העמוד עדיין נטען. נסה שוב בעוד רגע.");
+      Alert.alert(
+        t("common.alerts.errorTitle"),
+        t("signPdf.pageEditor.pageNotReady"),
+      );
       return;
     }
 
@@ -454,7 +459,7 @@ export default function PdfPageEditor({
           <View style={styles.loadingBox}>
             <ActivityIndicator />
             <Text style={{ opacity: 0.75, fontWeight: "800", color: "white" }}>
-              מכין תצוגת עמוד…
+              {t("signPdf.pageEditor.loading")}
             </Text>
           </View>
         )}
@@ -470,7 +475,9 @@ export default function PdfPageEditor({
           disabled={!nextTextTarget}
         >
           <Text style={styles.actionText}>
-            {nextTextTarget ? "הוסף טקסט" : "כבר יש 2 טקסטים"}
+            {nextTextTarget
+              ? t("signPdf.pageEditor.actions.addText")
+              : t("signPdf.pageEditor.actions.textsLimitReached")}
           </Text>
         </Pressable>
 
@@ -483,12 +490,12 @@ export default function PdfPageEditor({
           ]}
         >
           <Text style={styles.secondaryText}>
-            {!signatureUri ? "אין חתימה" : "הוסף חתימה"}
+            {!signatureUri
+              ? t("signPdf.pageEditor.actions.noSignature")
+              : t("signPdf.pageEditor.actions.addSignature")}
           </Text>
         </Pressable>
-      </View>
-
-      <Modal
+      </View>      <Modal
         visible={addTextOpen}
         transparent
         animationType="fade"
@@ -496,11 +503,13 @@ export default function PdfPageEditor({
       >
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>הוסף טקסט</Text>
+            <Text style={styles.modalTitle}>
+              {t("signPdf.pageEditor.modal.title")}
+            </Text>
             <TextInput
               value={addTextValue}
               onChangeText={setAddTextValue}
-              placeholder="הקלד טקסט…"
+              placeholder={t("signPdf.pageEditor.modal.placeholder")}
               placeholderTextColor="#777"
               autoFocus
               multiline
@@ -511,18 +520,21 @@ export default function PdfPageEditor({
                 style={[styles.modalBtn, styles.modalCancel]}
                 onPress={() => setAddTextOpen(false)}
               >
-                <Text style={styles.modalCancelText}>ביטול</Text>
+                <Text style={styles.modalCancelText}>
+                  {t("common.actions.cancel")}
+                </Text>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, styles.modalOk]}
                 onPress={confirmAddText}
               >
-                <Text style={styles.modalOkText}>הוסף</Text>
+                <Text style={styles.modalOkText}>
+                  {t("common.actions.add")}
+                </Text>
               </Pressable>
             </View>
             <Text style={styles.modalHint}>
-              טיפ: תעשה זום על העמוד ואז יהיה הרבה יותר קל לדייק גרירה/צביטה של
-              טקסטים וחתימה.
+              {t("signPdf.pageEditor.modal.tip")}
             </Text>
           </View>
         </View>
@@ -661,3 +673,4 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
 });
+

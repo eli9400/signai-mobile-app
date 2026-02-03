@@ -1,0 +1,163 @@
+{
+  "home": {
+    "appTitle": "Подпись документов",
+    "avatarInitial": "П",
+    "welcome": "Добро пожаловать",
+    "tagline": "Загрузка, подпись и экспорт документов — легко",
+    "signaturePreviewTitle": "Предпросмотр подписи",
+    "noSignature": "Сохранённой подписи пока нет",
+    "replace": "Заменить",
+    "notice": "💡 Сначала создайте подпись, чтобы начать подписывать документы",
+    "cameraTitle": "Сфотографировать",
+    "cameraSub": "Открыть камеру для съёмки",
+    "imageTitle": "Загрузить изображение",
+    "imageSub": "Загрузите изображение и добавьте подпись",
+    "pdfTitle": "Загрузить PDF",
+    "pdfSub": "Загрузите PDF-документ для подписи",
+    "bottomHint": "Чтобы подписывать документы — сначала создайте подпись.",
+    "language": "Язык"
+  },
+  "signature": {
+    "title": "Подпись",
+    "heroTitle": "Создать подпись",
+    "status": {
+      "drawHint": "Нарисуйте подпись пальцем в отмеченной области",
+      "empty": "Подпись не обнаружена — нарисуйте что-нибудь и затем сохраните",
+      "saving": "Сохранение...",
+      "saved": "Сохранено ✅",
+      "canvasError": "Не удалось прочитать данные с холста",
+      "webviewError": "Ошибка WebView: {{message}}",
+      "webviewHttpError": "HTTP ошибка WebView: {{code}}",
+      "webviewTerminated": "Процесс WebView завершён (iOS)"
+    },
+    "canvas": {
+      "title": "Нарисуйте подпись здесь",
+      "tip": "Совет: при сохранении мы автоматически обрежем поля"
+    },
+    "actions": {
+      "clear": "Очистить",
+      "save": "Сохранить",
+      "deleteSaved": "Удалить сохранённую подпись"
+    }
+  },
+  "common": {
+    "alerts": {
+      "errorTitle": "Ошибка",
+      "exitTitle": "Выход из документа",
+      "exitBody": "Вернуться на главный экран?"
+    },
+    "actions": {
+      "cancel": "Отмена",
+      "back": "Назад",
+      "backToHome": "На главный экран",
+      "add": "Добавить"
+    },
+    "errors": {
+      "sharingUnavailable": "Общий доступ недоступен на этом устройстве/в этой среде.",
+      "webviewError": "Ошибка WebView: {{message}}",
+      "unknown": "Неизвестная ошибка"
+    }
+  },
+  "signImage": {
+    "alerts": {
+      "noPermissionTitle": "Нет разрешения",
+      "galleryPermissionBody": "Нужно разрешение на доступ к галерее, чтобы выбрать изображение.",
+      "cameraPermissionBody": "Нужно разрешение на доступ к камере, чтобы сделать фото.",
+      "pickFailed": "Не удалось выбрать изображение",
+      "cameraFailed": "Не удалось сделать фото"
+    }
+  },
+  "imageEditor": {
+    "title": "Редактирование изображения",
+    "actions": {
+      "export": "Экспорт",
+      "addText": "Добавить текст",
+      "textsLimitReached": "Уже есть 2 текста",
+      "addSignature": "Добавить подпись"
+    },
+    "empty": {
+      "picking": "Выбор изображения..."
+    },
+    "loadingImage": "Загрузка изображения…",
+    "export": {
+      "shareTitle": "Поделиться подписанным изображением",
+      "exporting": "Экспорт изображения...",
+      "pleaseWait": "Пожалуйста, подождите"
+    },
+    "modal": {
+      "addTextTitle": "Добавить текст",
+      "addTextPlaceholder": "Введите текст…",
+      "tip": "Совет: увеличьте изображение — так будет намного проще точно перетаскивать/масштабировать тексты и подписи."
+    }
+  },
+  "signPdf": {
+    "subtitlePages": "{{count}} стр.",
+    "editor": {
+      "title": "Страница {{page}}{{total}}"
+    },
+    "alerts": {
+      "exportActiveTitle": "Экспорт уже идет",
+      "exportActiveBody": "Мы уже экспортируем. Пожалуйста, подождите.",
+      "exportTitle": "Экспорт PDF",
+      "noPagesSelected": "Страницы для экспорта не выбраны.",
+      "exportFailed": "Ошибка при экспорте"
+    },
+    "actions": {
+      "ok": "ОК",
+      "exportPdf": "Экспорт PDF",
+      "sharePdf": "Поделиться PDF"
+    },
+    "errors": {
+      "pdfNotLoaded": "PDF не загружен",
+      "pickFailed": "Не удалось выбрать/загрузить PDF",
+      "openFailed": "Не удалось загрузить открытый PDF",
+      "emptyUri": "Пустой URI",
+      "invalidDataUrl": "Неверный data URL"
+    },
+    "export": {
+      "overlayTitle": "Экспорт PDF...",
+      "progress": "Страницы: {{done}} / {{total}} ({{pct}}%)",
+      "working": "Выполняется...",
+      "status": {
+        "captureImage": "Снимаем изображение...",
+        "readImage": "Читаем изображение...",
+        "computeSize": "Рассчитываем размеры..."
+      }
+    },
+    "pageRenderer": {
+      "thumbLoading": "Готовим миниатюру...",
+      "pageRendering": "Рендерим страницу в PNG...",
+      "retry": "Попробовать снова"
+    },
+    "pageEditor": {
+      "pageNotReady": "Страница еще загружается. Попробуйте снова через мгновение.",
+      "loading": "Готовим предпросмотр страницы...",
+      "actions": {
+        "addText": "Добавить текст",
+        "textsLimitReached": "Уже есть 2 текста",
+        "noSignature": "Нет подписи",
+        "addSignature": "Добавить подпись"
+      },
+      "modal": {
+        "title": "Добавить текст",
+        "placeholder": "Введите текст...",
+        "tip": "Совет: увеличьте страницу — так будет намного проще точно перетаскивать/масштабировать тексты и подпись."
+      }
+    },
+    "pagesGrid": {
+      "thumbLabel": "Страница {{page}}",
+      "cardLabel": "Страница {{page}}",
+      "selectAll": "Выбрать все",
+      "deselectAll": "Снять выделение",
+      "selectedCount": "Выбрано {{selected}} / {{total}}",
+      "emptyHint": "Выберите PDF, чтобы увидеть страницы"
+    },
+    "multiPage": {
+      "status": {
+        "creating": "Создание многостраничного PDF...",
+        "processing": "Обработка страницы {{current}} из {{total}}...",
+        "generating": "Создание PDF..."
+      }
+    }
+  }
+}

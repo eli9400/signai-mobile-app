@@ -3,16 +3,22 @@ import React, { useMemo, useRef, useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
+import { useTranslation } from "react-i18next";
 import { saveSignaturePng, clearSignature } from "../storage/signatureStore";
 import { theme } from "../ui/theme";
 
 export default function SignatureScreen({ onDone }: { onDone: () => void }) {
+  const { t } = useTranslation();
+
   const webRef = useRef<WebView>(null);
-  const [status, setStatus] = useState<string>(
-    "צייר חתימה עם האצבע באזור המסומן",
-  );
+
+  const [status, setStatus] = useState<string>(t("signature.status.drawHint"));
 
   const html = useMemo(() => {
+    // ⚠️ בתוך ה-HTML אין לנו i18n, אז אנחנו מזריקים כאן טקסטים מתורגמים
+    const title = t("signature.canvas.title");
+    const tip = t("signature.canvas.tip");
+
     return `
 <!DOCTYPE html>
 <html>
@@ -55,16 +61,15 @@ canvas {
   margin: 10px 0 0 2px;
   text-align: center;
 }
-
   </style>
 </head>
 <body>
   <div id="wrap">
-    <div class="hint">צייר כאן את החתימה</div>
+    <div class="hint">${title}</div>
     <div class="panel">
       <canvas id="c" width="1000" height="500"></canvas>
     </div>
-    <div class="subhint">טיפ: נחתוך שוליים אוטומטית בשמירה</div>
+    <div class="subhint">${tip}</div>
   </div>
 
 <script>
@@ -74,7 +79,7 @@ canvas {
   ctx.lineWidth = 12;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  ctx.strokeStyle = 'black'; // ✅ חתימה שחורה
+  ctx.strokeStyle = 'black';
 
   let drawing = false;
   let last = null;
@@ -109,12 +114,10 @@ canvas {
     last = null;
   }
 
-  // Mouse
   c.addEventListener('mousedown', down);
   c.addEventListener('mousemove', move);
   window.addEventListener('mouseup', up);
 
-  // Touch
   c.addEventListener('touchstart', down, {passive:false});
   c.addEventListener('touchmove', move, {passive:false});
   window.addEventListener('touchend', up);
@@ -166,26 +169,26 @@ canvas {
 </script>
 </body>
 </html>`;
-  }, []);
+  }, [t]);
 
   const onMessage = async (e: any) => {
     try {
       const msg = JSON.parse(e.nativeEvent.data);
 
       if (msg.type === "empty") {
-        setStatus("לא זיהיתי חתימה — צייר משהו ואז שמור");
+        setStatus(t("signature.status.empty"));
         return;
       }
 
       if (msg.type === "png") {
-        setStatus("שומר...");
+        setStatus(t("signature.status.saving"));
         await saveSignaturePng(msg.b64);
-        setStatus("נשמר ✅");
+        setStatus(t("signature.status.saved"));
         onDone();
         return;
       }
     } catch {
-      setStatus("שגיאה בקריאת נתונים מהקנבס");
+      setStatus(t("signature.status.canvasError"));
     }
   };
 
@@ -197,7 +200,7 @@ canvas {
       <View style={styles.container}>
         {/* Top bar */}
         <View style={styles.topBar}>
-          <Text style={styles.appTitle}>חתימה</Text>
+          <Text style={styles.appTitle}>{t("signature.title")}</Text>
 
           <Pressable style={styles.closeBtn} onPress={onDone}>
             <Text style={styles.closeBtnText}>✕</Text>
@@ -206,7 +209,7 @@ canvas {
 
         {/* Hero / hint */}
         <View style={styles.hero}>
-          <Text style={styles.heroTitle}>צור חתימה</Text>
+          <Text style={styles.heroTitle}>{t("signature.heroTitle")}</Text>
           <Text style={styles.heroSub}>{status}</Text>
         </View>
 
@@ -226,18 +229,20 @@ canvas {
               androidLayerType="software"
               onError={(e) => {
                 setStatus(
-                  "WebView error: " +
-                    (e?.nativeEvent?.description ?? "unknown"),
+                  t("signature.status.webviewError", {
+                    message: e?.nativeEvent?.description ?? "unknown",
+                  }),
                 );
               }}
               onHttpError={(e) => {
                 setStatus(
-                  "WebView HTTP error: " +
-                    (e?.nativeEvent?.statusCode ?? "unknown"),
+                  t("signature.status.webviewHttpError", {
+                    code: e?.nativeEvent?.statusCode ?? "unknown",
+                  }),
                 );
               }}
               onContentProcessDidTerminate={() => {
-                setStatus("WebView process terminated (iOS)");
+                setStatus(t("signature.status.webviewTerminated"));
               }}
               style={styles.web}
             />
@@ -249,14 +254,18 @@ canvas {
               style={[styles.btn, styles.btnSecondary]}
               onPress={() => webRef.current?.injectJavaScript(jsClear)}
             >
-              <Text style={styles.btnSecondaryText}>נקה</Text>
+              <Text style={styles.btnSecondaryText}>
+                {t("signature.actions.clear")}
+              </Text>
             </Pressable>
 
             <Pressable
               style={[styles.btn, styles.btnPrimary]}
               onPress={() => webRef.current?.injectJavaScript(jsExport)}
             >
-              <Text style={styles.btnPrimaryText}>שמור</Text>
+              <Text style={styles.btnPrimaryText}>
+                {t("signature.actions.save")}
+              </Text>
             </Pressable>
           </View>
 
@@ -267,7 +276,9 @@ canvas {
               onDone();
             }}
           >
-            <Text style={styles.btnDangerText}>מחק חתימה שמורה</Text>
+            <Text style={styles.btnDangerText}>
+              {t("signature.actions.deleteSaved")}
+            </Text>
           </Pressable>
         </View>
 
@@ -354,7 +365,7 @@ const styles = StyleSheet.create({
     height: 320,
     borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "#F3F6FF", // ✅ תואם לרקע הבהיר של ה-HTML
+    backgroundColor: "#F3F6FF",
     borderWidth: 1,
     borderColor: "rgba(15,23,42,0.10)",
   },

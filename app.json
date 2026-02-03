@@ -3,7 +3,7 @@
     "name": "QuickSign",
     "slug": "quicksign",
     "scheme": "quicksign",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,34 +15,55 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.quicksign.app"
+      "bundleIdentifier": "com.quicksign.app",
+      "buildNumber": "4"
     },
     "android": {
       "package": "com.quicksign.app",
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
-
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "intentFilters": [
         {
           "action": "VIEW",
-          "category": ["DEFAULT", "BROWSABLE"],
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ],
           "data": [
-            { "scheme": "file", "mimeType": "application/pdf" },
-            { "scheme": "content", "mimeType": "application/pdf" }
+            {
+              "scheme": "file",
+              "mimeType": "application/pdf"
+            },
+            {
+              "scheme": "content",
+              "mimeType": "application/pdf"
+            }
           ]
         },
         {
           "action": "VIEW",
-          "category": ["DEFAULT", "BROWSABLE"],
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ],
           "data": [
-            { "scheme": "file", "mimeType": "image/*" },
-            { "scheme": "content", "mimeType": "image/*" }
+            {
+              "scheme": "file",
+              "mimeType": "image/*"
+            },
+            {
+              "scheme": "content",
+              "mimeType": "image/*"
+            }
           ]
         }
       ]
@@ -60,10 +81,16 @@
       [
         "expo-share-intent",
         {
-          "androidIntentFilters": ["image/*", "application/pdf"],
-          "androidMultiIntentFilters": ["image/*"]
+          "androidIntentFilters": [
+            "image/*",
+            "application/pdf"
+          ],
+          "androidMultiIntentFilters": [
+            "image/*"
+          ]
         }
-      ]
+      ],
+      "expo-localization"
     ]
   }
 }

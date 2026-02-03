@@ -1,0 +1,163 @@
+{
+  "home": {
+    "appTitle": "توقيع المستندات",
+    "avatarInitial": "ت",
+    "welcome": "مرحبًا",
+    "tagline": "تحميل وتوقيع وتصدير المستندات — بسهولة",
+    "signaturePreviewTitle": "معاينة التوقيع",
+    "noSignature": "لا يوجد توقيع محفوظ بعد",
+    "replace": "استبدال",
+    "notice": "💡 أنشئ توقيعًا أولًا لبدء توقيع المستندات",
+    "cameraTitle": "التقاط صورة",
+    "cameraSub": "افتح الكاميرا للتصوير",
+    "imageTitle": "تحميل صورة",
+    "imageSub": "حمّل صورة وأضف توقيعًا",
+    "pdfTitle": "تحميل PDF",
+    "pdfSub": "حمّل ملف PDF للتوقيع",
+    "bottomHint": "لتوقيع المستندات — أنشئ توقيعًا أولًا.",
+    "language": "اللغة"
+  },
+  "signature": {
+    "title": "التوقيع",
+    "heroTitle": "إنشاء توقيع",
+    "status": {
+      "drawHint": "ارسم توقيعك بإصبعك داخل المنطقة المحددة",
+      "empty": "لم يتم اكتشاف توقيع — ارسم شيئًا ثم احفظ",
+      "saving": "جارٍ الحفظ...",
+      "saved": "تم الحفظ ✅",
+      "canvasError": "تعذر قراءة البيانات من اللوحة",
+      "webviewError": "خطأ WebView: {{message}}",
+      "webviewHttpError": "خطأ HTTP في WebView: {{code}}",
+      "webviewTerminated": "تم إنهاء عملية WebView (iOS)"
+    },
+    "canvas": {
+      "title": "ارسم التوقيع هنا",
+      "tip": "نصيحة: سيتم قصّ الحواف تلقائيًا عند الحفظ"
+    },
+    "actions": {
+      "clear": "مسح",
+      "save": "حفظ",
+      "deleteSaved": "حذف التوقيع المحفوظ"
+    }
+  },
+  "common": {
+    "alerts": {
+      "errorTitle": "خطأ",
+      "exitTitle": "الخروج من المستند",
+      "exitBody": "العودة إلى الشاشة الرئيسية؟"
+    },
+    "actions": {
+      "cancel": "إلغاء",
+      "back": "رجوع",
+      "backToHome": "العودة إلى الرئيسية",
+      "add": "إضافة"
+    },
+    "errors": {
+      "sharingUnavailable": "المشاركة غير متاحة على هذا الجهاز/البيئة.",
+      "webviewError": "خطأ WebView: {{message}}",
+      "unknown": "خطأ غير معروف"
+    }
+  },
+  "signImage": {
+    "alerts": {
+      "noPermissionTitle": "لا توجد صلاحية",
+      "galleryPermissionBody": "تحتاج إلى صلاحية الوصول إلى المعرض لاختيار صورة.",
+      "cameraPermissionBody": "تحتاج إلى صلاحية استخدام الكاميرا لالتقاط صورة.",
+      "pickFailed": "تعذر اختيار صورة",
+      "cameraFailed": "تعذر التقاط صورة"
+    }
+  },
+  "imageEditor": {
+    "title": "تحرير الصورة",
+    "actions": {
+      "export": "تصدير",
+      "addText": "إضافة نص",
+      "textsLimitReached": "يوجد بالفعل نصّان",
+      "addSignature": "إضافة توقيع"
+    },
+    "empty": {
+      "picking": "جارٍ اختيار صورة..."
+    },
+    "loadingImage": "جارٍ تحميل الصورة…",
+    "export": {
+      "shareTitle": "مشاركة صورة موقّعة",
+      "exporting": "جارٍ تصدير الصورة...",
+      "pleaseWait": "يرجى الانتظار"
+    },
+    "modal": {
+      "addTextTitle": "إضافة نص",
+      "addTextPlaceholder": "اكتب نصًا…",
+      "tip": "نصيحة: قم بالتكبير على الصورة — سيكون من الأسهل بكثير سحب/تكبير النصوص والتوقيعات بدقة."
+    }
+  },
+  "signPdf": {
+    "subtitlePages": "{{count}} صفحات",
+    "editor": {
+      "title": "الصفحة {{page}}{{total}}"
+    },
+    "alerts": {
+      "exportActiveTitle": "التصدير جارٍ",
+      "exportActiveBody": "نقوم بالتصدير الآن. يرجى الانتظار.",
+      "exportTitle": "تصدير PDF",
+      "noPagesSelected": "لم يتم تحديد صفحات للتصدير.",
+      "exportFailed": "حدث خطأ أثناء التصدير"
+    },
+    "actions": {
+      "ok": "حسنًا",
+      "exportPdf": "تصدير PDF",
+      "sharePdf": "مشاركة PDF"
+    },
+    "errors": {
+      "pdfNotLoaded": "لم يتم تحميل PDF",
+      "pickFailed": "تعذر اختيار/تحميل ملف PDF",
+      "openFailed": "تعذر تحميل ملف PDF المفتوح",
+      "emptyUri": "عنوان URI فارغ",
+      "invalidDataUrl": "عنوان بيانات غير صالح"
+    },
+    "export": {
+      "overlayTitle": "جارٍ تصدير PDF...",
+      "progress": "الصفحات: {{done}} / {{total}} ({{pct}}%)",
+      "working": "جارٍ العمل...",
+      "status": {
+        "captureImage": "جارٍ التقاط الصورة...",
+        "readImage": "جارٍ قراءة الصورة...",
+        "computeSize": "جارٍ حساب الأبعاد..."
+      }
+    },
+    "pageRenderer": {
+      "thumbLoading": "جارٍ إعداد المعاينة المصغرة...",
+      "pageRendering": "جارٍ تحويل الصفحة إلى PNG...",
+      "retry": "حاول مرة أخرى"
+    },
+    "pageEditor": {
+      "pageNotReady": "الصفحة ما زالت تُحمَّل. حاول مرة أخرى بعد لحظة.",
+      "loading": "جارٍ تجهيز معاينة الصفحة...",
+      "actions": {
+        "addText": "إضافة نص",
+        "textsLimitReached": "لديك بالفعل نصّان",
+        "noSignature": "لا يوجد توقيع",
+        "addSignature": "إضافة توقيع"
+      },
+      "modal": {
+        "title": "إضافة نص",
+        "placeholder": "اكتب نصًا...",
+        "tip": "نصيحة: كبّر الصفحة — سيكون من الأسهل بكثير تحريك/تكبير النصوص والتوقيع بدقة."
+      }
+    },
+    "pagesGrid": {
+      "thumbLabel": "الصفحة {{page}}",
+      "cardLabel": "الصفحة {{page}}",
+      "selectAll": "تحديد الكل",
+      "deselectAll": "إلغاء تحديد الكل",
+      "selectedCount": "تم تحديد {{selected}} / {{total}}",
+      "emptyHint": "اختر ملف PDF لرؤية الصفحات"
+    },
+    "multiPage": {
+      "status": {
+        "creating": "جارٍ إنشاء PDF متعدد الصفحات...",
+        "processing": "جارٍ معالجة الصفحة {{current}} من {{total}}...",
+        "generating": "جارٍ إنشاء PDF..."
+      }
+    }
+  }
+}

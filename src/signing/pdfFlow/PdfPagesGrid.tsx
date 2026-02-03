@@ -14,6 +14,7 @@ import {
   FlatList,
   Image,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Ionicons } from "@expo/vector-icons";
 import PdfPageToPngWebView from "../pdf/PdfPageToPngWebView";
@@ -55,6 +56,7 @@ export default function PdfPagesGrid({
   exportDisabled,
   exportLabel,
 }: Props) {
+  const { t } = useTranslation();
   const pages = useMemo(
     () => Array.from({ length: totalPages }, (_, i) => i + 1),
     [totalPages],
@@ -175,7 +177,9 @@ export default function PdfPagesGrid({
             />
           ) : (
             <View style={styles.thumbPlaceholder}>
-              <Text style={styles.thumbPlaceholderText}>עמוד {p}</Text>
+              <Text style={styles.thumbPlaceholderText}>
+                {t("signPdf.pagesGrid.thumbLabel", { page: p })}
+              </Text>
             </View>
           )}
 
@@ -192,7 +196,9 @@ export default function PdfPagesGrid({
           </Pressable>
         </View>
 
-        <Text style={styles.cardLabel}>דף {p}</Text>
+        <Text style={styles.cardLabel}>
+          {t("signPdf.pagesGrid.cardLabel", { page: p })}
+        </Text>
       </Pressable>
     );
   };
@@ -200,7 +206,9 @@ export default function PdfPagesGrid({
   const someSelected =
     selectedPages.size > 0 && selectedPages.size < totalPages;
 
-  const selectLabel = allSelected ? "בטל הכל" : "סמן הכל";
+  const selectLabel = allSelected
+    ? t("signPdf.pagesGrid.deselectAll")
+    : t("signPdf.pagesGrid.selectAll");
 
   const selectIcon: keyof typeof Ionicons.glyphMap = allSelected
     ? "checkbox"
@@ -225,7 +233,7 @@ export default function PdfPagesGrid({
             borderColor: "#7c3aed",
             borderWidth: 2,
           }}
-          label={exportLabel || "ייצא PDF"}
+          label={exportLabel || t("signPdf.actions.exportPdf")}
         />
 
         <Pressable
@@ -261,7 +269,10 @@ export default function PdfPagesGrid({
       <View style={styles.actionsRow}>
         <View style={styles.selectedPill}>
           <Text style={styles.selectedPillText}>
-            נבחרו {selectedPages.size} / {totalPages || 0}
+            {t("signPdf.pagesGrid.selectedCount", {
+              selected: selectedPages.size,
+              total: totalPages || 0,
+            })}
           </Text>
         </View>
       </View>
@@ -282,7 +293,9 @@ export default function PdfPagesGrid({
         viewabilityConfig={viewabilityConfig}
         ListEmptyComponent={
           <View style={{ padding: 24, alignItems: "center" }}>
-            <Text style={{ opacity: 0.6 }}>בחר PDF כדי לראות דפים</Text>
+            <Text style={{ opacity: 0.6 }}>
+              {t("signPdf.pagesGrid.emptyHint")}
+            </Text>
           </View>
         }
       />

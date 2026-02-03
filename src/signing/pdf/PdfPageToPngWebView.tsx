@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { WebView } from "react-native-webview";
+import { useTranslation } from "react-i18next";
 
 type Quality = "high" | "thumb";
 
@@ -56,6 +57,7 @@ export default function PdfPageToPngWebView({
   onRendered,
   onError,
 }: Props) {
+  const { t } = useTranslation();
   const webRef = useRef<WebView>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -253,7 +255,7 @@ export default function PdfPageToPngWebView({
       }
     } catch (err: any) {
       setIsLoading(false);
-      onError?.(err?.message ?? "Unknown error");
+      onError?.(err?.message ?? t("common.errors.unknown"));
     }
   };
 
@@ -275,7 +277,11 @@ export default function PdfPageToPngWebView({
         allowUniversalAccessFromFileURLs
         mixedContentMode="always"
         onError={(syntheticEvent) => {
-          onError?.("WebView error: " + syntheticEvent.nativeEvent.description);
+          onError?.(
+            t("common.errors.webviewError", {
+              message: syntheticEvent.nativeEvent.description,
+            }),
+          );
         }}
         style={styles.web}
       />
@@ -284,10 +290,14 @@ export default function PdfPageToPngWebView({
         <View style={styles.loadingOverlay}>
           <ActivityIndicator />
           <Text style={styles.loadingText}>
-            {quality === "thumb" ? "מכין תצוגה מקדימה…" : "מרנדר עמוד ל־PNG…"}
+            {quality === "thumb"
+              ? t("signPdf.pageRenderer.thumbLoading")
+              : t("signPdf.pageRenderer.pageRendering")}
           </Text>
           <Pressable style={styles.retryBtn} onPress={retry}>
-            <Text style={styles.retryText}>נסה שוב</Text>
+            <Text style={styles.retryText}>
+              {t("signPdf.pageRenderer.retry")}
+            </Text>
           </Pressable>
         </View>
       )}

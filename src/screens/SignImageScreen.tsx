@@ -1,20 +1,9 @@
 // src/screens/SignImageScreen.tsx
-import React, {
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-  useRef,
-} from "react";
-import {
-  View,
-  Platform,
-  BackHandler,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { Platform, BackHandler, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
+import { useTranslation } from "react-i18next";
 
 import ImageEditor from "../signing/imageFlow/ImageEditor";
 
@@ -50,6 +39,8 @@ export default function SignImageScreen({
   onFileLoaded,
   useCamera = false,
 }: Props) {
+  const { t } = useTranslation();
+
   const autoPickedRef = useRef(false);
 
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -86,6 +77,7 @@ export default function SignImageScreen({
         pickImage();
       }
     }, 50);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFileUri, imageUri, isLoading, useCamera]);
 
   // Load incoming image from "Open with"
@@ -122,7 +114,10 @@ export default function SignImageScreen({
 
       const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (perm.status !== "granted") {
-        Alert.alert("אין הרשאה", "צריך הרשאת גישה לגלריה כדי לבחור תמונה.");
+        Alert.alert(
+          t("signImage.alerts.noPermissionTitle"),
+          t("signImage.alerts.galleryPermissionBody"),
+        );
         return;
       }
 
@@ -137,7 +132,10 @@ export default function SignImageScreen({
 
       loadImageUri(uri);
     } catch (e: any) {
-      Alert.alert("שגיאה", e?.message ?? "לא הצלחתי לבחור תמונה");
+      Alert.alert(
+        t("common.alerts.errorTitle"),
+        e?.message ?? t("signImage.alerts.pickFailed"),
+      );
     } finally {
       setIsLoading(false);
     }
@@ -149,7 +147,10 @@ export default function SignImageScreen({
 
       const perm = await ImagePicker.requestCameraPermissionsAsync();
       if (perm.status !== "granted") {
-        Alert.alert("אין הרשאה", "צריך הרשאת גישה למצלמה כדי לצלם תמונה.");
+        Alert.alert(
+          t("signImage.alerts.noPermissionTitle"),
+          t("signImage.alerts.cameraPermissionBody"),
+        );
         return;
       }
 
@@ -164,7 +165,10 @@ export default function SignImageScreen({
 
       loadImageUri(uri);
     } catch (e: any) {
-      Alert.alert("שגיאה", e?.message ?? "לא הצלחתי לצלם תמונה");
+      Alert.alert(
+        t("common.alerts.errorTitle"),
+        e?.message ?? t("signImage.alerts.cameraFailed"),
+      );
     } finally {
       setIsLoading(false);
     }
@@ -176,15 +180,15 @@ export default function SignImageScreen({
       return;
     }
 
-    Alert.alert("יציאה מהמסמך", "האם לחזור למסך הראשי?", [
-      { text: "ביטול", style: "cancel" },
+    Alert.alert(t("common.alerts.exitTitle"), t("common.alerts.exitBody"), [
+      { text: t("common.actions.cancel"), style: "cancel" },
       {
-        text: "חזרה למסך הראשי",
+        text: t("common.actions.backToHome"),
         style: "destructive",
         onPress: onBack,
       },
     ]);
-  }, [imageUri, onBack]);
+  }, [imageUri, onBack, t]);
 
   // Android hardware back
   useEffect(() => {

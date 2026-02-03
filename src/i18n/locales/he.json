@@ -1,0 +1,163 @@
+{
+  "home": {
+    "appTitle": "חתימת מסמכים",
+    "avatarInitial": "א",
+    "welcome": "ברוכים הבאים",
+    "tagline": "טעינה, חתימה וייצוא מסמכים — בקלות",
+    "signaturePreviewTitle": "תצוגה מקדימה של חתימה",
+    "noSignature": "אין חתימה שמורה עדיין",
+    "replace": "החלף",
+    "notice": "💡 צור חתימה תחילה כדי להתחיל לחתום על מסמכים",
+    "cameraTitle": "צלם תמונה",
+    "cameraSub": "פתח מצלמה לצילום",
+    "imageTitle": "טען תמונה",
+    "imageSub": "טען תמונה והוסף חתימה",
+    "pdfTitle": "טען PDF",
+    "pdfSub": "טען מסמך PDF לחתימה",
+    "bottomHint": "כדי להפעיל חתימה על מסמכים — קודם צור חתימה.",
+    "language": "שפה"
+  },
+  "signature": {
+    "title": "חתימה",
+    "heroTitle": "צור חתימה",
+    "status": {
+      "drawHint": "צייר חתימה עם האצבע באזור המסומן",
+      "empty": "לא זיהיתי חתימה — צייר משהו ואז שמור",
+      "saving": "שומר...",
+      "saved": "נשמר ✅",
+      "canvasError": "שגיאה בקריאת נתונים מהקנבס",
+      "webviewError": "WebView error: {{message}}",
+      "webviewHttpError": "WebView HTTP error: {{code}}",
+      "webviewTerminated": "WebView process terminated (iOS)"
+    },
+    "canvas": {
+      "title": "צייר כאן את החתימה",
+      "tip": "טיפ: נחתוך שוליים אוטומטית בשמירה"
+    },
+    "actions": {
+      "clear": "נקה",
+      "save": "שמור",
+      "deleteSaved": "מחק חתימה שמורה"
+    }
+  },
+  "common": {
+    "alerts": {
+      "errorTitle": "שגיאה",
+      "exitTitle": "יציאה מהמסמך",
+      "exitBody": "האם לחזור למסך הראשי?"
+    },
+    "actions": {
+      "cancel": "ביטול",
+      "back": "חזרה",
+      "backToHome": "חזרה למסך הראשי",
+      "add": "הוסף"
+    },
+    "errors": {
+      "sharingUnavailable": "שיתוף לא זמין במכשיר/סביבה הזו.",
+      "webviewError": "שגיאת WebView: {{message}}",
+      "unknown": "שגיאה לא ידועה"
+    }
+  },
+  "signImage": {
+    "alerts": {
+      "noPermissionTitle": "אין הרשאה",
+      "galleryPermissionBody": "צריך הרשאת גישה לגלריה כדי לבחור תמונה.",
+      "cameraPermissionBody": "צריך הרשאת גישה למצלמה כדי לצלם תמונה.",
+      "pickFailed": "לא הצלחתי לבחור תמונה",
+      "cameraFailed": "לא הצלחתי לצלם תמונה"
+    }
+  },
+  "imageEditor": {
+    "title": "עריכת תמונה",
+    "actions": {
+      "export": "ייצא",
+      "addText": "הוסף טקסט",
+      "textsLimitReached": "כבר יש 2 טקסטים",
+      "addSignature": "הוסף חתימה"
+    },
+    "empty": {
+      "picking": "בוחר תמונה..."
+    },
+    "loadingImage": "טוען תמונה…",
+    "export": {
+      "shareTitle": "שתף תמונה חתומה",
+      "exporting": "מייצא תמונה...",
+      "pleaseWait": "אנא המתן"
+    },
+    "modal": {
+      "addTextTitle": "הוסף טקסט",
+      "addTextPlaceholder": "הקלד טקסט…",
+      "tip": "טיפ: תעשה זום על התמונה ואז יהיה הרבה יותר קל לדייק גרירה/צביטה של טקסטים וחתימה."
+    }
+  },
+  "signPdf": {
+    "subtitlePages": "{{count}} דפים",
+    "editor": {
+      "title": "עמוד {{page}}{{total}}"
+    },
+    "alerts": {
+      "exportActiveTitle": "ייצוא פעיל",
+      "exportActiveBody": "אנחנו באמצע ייצוא. חכה שיסתיים.",
+      "exportTitle": "ייצוא PDF",
+      "noPagesSelected": "לא נבחרו עמודים לייצוא.",
+      "exportFailed": "שגיאה בזמן ייצוא"
+    },
+    "actions": {
+      "ok": "אוקי",
+      "exportPdf": "ייצא PDF",
+      "sharePdf": "שתף PDF"
+    },
+    "errors": {
+      "pdfNotLoaded": "PDF לא נטען",
+      "pickFailed": "לא הצלחתי לבחור/לטעון PDF",
+      "openFailed": "לא הצלחתי לטעון את ה-PDF שנפתח",
+      "emptyUri": "כתובת ריקה",
+      "invalidDataUrl": "כתובת נתונים לא תקינה"
+    },
+    "export": {
+      "overlayTitle": "מייצא PDF…",
+      "progress": "עמודים: {{done}} / {{total}} ({{pct}}%)",
+      "working": "הפעולה מתבצעת…",
+      "status": {
+        "captureImage": "מצלם תמונה...",
+        "readImage": "קורא תמונה...",
+        "computeSize": "מחשב מידות..."
+      }
+    },
+    "pageRenderer": {
+      "thumbLoading": "מכין תצוגה מקדימה...",
+      "pageRendering": "מרנדר עמוד ל-PNG...",
+      "retry": "נסה שוב"
+    },
+    "pageEditor": {
+      "pageNotReady": "העמוד עדיין נטען. נסה שוב בעוד רגע.",
+      "loading": "מכין תצוגת עמוד...",
+      "actions": {
+        "addText": "הוסף טקסט",
+        "textsLimitReached": "כבר יש 2 טקסטים",
+        "noSignature": "אין חתימה",
+        "addSignature": "הוסף חתימה"
+      },
+      "modal": {
+        "title": "הוסף טקסט",
+        "placeholder": "הקלד טקסט...",
+        "tip": "טיפ: תעשה זום על העמוד ואז יהיה הרבה יותר קל לדייק גרירה/צביטה של טקסטים וחתימה."
+      }
+    },
+    "pagesGrid": {
+      "thumbLabel": "עמוד {{page}}",
+      "cardLabel": "דף {{page}}",
+      "selectAll": "סמן הכל",
+      "deselectAll": "בטל הכל",
+      "selectedCount": "נבחרו {{selected}} / {{total}}",
+      "emptyHint": "בחר PDF כדי לראות דפים"
+    },
+    "multiPage": {
+      "status": {
+        "creating": "יוצר PDF מרובה עמודים...",
+        "processing": "מעבד עמוד {{current}} מתוך {{total}}...",
+        "generating": "מייצר PDF..."
+      }
+    }
+  }
+}

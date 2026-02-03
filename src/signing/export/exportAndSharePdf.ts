@@ -3,6 +3,7 @@ import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 import { captureRef } from "react-native-view-shot";
 import { Image } from "react-native";
+import i18n from "../../i18n";
 
 type Args = {
   viewRef: any;
@@ -20,14 +21,14 @@ type Args = {
 export async function exportAndSharePdf({
   viewRef,
   beforeCaptureDelayMs = 60,
-  dialogTitle = "שתף PDF",
+  dialogTitle = i18n.t("signPdf.actions.sharePdf"),
   pdfName = "signed-document.pdf",
   onConversionStart,
   onConversionProgress,
 }: Args) {
   const sharingAvailable = await Sharing.isAvailableAsync();
   if (!sharingAvailable) {
-    throw new Error("שיתוף לא זמין במכשיר/סביבה הזו.");
+    throw new Error(i18n.t("common.errors.sharingUnavailable"));
   }
 
   // Allow UI to re-render before capture
@@ -35,7 +36,7 @@ export async function exportAndSharePdf({
     await new Promise((r) => setTimeout(r, beforeCaptureDelayMs));
   }
 
-  onConversionProgress?.("צולם תמונה...");
+  onConversionProgress?.(i18n.t("signPdf.export.status.captureImage"));
 
   // Capture as PNG
   const pngUri = await captureRef(viewRef, {
@@ -44,14 +45,14 @@ export async function exportAndSharePdf({
     result: "tmpfile",
   });
 
-  onConversionProgress?.("קורא תמונה...");
+  onConversionProgress?.(i18n.t("signPdf.export.status.readImage"));
 
   // Read PNG as base64
   const pngBase64 = await FileSystem.readAsStringAsync(pngUri, {
     encoding: "base64" as any,
   });
 
-  onConversionProgress?.("מחשב מידות...");
+  onConversionProgress?.(i18n.t("signPdf.export.status.computeSize"));
 
   // Get image dimensions
   const dimensions = await getImageDimensions(pngUri);

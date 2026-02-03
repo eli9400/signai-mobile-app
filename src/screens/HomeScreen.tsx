@@ -1,8 +1,11 @@
 // src/screens/HomeScreen.tsx
-import React from "react";
-import { View, Text, Pressable, StyleSheet, Image } from "react-native";
+import React, { useMemo, useState } from "react";
+import { View, Text, Pressable, StyleSheet, Image, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { theme } from "../ui/theme";
+import i18n from "../i18n";
+import { languageLabel, setAppLanguage, type AppLang } from "../i18n";
 
 type Props = {
   signatureUri: string | null;
@@ -70,7 +73,17 @@ export default function HomeScreen({
   onGoSignPdf,
   onGoCamera,
 }: Props) {
+  const { t } = useTranslation();
   const canSign = Boolean(signatureUri);
+
+  const [langOpen, setLangOpen] = useState(false);
+
+  const currentLang = useMemo(() => {
+    const raw = (i18n.language || "he").split("-")[0] as AppLang;
+    return (["he", "en", "ar", "ru"] as AppLang[]).includes(raw) ? raw : "he";
+  }, [i18n.language]);
+
+  const langs: AppLang[] = ["he", "en", "ar", "ru"];
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
@@ -79,25 +92,32 @@ export default function HomeScreen({
         <View style={styles.topBar}>
           <View style={styles.topLeft}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>א</Text>
+              <Text style={styles.avatarText}>{t("home.avatarInitial")}</Text>
             </View>
           </View>
 
-          {/* Placeholder language switcher (we'll wire real i18n later) */}
-          <View style={styles.langPill}>
-            <Text style={styles.langText}>עברית</Text>
+          {/* Language switcher */}
+          <Pressable
+            onPress={() => setLangOpen(true)}
+            style={({ pressed }) => [
+              styles.langPill,
+              pressed ? { opacity: 0.85 } : null,
+            ]}
+          >
+            <Text style={styles.langText}>{languageLabel[currentLang]}</Text>
             <Text style={styles.langChevron}>▾</Text>
-          </View>
+          </Pressable>
 
-          <Text style={styles.appTitle}>חתימת מסמכים</Text>
+          <Text style={styles.appTitle}>{t("home.appTitle")}</Text>
         </View>
+
         <View style={styles.spacerTop} />
 
         {/* Hero */}
         <View style={styles.hero}>
-          <Text style={styles.heroTitle}>ברוכים הבאים </Text>
+          <Text style={styles.heroTitle}>{t("home.welcome")}</Text>
           <Text style={styles.heroSub} numberOfLines={2}>
-            טעינה, חתימה וייצוא מסמכים — בקלות
+            {t("home.tagline")}
           </Text>
         </View>
 
@@ -105,13 +125,15 @@ export default function HomeScreen({
         <Card style={styles.signatureCard}>
           <View style={styles.signatureRow}>
             <Pressable style={styles.smallBtn} onPress={onGoSignature}>
-              <Text style={styles.smallBtnText}>החלף</Text>
+              <Text style={styles.smallBtnText}>{t("home.replace")}</Text>
             </Pressable>
 
             <View style={styles.sigInfo}>
-              <Text style={styles.sigLabel}>תצוגה מקדימה של חתימה</Text>
+              <Text style={styles.sigLabel}>
+                {t("home.signaturePreviewTitle")}
+              </Text>
               {!signatureUri ? (
-                <Text style={styles.sigHint}>אין חתימה שמורה עדיין</Text>
+                <Text style={styles.sigHint}>{t("home.noSignature")}</Text>
               ) : null}
             </View>
 
@@ -129,17 +151,15 @@ export default function HomeScreen({
           </View>
 
           {!canSign ? (
-            <Text style={styles.noticeText}>
-              💡 צור חתימה תחילה כדי להתחיל לחתום על מסמכים
-            </Text>
+            <Text style={styles.noticeText}>{t("home.notice")}</Text>
           ) : null}
         </Card>
 
         {/* Actions row */}
         <View style={styles.actionsRow}>
           <ActionCard
-            title="צלם תמונה"
-            subtitle="פתח מצלמה לצילום"
+            title={t("home.cameraTitle")}
+            subtitle={t("home.cameraSub")}
             icon="📷"
             accent="green"
             disabled={!canSign}
@@ -147,8 +167,8 @@ export default function HomeScreen({
           />
 
           <ActionCard
-            title="טען תמונה"
-            subtitle="טען תמונה והוסף חתימה"
+            title={t("home.imageTitle")}
+            subtitle={t("home.imageSub")}
             icon="🖼️"
             accent="purple"
             disabled={!canSign}
@@ -156,8 +176,8 @@ export default function HomeScreen({
           />
 
           <ActionCard
-            title="טען PDF"
-            subtitle="טען מסמך PDF לחתימה"
+            title={t("home.pdfTitle")}
+            subtitle={t("home.pdfSub")}
             icon="📄"
             accent="blue"
             disabled={!canSign}
@@ -166,12 +186,51 @@ export default function HomeScreen({
         </View>
 
         {!canSign ? (
-          <Text style={styles.bottomHint}>
-            כדי להפעיל חתימה על מסמכים — קודם צור חתימה.
-          </Text>
+          <Text style={styles.bottomHint}>{t("home.bottomHint")}</Text>
         ) : null}
+
         <View style={styles.spacerBottom} />
       </View>
+
+      {/* Language modal */}
+      <Modal
+        visible={langOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLangOpen(false)}
+      >
+        <Pressable
+          style={styles.langBackdrop}
+          onPress={() => setLangOpen(false)}
+        >
+          <Pressable style={styles.langCard} onPress={() => {}}>
+            <Text style={styles.langTitle}>{t("home.language")}</Text>
+
+            <View style={{ height: 10 }} />
+
+            {langs.map((lng) => {
+              const isActive = lng === currentLang;
+              return (
+                <Pressable
+                  key={lng}
+                  style={({ pressed }) => [
+                    styles.langRow,
+                    isActive ? styles.langRowActive : null,
+                    pressed ? { opacity: 0.9 } : null,
+                  ]}
+                  onPress={async () => {
+                    setLangOpen(false);
+                    await setAppLanguage(lng);
+                  }}
+                >
+                  <Text style={styles.langRowText}>{languageLabel[lng]}</Text>
+                  {isActive ? <Text style={styles.langCheck}>✓</Text> : null}
+                </Pressable>
+              );
+            })}
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -251,7 +310,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     color: theme.colors.textPrimary,
     ...theme.typography.h1,
-    fontSize: 28, // a bit smaller for mobile
+    fontSize: 28,
     lineHeight: 34,
     textAlign: "center",
   },
@@ -387,4 +446,46 @@ const styles = StyleSheet.create({
   },
   spacerTop: { flex: 0.35 },
   spacerBottom: { flex: 1 },
+
+  // Language modal styles
+  langBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
+    padding: 16,
+  },
+  langCard: {
+    backgroundColor: "white",
+    borderRadius: 18,
+    padding: 16,
+  },
+  langTitle: {
+    fontSize: 18,
+    fontWeight: "900",
+    color: theme.colors.textPrimary,
+    textAlign: "right",
+  },
+  langRow: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(15, 23, 42, 0.10)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  langRowActive: {
+    borderColor: theme.colors.brand,
+    backgroundColor: "rgba(37, 99, 235, 0.06)",
+  },
+  langRowText: {
+    fontWeight: "800",
+    color: theme.colors.textPrimary,
+  },
+  langCheck: {
+    fontWeight: "900",
+    color: theme.colors.brand,
+  },
 });

@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
+import i18n from "../../i18n";
 
 type Status = "idle" | "picking" | "reading" | "ready" | "error";
 
@@ -65,7 +66,10 @@ export function usePdfDocument() {
       return loaded;
     } catch (e: any) {
       setStatus("error");
-      Alert.alert("שגיאה", e?.message ?? "לא הצלחתי לבחור/לטעון PDF");
+      Alert.alert(
+        i18n.t("common.alerts.errorTitle"),
+        e?.message ?? i18n.t("signPdf.errors.pickFailed"),
+      );
       return null;
     }
   }, []);
@@ -84,7 +88,10 @@ export function usePdfDocument() {
       return true;
     } catch (e: any) {
       setStatus("error");
-      Alert.alert("שגיאה", e?.message ?? "לא הצלחתי לטעון את ה-PDF שנפתח");
+      Alert.alert(
+        i18n.t("common.alerts.errorTitle"),
+        e?.message ?? i18n.t("signPdf.errors.openFailed"),
+      );
       return false;
     }
   }, []);

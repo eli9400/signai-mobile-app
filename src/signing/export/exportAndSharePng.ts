@@ -1,6 +1,7 @@
 // src/signing/export/exportAndSharePng.ts
 import * as Sharing from "expo-sharing";
 import { captureRef } from "react-native-view-shot";
+import i18n from "../../i18n";
 
 type Args = {
   viewRef: any; // ref to a View (collapsable={false})
@@ -11,11 +12,11 @@ type Args = {
 export async function exportAndSharePng({
   viewRef,
   beforeCaptureDelayMs = 60,
-  dialogTitle = "שתף תמונה",
+  dialogTitle = i18n.t("imageEditor.export.shareTitle"),
 }: Args) {
   const sharingAvailable = await Sharing.isAvailableAsync();
   if (!sharingAvailable) {
-    throw new Error("שיתוף לא זמין במכשיר/סביבה הזו.");
+    throw new Error(i18n.t("common.errors.sharingUnavailable"));
   }
 
   // allow UI to re-render (hide borders/hints) before capture

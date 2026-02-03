@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, ViewStyle, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Foundation from "@expo/vector-icons/Foundation";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTranslation } from "react-i18next";
 
 type IconBtnProps = {
   onPress: () => void;
@@ -35,8 +36,11 @@ export function BackIconButton({
   color = "#0f172a",
   style,
   hitSlop = 10,
-  accessibilityLabel = "חזרה",
+  accessibilityLabel,
 }: Omit<IconBtnProps, "iconName">) {
+  const { t } = useTranslation();
+  const label = accessibilityLabel ?? t("common.actions.back");
+
   return (
     <ActionIconButton
       onPress={onPress}
@@ -46,7 +50,7 @@ export function BackIconButton({
       color={color}
       style={style}
       hitSlop={hitSlop}
-      accessibilityLabel={accessibilityLabel}
+      accessibilityLabel={label}
     />
   );
 }

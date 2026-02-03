@@ -1,0 +1,163 @@
+{
+  "home": {
+    "appTitle": "Document Signing",
+    "avatarInitial": "S",
+    "welcome": "Welcome",
+    "tagline": "Load, sign and export documents — easily",
+    "signaturePreviewTitle": "Signature preview",
+    "noSignature": "No saved signature yet",
+    "replace": "Replace",
+    "notice": "💡 Create a signature first to start signing documents",
+    "cameraTitle": "Take a photo",
+    "cameraSub": "Open camera to capture",
+    "imageTitle": "Load image",
+    "imageSub": "Load an image and add a signature",
+    "pdfTitle": "Load PDF",
+    "pdfSub": "Load a PDF document to sign",
+    "bottomHint": "To sign documents — create a signature first.",
+    "language": "Language"
+  },
+  "signature": {
+    "title": "Signature",
+    "heroTitle": "Create a signature",
+    "status": {
+      "drawHint": "Draw your signature with your finger in the marked area",
+      "empty": "No signature detected — draw something and then save",
+      "saving": "Saving...",
+      "saved": "Saved ✅",
+      "canvasError": "Failed to read data from canvas",
+      "webviewError": "WebView error: {{message}}",
+      "webviewHttpError": "WebView HTTP error: {{code}}",
+      "webviewTerminated": "WebView process terminated (iOS)"
+    },
+    "canvas": {
+      "title": "Draw your signature here",
+      "tip": "Tip: we will auto-crop margins when saving"
+    },
+    "actions": {
+      "clear": "Clear",
+      "save": "Save",
+      "deleteSaved": "Delete saved signature"
+    }
+  },
+  "common": {
+    "alerts": {
+      "errorTitle": "Error",
+      "exitTitle": "Exit document",
+      "exitBody": "Return to the home screen?"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "back": "Back",
+      "backToHome": "Back to Home",
+      "add": "Add"
+    },
+    "errors": {
+      "sharingUnavailable": "Sharing is not available on this device/environment.",
+      "webviewError": "WebView error: {{message}}",
+      "unknown": "Unknown error"
+    }
+  },
+  "signImage": {
+    "alerts": {
+      "noPermissionTitle": "No permission",
+      "galleryPermissionBody": "Gallery permission is required to pick an image.",
+      "cameraPermissionBody": "Camera permission is required to take a photo.",
+      "pickFailed": "Couldn't pick an image",
+      "cameraFailed": "Couldn't take a photo"
+    }
+  },
+  "imageEditor": {
+    "title": "Edit Image",
+    "actions": {
+      "export": "Export",
+      "addText": "Add text",
+      "textsLimitReached": "You already have 2 texts",
+      "addSignature": "Add signature"
+    },
+    "empty": {
+      "picking": "Picking an image..."
+    },
+    "loadingImage": "Loading image…",
+    "export": {
+      "shareTitle": "Share signed image",
+      "exporting": "Exporting image...",
+      "pleaseWait": "Please wait"
+    },
+    "modal": {
+      "addTextTitle": "Add text",
+      "addTextPlaceholder": "Type text…",
+      "tip": "Tip: zoom in on the image — it will be much easier to precisely drag/pinch texts and signatures."
+    }
+  },
+  "signPdf": {
+    "subtitlePages": "{{count}} pages",
+    "editor": {
+      "title": "Page {{page}}{{total}}"
+    },
+    "alerts": {
+      "exportActiveTitle": "Export in progress",
+      "exportActiveBody": "We're exporting. Please wait.",
+      "exportTitle": "Export PDF",
+      "noPagesSelected": "No pages selected for export.",
+      "exportFailed": "Error during export"
+    },
+    "actions": {
+      "ok": "OK",
+      "exportPdf": "Export PDF",
+      "sharePdf": "Share PDF"
+    },
+    "errors": {
+      "pdfNotLoaded": "PDF not loaded",
+      "pickFailed": "Couldn't pick/load PDF",
+      "openFailed": "Couldn't load the opened PDF",
+      "emptyUri": "Empty URI",
+      "invalidDataUrl": "Invalid data URL"
+    },
+    "export": {
+      "overlayTitle": "Exporting PDF...",
+      "progress": "Pages: {{done}} / {{total}} ({{pct}}%)",
+      "working": "Working...",
+      "status": {
+        "captureImage": "Capturing image...",
+        "readImage": "Reading image...",
+        "computeSize": "Calculating dimensions..."
+      }
+    },
+    "pageRenderer": {
+      "thumbLoading": "Preparing thumbnail...",
+      "pageRendering": "Rendering page to PNG...",
+      "retry": "Try again"
+    },
+    "pageEditor": {
+      "pageNotReady": "The page is still loading. Try again in a moment.",
+      "loading": "Preparing page preview...",
+      "actions": {
+        "addText": "Add text",
+        "textsLimitReached": "You already have 2 texts",
+        "noSignature": "No signature",
+        "addSignature": "Add signature"
+      },
+      "modal": {
+        "title": "Add text",
+        "placeholder": "Type text...",
+        "tip": "Tip: zoom in on the page — it will be much easier to precisely drag/pinch texts and signature."
+      }
+    },
+    "pagesGrid": {
+      "thumbLabel": "Page {{page}}",
+      "cardLabel": "Page {{page}}",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "selectedCount": "Selected {{selected}} / {{total}}",
+      "emptyHint": "Choose a PDF to see pages"
+    },
+    "multiPage": {
+      "status": {
+        "creating": "Creating multi-page PDF...",
+        "processing": "Processing page {{current}} of {{total}}...",
+        "generating": "Generating PDF..."
+      }
+    }
+  }
+}

@@ -1,6 +1,9 @@
 // src/AppInner.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { I18nManager, Platform, BackHandler, Alert } from "react-native";
+import { initI18n } from "./i18n";
+import { useTranslation } from "react-i18next";
+
 import * as Linking from "expo-linking";
 import { useShareIntentContext } from "expo-share-intent";
 import { loadSignaturePngUri } from "./storage/signatureStore";
@@ -41,6 +44,15 @@ function detectKindFromUri(uri: string): OpenKind {
 }
 
 export default function AppInner() {
+  const { t } = useTranslation();
+  const [i18nReady, setI18nReady] = useState(false);
+
+  useEffect(() => {
+    initI18n()
+      .catch(() => {})
+      .finally(() => setI18nReady(true));
+  }, []);
+
   const [screen, setScreen] = useState<Screen>("home");
   const [signatureUri, setSignatureUri] = useState<string | null>(null);
 
@@ -89,10 +101,10 @@ export default function AppInner() {
     }
 
     // אם יש קובץ – דיאלוג אישור
-    Alert.alert("יציאה מהמסמך", "האם לחזור למסך הראשי?", [
-      { text: "ביטול", style: "cancel" },
+    Alert.alert(t("common.alerts.exitTitle"), t("common.alerts.exitBody"), [
+      { text: t("common.actions.cancel"), style: "cancel" },
       {
-        text: "חזרה למסך הראשי",
+        text: t("common.actions.backToHome"),
         style: "destructive",
         onPress: () => {
           clearOpen();
@@ -274,6 +286,9 @@ export default function AppInner() {
     setHasLoadedFile(false);
     setUseCamera(false);
   };
+
+    if (!i18nReady) return null;
+
 
   if (screen === "signature") {
     return <SignatureScreen onDone={() => setScreen("home")} />;
