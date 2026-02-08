@@ -4,7 +4,6 @@ import { initReactI18next } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { I18nManager, Platform } from "react-native";
 import * as Localization from "expo-localization";
-import * as Updates from "expo-updates";
 
 // translations
 import he from "./locales/he.json";
@@ -53,17 +52,18 @@ async function applyRtlIfNeeded(nextLang: AppLang) {
 
   const shouldBeRtl = isRtlLang(nextLang);
   const isCurrentlyRtl = I18nManager.isRTL;
+  const isSwapEnabled =
+    I18nManager.getConstants?.().doLeftAndRightSwapInRTL ??
+    I18nManager.doLeftAndRightSwapInRTL;
+
+  // Keep gestures consistent: never swap left/right in RTL (prevents drag inversion after PDF).
+  if (isSwapEnabled) {
+    I18nManager.swapLeftAndRightInRTL(false);
+  }
 
   if (shouldBeRtl !== isCurrentlyRtl) {
     I18nManager.allowRTL(true);
     I18nManager.forceRTL(shouldBeRtl);
-
-    // reload so layout direction is applied everywhere
-    try {
-      await Updates.reloadAsync();
-    } catch {
-      // if reload fails, user can reopen app manually
-    }
   }
 }
 

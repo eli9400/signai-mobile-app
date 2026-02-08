@@ -1,21 +1,84 @@
 {
   "home": {
     "appTitle": "Подпись документов",
+    "greeting": "Привет, {{name}}",
     "avatarInitial": "П",
+    "avatarGuest": "Г",
+    "guestLabel": "Гость",
+    "guestSubtitle": "Ограниченный режим",
     "welcome": "Добро пожаловать",
     "tagline": "Загрузка, подпись и экспорт документов — легко",
     "signaturePreviewTitle": "Предпросмотр подписи",
-    "noSignature": "Сохранённой подписи пока нет",
+    "noSignature": "Сохраненной подписи пока нет",
     "replace": "Заменить",
+    "create": "Создать",
     "notice": "💡 Сначала создайте подпись, чтобы начать подписывать документы",
-    "cameraTitle": "Сфотографировать",
-    "cameraSub": "Открыть камеру для съёмки",
+    "cameraTitle": "Сделать фото",
+    "cameraSub": "Открыть камеру для съемки",
     "imageTitle": "Загрузить изображение",
     "imageSub": "Загрузите изображение и добавьте подпись",
     "pdfTitle": "Загрузить PDF",
     "pdfSub": "Загрузите PDF-документ для подписи",
     "bottomHint": "Чтобы подписывать документы — сначала создайте подпись.",
-    "language": "Язык"
+    "language": "Язык",
+    "guestTitle": "Продолжить как гость",
+    "guestBody": "Подпись доступна, но функции аккаунта только после входа.",
+    "signIn": "Войти"
+  },
+  "auth": {
+    "title": "Вход в QuickSign",
+    "subtitle": "Войдите по email или через Google",
+    "tabs": {
+      "signIn": "Вход",
+      "signUp": "Регистрация"
+    },
+    "fields": {
+      "name": "Имя",
+      "email": "Email",
+      "password": "Пароль",
+      "confirmPassword": "Подтвердите пароль"
+    },
+    "actions": {
+      "signIn": "Войти",
+      "signUp": "Создать аккаунт",
+      "google": "Продолжить с Google",
+      "continueAsGuest": "Продолжить как гость"
+    },
+    "or": "или",
+    "errors": {
+      "missingName": "Укажите имя",
+      "missingEmail": "Укажите email",
+      "missingPassword": "Укажите пароль",
+      "passwordTooShort": "Пароль должен быть не короче 6 символов",
+      "passwordsDontMatch": "Пароли не совпадают",
+      "firebaseNotConfigured": "Firebase еще не настроен",
+      "invalidEmail": "Неверный email",
+      "invalidCredentials": "Неверный email или пароль",
+      "userNotFound": "Пользователь не найден",
+      "emailInUse": "Email уже используется",
+      "weakPassword": "Слишком слабый пароль",
+      "googleNotRegistered": "Этот аккаунт Google еще не зарегистрирован. Сначала зарегистрируйтесь.",
+      "googleAlreadyRegistered": "Этот аккаунт уже существует. Пожалуйста, войдите."
+    }
+  },
+  "profile": {
+    "title": "Профиль",
+    "fields": {
+      "name": "Имя",
+      "email": "Email",
+      "language": "Язык"
+    },
+    "placeholders": {
+      "name": "Ваше имя"
+    },
+    "guestEmail": "Гость",
+    "guestHint": "Войдите, чтобы редактировать профиль и управлять оплатой.",
+    "actions": {
+      "save": "Сохранить",
+      "billing": "Оплата (скоро)",
+      "signIn": "Войти",
+      "signOut": "Выйти"
+    }
   },
   "signature": {
     "title": "Подпись",
@@ -44,16 +107,20 @@
     "alerts": {
       "errorTitle": "Ошибка",
       "exitTitle": "Выход из документа",
-      "exitBody": "Вернуться на главный экран?"
+      "exitBody": "Вернуться на главный экран?",
+      "restartTitle": "Требуется перезапуск",
+      "restartBody": "Чтобы применить направление языка, перезапустите приложение."
     },
     "actions": {
       "cancel": "Отмена",
       "back": "Назад",
       "backToHome": "На главный экран",
-      "add": "Добавить"
+      "add": "Добавить",
+      "restartNow": "Перезапустить сейчас",
+      "later": "Позже"
     },
     "errors": {
-      "sharingUnavailable": "Общий доступ недоступен на этом устройстве/в этой среде.",
+      "sharingUnavailable": "Поделиться недоступно на этом устройстве/в этой среде.",
       "webviewError": "Ошибка WebView: {{message}}",
       "unknown": "Неизвестная ошибка"
     }
@@ -78,7 +145,7 @@
     "empty": {
       "picking": "Выбор изображения..."
     },
-    "loadingImage": "Загрузка изображения…",
+    "loadingImage": "Загрузка изображения...",
     "export": {
       "shareTitle": "Поделиться подписанным изображением",
       "exporting": "Экспорт изображения...",
@@ -86,8 +153,8 @@
     },
     "modal": {
       "addTextTitle": "Добавить текст",
-      "addTextPlaceholder": "Введите текст…",
-      "tip": "Совет: увеличьте изображение — так будет намного проще точно перетаскивать/масштабировать тексты и подписи."
+      "addTextPlaceholder": "Введите текст...",
+      "tip": "Совет: увеличьте изображение — так будет намного проще точно перетаскивать/масштабировать тексты и подпись."
     }
   },
   "signPdf": {

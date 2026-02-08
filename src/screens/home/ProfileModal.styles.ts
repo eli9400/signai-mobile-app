@@ -1,0 +1,92 @@
+import { StyleSheet } from "react-native";
+import { theme } from "../../ui/theme";
+
+export const styles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
+    padding: 16,
+  },
+  card: {
+    backgroundColor: "white",
+    borderRadius: 18,
+    padding: 16,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "900",
+    color: theme.colors.textPrimary,
+    textAlign: "right",
+  },
+  label: {
+    color: theme.colors.textSecondary,
+    fontWeight: "700",
+    fontSize: 12,
+    marginTop: 6,
+  },
+  langIconBtn: {
+    alignSelf: "flex-start",
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    borderColor: "rgba(15, 23, 42, 0.12)",
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  langIconText: { fontSize: 18 },
+  profileHint: {
+    color: theme.colors.textSecondary,
+    fontWeight: "700",
+    fontSize: 13,
+    marginTop: 4,
+    lineHeight: 18,
+  },
+  profileInput: {
+    borderWidth: 1,
+    borderColor: "rgba(15, 23, 42, 0.12)",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: "#fff",
+    fontWeight: "700",
+  },
+  profileValue: {
+    color: theme.colors.textPrimary,
+    fontWeight: "700",
+    paddingVertical: 6,
+  },
+  primaryBtn: {
+    marginTop: 10,
+    backgroundColor: theme.colors.buttonPrimary,
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  btnDisabled: { opacity: 0.5 },
+  primaryBtnText: { color: "white", fontWeight: "900" },
+  secondaryBtn: {
+    marginTop: 8,
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(15, 23, 42, 0.12)",
+  },
+  secondaryBtnText: {
+    color: theme.colors.textPrimary,
+    fontWeight: "800",
+  },
+  dangerBtn: {
+    marginTop: 8,
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: "center",
+    backgroundColor: "rgba(185, 28, 28, 0.10)",
+    borderWidth: 1,
+    borderColor: "rgba(185, 28, 28, 0.25)",
+  },
+  dangerBtnText: { color: "#b91c1c", fontWeight: "900" },
+});

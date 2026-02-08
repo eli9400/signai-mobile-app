@@ -2,8 +2,8 @@
   "expo": {
     "name": "QuickSign",
     "slug": "quicksign",
-    "scheme": "quicksign",
-    "version": "1.0.4",
+    "scheme": "com.quicksign.app",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,28 +16,23 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.quicksign.app",
-      "buildNumber": "4"
+      "buildNumber": "7"
     },
     "android": {
       "package": "com.quicksign.app",
-      "versionCode": 4,
+      "versionCode": 7,
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "permissions": [
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
-      ],
+      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
       "intentFilters": [
         {
           "action": "VIEW",
-          "category": [
-            "DEFAULT",
-            "BROWSABLE"
-          ],
+          "category": ["DEFAULT", "BROWSABLE"],
           "data": [
             {
               "scheme": "file",
@@ -51,10 +46,7 @@
         },
         {
           "action": "VIEW",
-          "category": [
-            "DEFAULT",
-            "BROWSABLE"
-          ],
+          "category": ["DEFAULT", "BROWSABLE"],
           "data": [
             {
               "scheme": "file",
@@ -74,20 +66,18 @@
     "extra": {
       "eas": {
         "projectId": "2b854c6f-1ad5-43fd-87cb-92487ad1c5ff"
-      }
+      },
+      "googleWebClientId": "819188208664-u6dgli3anpts6656c55f3n7qtoh7kdft.apps.googleusercontent.com",
+      "googleAndroidClientId": "819188208664-6gl87n03vdm9qd6quqf45siu4gdo43s0.apps.googleusercontent.com",
+      "googleExpoClientId": "819188208664-u6dgli3anpts6656c55f3n7qtoh7kdft.apps.googleusercontent.com"
     },
     "owner": "eli9400457",
     "plugins": [
       [
         "expo-share-intent",
         {
-          "androidIntentFilters": [
-            "image/*",
-            "application/pdf"
-          ],
-          "androidMultiIntentFilters": [
-            "image/*"
-          ]
+          "androidIntentFilters": ["image/*", "application/pdf"],
+          "androidMultiIntentFilters": ["image/*"]
         }
       ],
       "expo-localization"

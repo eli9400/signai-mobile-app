@@ -6,6 +6,10 @@ import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
 
 import ImageEditor from "../signing/imageFlow/ImageEditor";
+import {
+  createInitialEditState,
+  type ImageEditState,
+} from "./signImage/signImageState";
 
 type Props = {
   signatureUri: string | null;
@@ -13,23 +17,6 @@ type Props = {
   initialFileUri?: string | null;
   onFileLoaded?: () => void;
   useCamera?: boolean;
-};
-
-type Point = { x: number; y: number };
-type Size = { w: number; h: number };
-
-export type ImageEditState = {
-  sigEnabled: boolean;
-  sigItems: { id: string; pos: Point; size: Size }[];
-  activeSigId: string | null;
-
-  name1: string;
-  name1Pos: Point;
-  name1Font: number;
-
-  name2: string;
-  name2Pos: Point;
-  name2Font: number;
 };
 
 export default function SignImageScreen({
@@ -49,17 +36,9 @@ export default function SignImageScreen({
   );
   const [isLoading, setIsLoading] = useState(false);
 
-  const [editState, setEditState] = useState<ImageEditState>({
-    sigEnabled: false,
-    sigItems: [],
-    activeSigId: null,
-    name1: "",
-    name1Pos: { x: 20, y: 140 },
-    name1Font: 28,
-    name2: "",
-    name2Pos: { x: 20, y: 210 },
-    name2Font: 28,
-  });
+  const [editState, setEditState] = useState<ImageEditState>(
+    createInitialEditState(),
+  );
 
   // Auto-pick image on mount (or take photo if useCamera)
   useEffect(() => {
@@ -95,17 +74,7 @@ export default function SignImageScreen({
   const loadImageUri = (uri: string) => {
     setImageUri(uri);
     setImageSize(null);
-    setEditState({
-      sigEnabled: false,
-      sigItems: [],
-      activeSigId: null,
-      name1: "",
-      name1Pos: { x: 20, y: 140 },
-      name1Font: 28,
-      name2: "",
-      name2Pos: { x: 20, y: 210 },
-      name2Font: 28,
-    });
+    setEditState(createInitialEditState());
   };
 
   const pickImage = async () => {

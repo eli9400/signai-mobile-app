@@ -1,12 +1,17 @@
 {
   "home": {
     "appTitle": "Document Signing",
+    "greeting": "Hi {{name}}",
     "avatarInitial": "S",
+    "avatarGuest": "G",
+    "guestLabel": "Guest",
+    "guestSubtitle": "Limited mode",
     "welcome": "Welcome",
     "tagline": "Load, sign and export documents — easily",
     "signaturePreviewTitle": "Signature preview",
     "noSignature": "No saved signature yet",
     "replace": "Replace",
+    "create": "Create",
     "notice": "💡 Create a signature first to start signing documents",
     "cameraTitle": "Take a photo",
     "cameraSub": "Open camera to capture",
@@ -15,7 +20,65 @@
     "pdfTitle": "Load PDF",
     "pdfSub": "Load a PDF document to sign",
     "bottomHint": "To sign documents — create a signature first.",
-    "language": "Language"
+    "language": "Language",
+    "guestTitle": "Continue as guest",
+    "guestBody": "You can sign, but account features are disabled until you sign in.",
+    "signIn": "Sign in"
+  },
+  "auth": {
+    "title": "Sign in to QuickSign",
+    "subtitle": "Use email or Google to continue",
+    "tabs": {
+      "signIn": "Sign In",
+      "signUp": "Sign Up"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password"
+    },
+    "actions": {
+      "signIn": "Sign In",
+      "signUp": "Create Account",
+      "google": "Continue with Google",
+      "continueAsGuest": "Continue as guest"
+    },
+    "or": "or",
+    "errors": {
+      "missingName": "Name is required",
+      "missingEmail": "Email is required",
+      "missingPassword": "Password is required",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordsDontMatch": "Passwords do not match",
+      "firebaseNotConfigured": "Firebase is not configured yet",
+      "invalidEmail": "Invalid email address",
+      "invalidCredentials": "Invalid email or password",
+      "userNotFound": "User not found",
+      "emailInUse": "Email is already in use",
+      "weakPassword": "Password is too weak",
+      "googleNotRegistered": "This Google account isn't registered yet. Please sign up.",
+      "googleAlreadyRegistered": "This Google account already exists. Please sign in."
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "language": "Language"
+    },
+    "placeholders": {
+      "name": "Your name"
+    },
+    "guestEmail": "Guest",
+    "guestHint": "Sign in to edit your profile and manage billing.",
+    "actions": {
+      "save": "Save",
+      "billing": "Billing (soon)",
+      "signIn": "Sign in",
+      "signOut": "Sign out"
+    }
   },
   "signature": {
     "title": "Signature",
@@ -44,13 +107,17 @@
     "alerts": {
       "errorTitle": "Error",
       "exitTitle": "Exit document",
-      "exitBody": "Return to the home screen?"
+      "exitBody": "Return to the home screen?",
+      "restartTitle": "Restart required",
+      "restartBody": "To apply the language direction, please restart the app."
     },
     "actions": {
       "cancel": "Cancel",
       "back": "Back",
       "backToHome": "Back to Home",
-      "add": "Add"
+      "add": "Add",
+      "restartNow": "Restart now",
+      "later": "Later"
     },
     "errors": {
       "sharingUnavailable": "Sharing is not available on this device/environment.",

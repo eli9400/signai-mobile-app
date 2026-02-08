@@ -1,12 +1,17 @@
 {
   "home": {
     "appTitle": "חתימת מסמכים",
+    "greeting": "היי {{name}}",
     "avatarInitial": "א",
+    "avatarGuest": "G",
+    "guestLabel": "אורח",
+    "guestSubtitle": "מצב מוגבל",
     "welcome": "ברוכים הבאים",
     "tagline": "טעינה, חתימה וייצוא מסמכים — בקלות",
     "signaturePreviewTitle": "תצוגה מקדימה של חתימה",
     "noSignature": "אין חתימה שמורה עדיין",
     "replace": "החלף",
+    "create": "צור",
     "notice": "💡 צור חתימה תחילה כדי להתחיל לחתום על מסמכים",
     "cameraTitle": "צלם תמונה",
     "cameraSub": "פתח מצלמה לצילום",
@@ -15,7 +20,65 @@
     "pdfTitle": "טען PDF",
     "pdfSub": "טען מסמך PDF לחתימה",
     "bottomHint": "כדי להפעיל חתימה על מסמכים — קודם צור חתימה.",
-    "language": "שפה"
+    "language": "שפה",
+    "guestTitle": "המשך כאורח",
+    "guestBody": "אפשר לחתום, אבל תכונות חשבון זמינות רק אחרי התחברות.",
+    "signIn": "התחברות"
+  },
+  "auth": {
+    "title": "התחברות ל-QuickSign",
+    "subtitle": "התחבר עם אימייל או Google כדי להמשיך",
+    "tabs": {
+      "signIn": "התחברות",
+      "signUp": "הרשמה"
+    },
+    "fields": {
+      "name": "שם",
+      "email": "אימייל",
+      "password": "סיסמה",
+      "confirmPassword": "אימות סיסמה"
+    },
+    "actions": {
+      "signIn": "התחבר",
+      "signUp": "צור חשבון",
+      "google": "המשך עם Google",
+      "continueAsGuest": "המשך כאורח"
+    },
+    "or": "או",
+    "errors": {
+      "missingName": "שם הוא שדה חובה",
+      "missingEmail": "האימייל חובה",
+      "missingPassword": "הסיסמה חובה",
+      "passwordTooShort": "הסיסמה חייבת להיות לפחות 6 תווים",
+      "passwordsDontMatch": "הסיסמאות לא תואמות",
+      "firebaseNotConfigured": "Firebase עדיין לא הוגדר",
+      "invalidEmail": "אימייל לא תקין",
+      "invalidCredentials": "אימייל או סיסמה שגויים",
+      "userNotFound": "המשתמש לא נמצא",
+      "emailInUse": "האימייל כבר בשימוש",
+      "weakPassword": "סיסמה חלשה מדי",
+      "googleNotRegistered": "החשבון לא רשום עדיין. יש לבצע הרשמה תחילה.",
+      "googleAlreadyRegistered": "החשבון כבר קיים. נא להתחבר במקום זאת."
+    }
+  },
+  "profile": {
+    "title": "פרופיל",
+    "fields": {
+      "name": "שם",
+      "email": "אימייל",
+      "language": "שפה"
+    },
+    "placeholders": {
+      "name": "השם שלך"
+    },
+    "guestEmail": "אורח",
+    "guestHint": "כדי לערוך פרופיל ולנהל תשלום צריך להתחבר.",
+    "actions": {
+      "save": "שמור",
+      "billing": "תשלום (בקרוב)",
+      "signIn": "התחברות",
+      "signOut": "התנתקות"
+    }
   },
   "signature": {
     "title": "חתימה",
@@ -44,13 +107,17 @@
     "alerts": {
       "errorTitle": "שגיאה",
       "exitTitle": "יציאה מהמסמך",
-      "exitBody": "האם לחזור למסך הראשי?"
+      "exitBody": "האם לחזור למסך הראשי?",
+      "restartTitle": "נדרש אתחול",
+      "restartBody": "כדי להחיל שינוי שפה/כיוון יש להפעיל מחדש את האפליקציה."
     },
     "actions": {
       "cancel": "ביטול",
       "back": "חזרה",
       "backToHome": "חזרה למסך הראשי",
-      "add": "הוסף"
+      "add": "הוסף",
+      "restartNow": "אתחל עכשיו",
+      "later": "אחר כך"
     },
     "errors": {
       "sharingUnavailable": "שיתוף לא זמין במכשיר/סביבה הזו.",

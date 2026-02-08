@@ -1,6 +1,6 @@
 // src/ui/icons.tsx
 import React from "react";
-import { Pressable, StyleSheet, ViewStyle, Text } from "react-native";
+import { Pressable, StyleSheet, ViewStyle, Text, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Foundation from "@expo/vector-icons/Foundation";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -11,7 +11,7 @@ type IconBtnProps = {
   disabled?: boolean;
   size?: number;
   color?: string;
-  style?: ViewStyle | ViewStyle[];
+  style?: ViewStyle | ViewStyle[]; 
   hitSlop?: number;
   accessibilityLabel?: string;
   iconName?: keyof typeof Ionicons.glyphMap;
@@ -82,6 +82,35 @@ export function ActionIconButton({
       <Ionicons name={iconName as any} size={size} color={color} />
     </Pressable>
   );
+}
+
+type InlineIconProps = {
+  size?: number;
+  color?: string;
+  style?: ViewStyle | ViewStyle[];
+};
+
+export function AuthEmailIcon({ size = 18, color = "#0f172a" }: InlineIconProps) {
+  return <Ionicons name="mail-outline" size={size} color={color} />;
+}
+
+export function AuthGoogleIcon({
+  size = 18,
+}: InlineIconProps) {
+  return (
+    <Image
+      source={require("../../assets/google.png")}
+      style={{ width: size, height: size }}
+      resizeMode="contain"
+    />
+  );
+}
+
+export function AuthGuestIcon({
+  size = 18,
+  color = "#0f172a",
+}: InlineIconProps) {
+  return <Ionicons name="person-circle-outline" size={size} color={color} />;
 }
 
 export function ExportPdfPillButton({

@@ -1,24 +1,14 @@
 // src/signing/pdfFlow/PdfPagesGrid.tsx
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useCallback,
-} from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  FlatList,
-  Image,
-} from "react-native";
+import React, { useMemo, useCallback } from "react";
+import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
-
 import { Ionicons } from "@expo/vector-icons";
-import PdfPageToPngWebView from "../pdf/PdfPageToPngWebView";
-import { BackIconButton, ExportPdfPillButton } from "../../ui/icons";
+import PdfPagesGridHeader from "./pdfPagesGrid/PdfPagesGridHeader";
+import PdfPagesGridList from "./pdfPagesGrid/PdfPagesGridList";
+import PdfPagesGridSelectedRow from "./pdfPagesGrid/PdfPagesGridSelectedRow";
+import PdfPagesGridThumbRenderer from "./pdfPagesGrid/PdfPagesGridThumbRenderer";
+import { styles } from "./pdfPagesGrid/PdfPagesGrid.styles";
+import { usePdfPagesThumbQueue } from "./pdfPagesGrid/usePdfPagesThumbQueue";
 
 type Props = {
   subtitle?: string | null;
@@ -31,7 +21,6 @@ type Props = {
   setSelectedPages: (s: Set<number>) => void;
   onOpenPage: (pageNumber: number) => void;
   pdfBase64?: string;
-  // ✅ Receive thumbnails from parent to persist between views
   thumbnails: Record<number, string>;
   setThumbnails: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   onExportPdf?: () => void;
@@ -57,16 +46,18 @@ export default function PdfPagesGrid({
   exportLabel,
 }: Props) {
   const { t } = useTranslation();
+
   const pages = useMemo(
     () => Array.from({ length: totalPages }, (_, i) => i + 1),
     [totalPages],
   );
 
   const allSelected = totalPages > 0 && selectedPages.size === totalPages;
+  const someSelected =
+    selectedPages.size > 0 && selectedPages.size < totalPages;
 
   const toggleSelectAll = useCallback(() => {
     if (!totalPages) return;
-
     if (allSelected) {
       setSelectedPages(new Set());
     } else {
@@ -76,135 +67,15 @@ export default function PdfPagesGrid({
     }
   }, [allSelected, setSelectedPages, totalPages]);
 
-  // ✅ Queue management remains in this component
-  const queueRef = useRef<number[]>([]);
-  const renderingRef = useRef(false);
-  const [renderPage, setRenderPage] = useState<number | null>(null);
-
-  // ✅ Don't reset thumbs when component mounts - they persist in parent
-  // Only reset the queue
-  useEffect(() => {
-    queueRef.current = [];
-    renderingRef.current = false;
-    setRenderPage(null);
-  }, [pdfBase64]);
-
-  const enqueuePages = useCallback(
-    (pageNums: number[]) => {
-      if (!pdfBase64) return;
-
-      const next = [...queueRef.current];
-      for (const p of pageNums) {
-        if (p < 1 || p > totalPages) continue;
-        if (thumbnails[p]) continue; // ✅ Skip if already have thumbnail
-        if (next.includes(p)) continue;
-        next.push(p);
-      }
-      queueRef.current = next;
-
-      if (!renderingRef.current) {
-        const first = queueRef.current.shift();
-        if (first) {
-          renderingRef.current = true;
-          setRenderPage(first);
-        }
-      }
+  const togglePage = useCallback(
+    (p: number) => {
+      const next = new Set(selectedPages);
+      if (next.has(p)) next.delete(p);
+      else next.add(p);
+      setSelectedPages(next);
     },
-    [pdfBase64, totalPages, thumbnails],
+    [selectedPages, setSelectedPages],
   );
-
-  // Load first 6 immediately
-  useEffect(() => {
-    if (!pdfReady || totalPages <= 0) return;
-    enqueuePages(pages.slice(0, 6));
-  }, [pdfReady, totalPages, enqueuePages, pages]);
-
-  const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
-    const visible: number[] = [];
-    for (const vi of viewableItems) {
-      const p = vi?.item;
-      if (typeof p === "number") visible.push(p);
-    }
-
-    const extra: number[] = [];
-    for (const p of visible) {
-      for (let k = 0; k < 4; k++) extra.push(p + k);
-    }
-    enqueuePages([...visible, ...extra]);
-  }).current;
-
-  const onEndReached = useCallback(() => {
-    if (!totalPages) return;
-
-    const loadedNums = Object.keys(thumbnails)
-      .map((x) => Number(x))
-      .filter(Boolean);
-    const maxLoaded = loadedNums.length ? Math.max(...loadedNums) : 0;
-
-    const start = Math.max(1, maxLoaded + 1);
-    const nextBatch: number[] = [];
-    for (let p = start; p <= Math.min(totalPages, start + 12); p++) {
-      nextBatch.push(p);
-    }
-
-    enqueuePages(nextBatch);
-  }, [enqueuePages, thumbnails, totalPages]);
-
-  const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold: 10,
-    minimumViewTime: 80,
-  }).current;
-
-  const toggle = (p: number) => {
-    const next = new Set(selectedPages);
-    if (next.has(p)) next.delete(p);
-    else next.add(p);
-    setSelectedPages(next);
-  };
-
-  const renderItem = ({ item: p }: { item: number }) => {
-    const isSel = selectedPages.has(p);
-    const thumb = thumbnails[p];
-
-    return (
-      <Pressable style={styles.card} onPress={() => onOpenPage(p)}>
-        <View style={styles.thumbBox}>
-          {thumb ? (
-            <Image
-              source={{ uri: thumb }}
-              style={styles.thumbImg}
-              resizeMode="contain"
-            />
-          ) : (
-            <View style={styles.thumbPlaceholder}>
-              <Text style={styles.thumbPlaceholderText}>
-                {t("signPdf.pagesGrid.thumbLabel", { page: p })}
-              </Text>
-            </View>
-          )}
-
-          <Pressable
-            onPress={(e) => {
-              // @ts-ignore
-              e?.stopPropagation?.();
-              toggle(p);
-            }}
-            hitSlop={12}
-            style={[styles.check, isSel && styles.checkOn]}
-          >
-            {isSel ? <Text style={styles.checkTextOn}>✓</Text> : null}
-          </Pressable>
-        </View>
-
-        <Text style={styles.cardLabel}>
-          {t("signPdf.pagesGrid.cardLabel", { page: p })}
-        </Text>
-      </Pressable>
-    );
-  };
-
-  const someSelected =
-    selectedPages.size > 0 && selectedPages.size < totalPages;
 
   const selectLabel = allSelected
     ? t("signPdf.pagesGrid.deselectAll")
@@ -216,243 +87,69 @@ export default function PdfPagesGrid({
       ? "remove-circle-outline"
       : "square-outline";
 
+  const {
+    renderPage,
+    onViewableItemsChanged,
+    onEndReached,
+    viewabilityConfig,
+    onThumbRendered,
+    onThumbError,
+  } = usePdfPagesThumbQueue({
+    pdfReady,
+    pdfBase64,
+    totalPages,
+    pages,
+    thumbnails,
+    setThumbnails,
+  });
+
   return (
     <View style={styles.root}>
-      <View style={styles.top}>
-        <BackIconButton onPress={onClose} />
-
-        <View style={styles.centerTitle} />
-
-        <ExportPdfPillButton
-          onPress={() => onExportPdf?.()}
-          disabled={false}
-          size={26}
-          color="#7c3aed"
-          style={{
-            backgroundColor: "#fff",
-            borderColor: "#7c3aed",
-            borderWidth: 2,
-          }}
-          label={exportLabel || t("signPdf.actions.exportPdf")}
-        />
-
-        <Pressable
-          style={[
-            styles.selectAllChip,
-            (isLoading || !pdfReady || totalPages <= 0) &&
-              styles.selectAllChipDis,
-          ]}
-          onPress={toggleSelectAll}
-          disabled={isLoading || !pdfReady || totalPages <= 0}
-          hitSlop={10}
-        >
-          <Ionicons
-            name={selectIcon}
-            size={18}
-            color={
-              allSelected ? "#6d28d9" : someSelected ? "#6d28d9" : "#6b7280"
-            }
-          />
-          <Text
-            style={[
-              styles.selectAllText,
-              (allSelected || someSelected) && styles.selectAllTextOn,
-            ]}
-          >
-            {selectLabel}
-          </Text>
-        </Pressable>
-      </View>
+      <PdfPagesGridHeader
+        onClose={onClose}
+        onExportPdf={onExportPdf}
+        exportDisabled={exportDisabled}
+        exportLabel={exportLabel || t("signPdf.actions.exportPdf")}
+        selectLabel={selectLabel}
+        selectIcon={selectIcon}
+        selectDisabled={isLoading || !pdfReady || totalPages <= 0}
+        onToggleSelectAll={toggleSelectAll}
+        isSelectedState={allSelected || someSelected}
+      />
 
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
 
-      <View style={styles.actionsRow}>
-        <View style={styles.selectedPill}>
-          <Text style={styles.selectedPillText}>
-            {t("signPdf.pagesGrid.selectedCount", {
-              selected: selectedPages.size,
-              total: totalPages || 0,
-            })}
-          </Text>
-        </View>
-      </View>
-
-      <FlatList
-        data={pages}
-        keyExtractor={(p) => String(p)}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 14 }}
-        contentContainerStyle={{ padding: 16, gap: 14 }}
-        renderItem={renderItem}
-        initialNumToRender={6}
-        windowSize={7}
-        removeClippedSubviews
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.5}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig}
-        ListEmptyComponent={
-          <View style={{ padding: 24, alignItems: "center" }}>
-            <Text style={{ opacity: 0.6 }}>
-              {t("signPdf.pagesGrid.emptyHint")}
-            </Text>
-          </View>
-        }
+      <PdfPagesGridSelectedRow
+        label={t("signPdf.pagesGrid.selectedCount", {
+          selected: selectedPages.size,
+          total: totalPages || 0,
+        })}
       />
 
-      {/* Hidden renderer: renders ONE page at a time for thumbnails */}
-      {pdfBase64 && renderPage && (
-        <View style={{ position: "absolute", width: 1, height: 1, opacity: 0 }}>
-          <PdfPageToPngWebView
-            pdfBase64={pdfBase64}
-            pageNumber={renderPage}
-            onRendered={(dataUrl) => {
-              setThumbnails((prev) => ({
-                ...prev,
-                [renderPage]: String(dataUrl),
-              }));
+      <PdfPagesGridList
+        pages={pages}
+        selectedPages={selectedPages}
+        thumbnails={thumbnails}
+        onOpenPage={onOpenPage}
+        onTogglePage={togglePage}
+        onEndReached={onEndReached}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+        thumbLabelFor={(page) =>
+          t("signPdf.pagesGrid.thumbLabel", { page })
+        }
+        cardLabelFor={(page) =>
+          t("signPdf.pagesGrid.cardLabel", { page })
+        }
+        emptyLabel={t("signPdf.pagesGrid.emptyHint")}
+      />
 
-              const next = queueRef.current.shift() ?? null;
-              if (next) setRenderPage(next);
-              else {
-                renderingRef.current = false;
-                setRenderPage(null);
-              }
-            }}
-            onError={() => {
-              const next = queueRef.current.shift() ?? null;
-              if (next) setRenderPage(next);
-              else {
-                renderingRef.current = false;
-                setRenderPage(null);
-              }
-            }}
-          />
-        </View>
-      )}
+      <PdfPagesGridThumbRenderer
+        pdfBase64={pdfBase64}
+        renderPage={renderPage}
+        onRendered={onThumbRendered}
+        onError={onThumbError}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#eef2ff" },
-
-  top: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 10,
-  },
-  centerTitle: { flex: 1, alignItems: "center" },
-
-  title: { fontSize: 20, fontWeight: "900" },
-  subtitle: { textAlign: "center", opacity: 0.7, marginBottom: 8 },
-
-  iconBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 3,
-  },
-  iconBtnDis: { opacity: 0.4 },
-
-  actionsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
-
-  selectedPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 16,
-    backgroundColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-  },
-  selectedPillText: { fontWeight: "800" },
-
-  hint: { opacity: 0.65, fontWeight: "800" },
-
-  card: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    borderRadius: 18,
-    padding: 12,
-    elevation: 4,
-  },
-  thumbBox: {
-    height: 140,
-    borderRadius: 14,
-    overflow: "hidden",
-    backgroundColor: "#f3f4f6",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  thumbImg: { width: "100%", height: "100%" },
-  thumbPlaceholder: { flex: 1, alignItems: "center", justifyContent: "center" },
-  thumbPlaceholderText: { opacity: 0.35, fontWeight: "800" },
-
-  check: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    backgroundColor: "#ffffff",
-    borderWidth: 2,
-    borderColor: "#6d28d9",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkOn: { backgroundColor: "#6d28d9" },
-  checkTextOn: { color: "white", fontWeight: "900" },
-
-  checkText: { color: "#6d28d9", fontWeight: "900" },
-
-  cardLabel: {
-    marginTop: 10,
-    fontWeight: "900",
-    textAlign: "center",
-    opacity: 0.85,
-  },
-  selectAllChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 12,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#ffffff",
-    elevation: 3,
-  },
-  selectAllChipDis: { opacity: 0.45 },
-  selectAllText: {
-    fontWeight: "900",
-    color: "#6b7280",
-  },
-  selectAllTextOn: {
-    color: "#6d28d9",
-  },
-  exportBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 16,
-    backgroundColor: "#6d28d9",
-    elevation: 4,
-  },
-  exportBtnDis: { opacity: 0.45 },
-  exportBtnText: { color: "#fff", fontWeight: "900" },
-});

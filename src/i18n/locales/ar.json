@@ -1,13 +1,18 @@
 {
   "home": {
     "appTitle": "توقيع المستندات",
+    "greeting": "مرحبًا {{name}}",
     "avatarInitial": "ت",
+    "avatarGuest": "ز",
+    "guestLabel": "زائر",
+    "guestSubtitle": "وضع محدود",
     "welcome": "مرحبًا",
     "tagline": "تحميل وتوقيع وتصدير المستندات — بسهولة",
     "signaturePreviewTitle": "معاينة التوقيع",
     "noSignature": "لا يوجد توقيع محفوظ بعد",
     "replace": "استبدال",
-    "notice": "💡 أنشئ توقيعًا أولًا لبدء توقيع المستندات",
+    "create": "إنشاء",
+    "notice": "💡 أنشئ توقيعًا أولًا لتبدأ توقيع المستندات",
     "cameraTitle": "التقاط صورة",
     "cameraSub": "افتح الكاميرا للتصوير",
     "imageTitle": "تحميل صورة",
@@ -15,7 +20,65 @@
     "pdfTitle": "تحميل PDF",
     "pdfSub": "حمّل ملف PDF للتوقيع",
     "bottomHint": "لتوقيع المستندات — أنشئ توقيعًا أولًا.",
-    "language": "اللغة"
+    "language": "اللغة",
+    "guestTitle": "المتابعة كزائر",
+    "guestBody": "يمكنك التوقيع، لكن ميزات الحساب تتطلب تسجيل الدخول.",
+    "signIn": "تسجيل الدخول"
+  },
+  "auth": {
+    "title": "تسجيل الدخول إلى QuickSign",
+    "subtitle": "استخدم البريد الإلكتروني أو Google للمتابعة",
+    "tabs": {
+      "signIn": "تسجيل الدخول",
+      "signUp": "إنشاء حساب"
+    },
+    "fields": {
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور"
+    },
+    "actions": {
+      "signIn": "تسجيل الدخول",
+      "signUp": "إنشاء حساب",
+      "google": "المتابعة باستخدام Google",
+      "continueAsGuest": "المتابعة كزائر"
+    },
+    "or": "أو",
+    "errors": {
+      "missingName": "الاسم مطلوب",
+      "missingEmail": "البريد الإلكتروني مطلوب",
+      "missingPassword": "كلمة المرور مطلوبة",
+      "passwordTooShort": "كلمة المرور يجب ألا تقل عن 6 أحرف",
+      "passwordsDontMatch": "كلمتا المرور غير متطابقتين",
+      "firebaseNotConfigured": "Firebase غير مُعَد بعد",
+      "invalidEmail": "بريد إلكتروني غير صالح",
+      "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+      "userNotFound": "المستخدم غير موجود",
+      "emailInUse": "البريد الإلكتروني مستخدم بالفعل",
+      "weakPassword": "كلمة المرور ضعيفة جدًا",
+      "googleNotRegistered": "حساب Google غير مسجل بعد. يرجى التسجيل أولًا.",
+      "googleAlreadyRegistered": "هذا الحساب موجود بالفعل. يرجى تسجيل الدخول."
+    }
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "fields": {
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "language": "اللغة"
+    },
+    "placeholders": {
+      "name": "اسمك"
+    },
+    "guestEmail": "زائر",
+    "guestHint": "سجّل الدخول لتعديل الملف الشخصي وإدارة الدفع.",
+    "actions": {
+      "save": "حفظ",
+      "billing": "الدفع (قريبًا)",
+      "signIn": "تسجيل الدخول",
+      "signOut": "تسجيل الخروج"
+    }
   },
   "signature": {
     "title": "التوقيع",
@@ -32,7 +95,7 @@
     },
     "canvas": {
       "title": "ارسم التوقيع هنا",
-      "tip": "نصيحة: سيتم قصّ الحواف تلقائيًا عند الحفظ"
+      "tip": "نصيحة: سيتم قص الحواف تلقائيًا عند الحفظ"
     },
     "actions": {
       "clear": "مسح",
@@ -44,13 +107,17 @@
     "alerts": {
       "errorTitle": "خطأ",
       "exitTitle": "الخروج من المستند",
-      "exitBody": "العودة إلى الشاشة الرئيسية؟"
+      "exitBody": "العودة إلى الشاشة الرئيسية؟",
+      "restartTitle": "مطلوب إعادة التشغيل",
+      "restartBody": "لتطبيق اتجاه اللغة، يرجى إعادة تشغيل التطبيق."
     },
     "actions": {
       "cancel": "إلغاء",
       "back": "رجوع",
       "backToHome": "العودة إلى الرئيسية",
-      "add": "إضافة"
+      "add": "إضافة",
+      "restartNow": "أعد التشغيل الآن",
+      "later": "لاحقًا"
     },
     "errors": {
       "sharingUnavailable": "المشاركة غير متاحة على هذا الجهاز/البيئة.",
@@ -60,7 +127,7 @@
   },
   "signImage": {
     "alerts": {
-      "noPermissionTitle": "لا توجد صلاحية",
+      "noPermissionTitle": "لا يوجد صلاحية",
       "galleryPermissionBody": "تحتاج إلى صلاحية الوصول إلى المعرض لاختيار صورة.",
       "cameraPermissionBody": "تحتاج إلى صلاحية استخدام الكاميرا لالتقاط صورة.",
       "pickFailed": "تعذر اختيار صورة",
@@ -72,13 +139,13 @@
     "actions": {
       "export": "تصدير",
       "addText": "إضافة نص",
-      "textsLimitReached": "يوجد بالفعل نصّان",
+      "textsLimitReached": "لديك بالفعل نصّان",
       "addSignature": "إضافة توقيع"
     },
     "empty": {
       "picking": "جارٍ اختيار صورة..."
     },
-    "loadingImage": "جارٍ تحميل الصورة…",
+    "loadingImage": "جارٍ تحميل الصورة...",
     "export": {
       "shareTitle": "مشاركة صورة موقّعة",
       "exporting": "جارٍ تصدير الصورة...",
@@ -86,8 +153,8 @@
     },
     "modal": {
       "addTextTitle": "إضافة نص",
-      "addTextPlaceholder": "اكتب نصًا…",
-      "tip": "نصيحة: قم بالتكبير على الصورة — سيكون من الأسهل بكثير سحب/تكبير النصوص والتوقيعات بدقة."
+      "addTextPlaceholder": "اكتب نصًا...",
+      "tip": "نصيحة: كبّر الصورة — سيكون من الأسهل بكثير تحريك/تكبير النصوص والتوقيع بدقة."
     }
   },
   "signPdf": {
