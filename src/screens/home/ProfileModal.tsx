@@ -15,6 +15,7 @@ type Props = {
   setNameDraft: (value: string) => void;
   onUpdateProfile: (displayName: string) => Promise<void> | void;
   onOpenLanguage: () => void;
+  onOpenBilling: () => void;
   onGoAuth: () => void;
   onSignOut: () => void;
 };
@@ -29,6 +30,7 @@ export default function ProfileModal({
   setNameDraft,
   onUpdateProfile,
   onOpenLanguage,
+  onOpenBilling,
   onGoAuth,
   onSignOut,
 }: Props) {
@@ -98,7 +100,13 @@ export default function ProfileModal({
           ) : null}
 
           {user ? (
-            <Pressable style={styles.secondaryBtn} disabled>
+            <Pressable
+              style={styles.secondaryBtn}
+              onPress={() => {
+                onClose();
+                onOpenBilling();
+              }}
+            >
               <Text style={styles.secondaryBtnText}>
                 {t("profile.actions.billing")}
               </Text>

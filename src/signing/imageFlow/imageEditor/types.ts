@@ -13,6 +13,8 @@ export type ImageEditorProps = {
   signatureUri: string | null;
   editState: ImageEditState;
   setEditState: Dispatch<SetStateAction<ImageEditState>>;
+  onExportComplete?: () => void;
+  canUseAction?: boolean;
 };
 
 export type TextTarget = "name1" | "name2" | null;

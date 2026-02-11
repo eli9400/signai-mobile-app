@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Alert, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import ActionsRow from "./home/ActionsRow";
@@ -8,6 +8,9 @@ import HomeHero from "./home/HomeHero";
 import HomeLanguageModal from "./home/HomeLanguageModal";
 import ProfileModal from "./home/ProfileModal";
 import SignatureCard from "./home/SignatureCard";
+import BillingModal from "./home/BillingModal";
+import BannerAd from "../components/BannerAd";
+import { useUserContext } from "../contexts/UserContext";
 import { layoutStyles } from "./home/HomeLayout.styles";
 import { ICON_GUEST_AVATAR } from "./home/homeIcons";
 import { type HomeScreenProps } from "./home/homeTypes";
@@ -25,10 +28,31 @@ export default function HomeScreen({
   onGoCamera,
 }: HomeScreenProps) {
   const { t } = useTranslation();
+  const { canUse, loading: userLoading, usesLeft } = useUserContext();
   const canSign = Boolean(signatureUri);
+  const canUseAction = userLoading ? true : canUse;
+  const usageLabel = userLoading
+    ? null
+    : canUse
+      ? t("home.usesLeft", { count: usesLeft })
+      : t("home.usesLimitReached");
+  const limitAlertShownRef = useRef(false);
+
+  useEffect(() => {
+    if (userLoading) return;
+    if (canUse) {
+      limitAlertShownRef.current = false;
+      return;
+    }
+    if (limitAlertShownRef.current) return;
+    limitAlertShownRef.current = true;
+    // Simple alert when weekly limit reached
+    Alert.alert(t("home.limitTitle"), t("home.limitBody"));
+  }, [canUse, userLoading, t]);
 
   const [langOpen, setLangOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [billingOpen, setBillingOpen] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
 
   const displayName = (user?.displayName || "").trim();
@@ -70,6 +94,7 @@ export default function HomeScreen({
 
         <ActionsRow
           canSign={canSign}
+          canUse={canUseAction}
           onGoCamera={onGoCamera}
           onGoSignImage={onGoSignImage}
           onGoSignPdf={onGoSignPdf}
@@ -79,8 +104,15 @@ export default function HomeScreen({
           <Text style={layoutStyles.bottomHint}>{t("home.bottomHint")}</Text>
         ) : null}
 
+        {usageLabel ? (
+          <Text style={layoutStyles.usageHint}>{usageLabel}</Text>
+        ) : null}
+
         <View style={layoutStyles.spacerBottom} />
       </View>
+
+      {/* Banner Ad at the bottom */}
+      <BannerAd />
 
       <HomeLanguageModal open={langOpen} onClose={() => setLangOpen(false)} />
 
@@ -94,8 +126,16 @@ export default function HomeScreen({
         setNameDraft={setNameDraft}
         onUpdateProfile={onUpdateProfile}
         onOpenLanguage={() => setLangOpen(true)}
+        onOpenBilling={() => setBillingOpen(true)}
         onGoAuth={onGoAuth}
         onSignOut={onSignOut}
+      />
+
+      <BillingModal
+        open={billingOpen}
+        onClose={() => setBillingOpen(false)}
+        userId={user?.uid ?? null}
+        email={displayEmail}
       />
     </SafeAreaView>
   );

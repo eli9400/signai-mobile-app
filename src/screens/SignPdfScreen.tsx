@@ -12,6 +12,8 @@ import { createDefaultPageEdit } from "./signPdf/signPdfState";
 import { type PageEditState } from "./signPdf/signPdfTypes";
 import PdfExportOverlay from "./signPdf/PdfExportOverlay";
 import { useSignPdfEffects } from "./signPdf/useSignPdfEffects";
+import { useInterstitialAd } from "../hooks/useInterstitialAd";
+import { useUserContext } from "../contexts/UserContext";
 type Props = {
   signatureUri: string | null;
   onBack: () => void;
@@ -25,6 +27,8 @@ export default function SignPdfScreen({
   onFileLoaded,
 }: Props) {
   const { t } = useTranslation();
+  const { showAd } = useInterstitialAd();
+  const { consumeAction, canUse, loading: userLoading } = useUserContext();
   const doc = usePdfDocument();
   const [view, setView] = useState<"grid" | "editor">("grid");
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
@@ -38,7 +42,10 @@ export default function SignPdfScreen({
   const pdfBase64 = doc.pdf?.base64 ?? null;
   const pdfName = doc.pdf?.name ?? null;
   const hasPdf = Boolean(doc.pdf?.uri);
-  const exportPct = exportTotal ? Math.round((exportDone / exportTotal) * 100) : 0;
+  const canUseAction = userLoading ? true : canUse;
+  const exportPct = exportTotal
+    ? Math.round((exportDone / exportTotal) * 100)
+    : 0;
   useSignPdfEffects({
     doc,
     initialFileUri,
@@ -53,10 +60,22 @@ export default function SignPdfScreen({
     view,
     isExportingPdf,
   });
-  const subtitle = useMemo(() => (!pdfName ? null : totalPages ? `${pdfName} • ${t("signPdf.subtitlePages", { count: totalPages })}` : pdfName), [pdfName, totalPages, t]);
+  const subtitle = useMemo(
+    () =>
+      !pdfName
+        ? null
+        : totalPages
+          ? `${pdfName} • ${t("signPdf.subtitlePages", { count: totalPages })}`
+          : pdfName,
+    [pdfName, totalPages, t],
+  );
   const isLoading = doc.isBusy;
   const shouldDiscoverTotal = Boolean(pdfBase64) && totalPages === 0;
-  const getPageEdit = useCallback((pageNumber: number): PageEditState => pageEdits[pageNumber] ?? createDefaultPageEdit(pageNumber), [pageEdits]);
+  const getPageEdit = useCallback(
+    (pageNumber: number): PageEditState =>
+      pageEdits[pageNumber] ?? createDefaultPageEdit(pageNumber),
+    [pageEdits],
+  );
   const handleBackToGrid = useCallback((editState: PageEditState) => {
     setPageEdits((prev) => ({
       ...prev,
@@ -90,7 +109,11 @@ export default function SignPdfScreen({
   const startExportPdf = useCallback(async () => {
     if (isExportingPdf) return;
     if (!pdfBase64) return;
-    const pages = Array.from(selectedPages).slice().sort((a, b) => a - b);
+    if (!canUseAction) return;
+    let shouldExit = false;
+    const pages = Array.from(selectedPages)
+      .slice()
+      .sort((a, b) => a - b);
     if (pages.length === 0) {
       Alert.alert(
         t("signPdf.alerts.exportTitle"),
@@ -116,6 +139,9 @@ export default function SignPdfScreen({
       const base = (pdfName || "signed-document").replace(/\.(pdf)$/i, "");
       const outName = `${base}-signed.pdf`;
       await savePdfAndShare(outB64, outName, t("signPdf.actions.sharePdf"));
+      await consumeAction();
+      showAd();
+      shouldExit = true;
     } catch (e: any) {
       Alert.alert(
         t("signPdf.alerts.exportTitle"),
@@ -123,6 +149,7 @@ export default function SignPdfScreen({
       );
     } finally {
       setIsExportingPdf(false);
+      if (shouldExit) onBack();
     }
   }, [
     isExportingPdf,
@@ -132,6 +159,10 @@ export default function SignPdfScreen({
     signatureUri,
     pdfName,
     t,
+    canUseAction,
+    consumeAction,
+    showAd,
+    onBack,
   ]);
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
@@ -144,6 +175,7 @@ export default function SignPdfScreen({
           onPickPdf={doc.pickPdf}
           totalPages={totalPages}
           onExportPdf={startExportPdf}
+          exportDisabled={!canUseAction || isExportingPdf}
           selectedPages={selectedPages}
           setSelectedPages={setSelectedPages}
           onOpenPage={(pageNumber) => {

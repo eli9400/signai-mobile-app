@@ -25,6 +25,8 @@ export default function ImageEditor({
   signatureUri,
   editState,
   setEditState,
+  onExportComplete,
+  canUseAction = true,
 }: ImageEditorProps) {
   const { t } = useTranslation();
 
@@ -58,7 +60,9 @@ export default function ImageEditor({
     canShowImage,
     imageBoxRef,
     shareTitle: t("imageEditor.export.shareTitle"),
+    onExportComplete,
   });
+  const canExport = canShowImage && !isExporting && canUseAction;
 
   const addSignature = () => {
     if (!signatureUri) return;
@@ -103,7 +107,7 @@ export default function ImageEditor({
         onClose={onClose}
         showExport={Boolean(imageUri)}
         onExport={exportImage}
-        exportDisabled={!canShowImage || isExporting}
+        exportDisabled={!canExport}
         exportLabel={t("imageEditor.actions.export")}
       />
 

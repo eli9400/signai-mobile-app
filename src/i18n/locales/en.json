@@ -20,6 +20,10 @@
     "pdfTitle": "Load PDF",
     "pdfSub": "Load a PDF document to sign",
     "bottomHint": "To sign documents — create a signature first.",
+    "usesLeft": "You have {{count}} actions left this week",
+    "usesLimitReached": "You reached your weekly limit",
+    "limitTitle": "Weekly limit reached",
+    "limitBody": "You can continue after 7 days or add a card to pay ₪1 per action.",
     "language": "Language",
     "guestTitle": "Continue as guest",
     "guestBody": "You can sign, but account features are disabled until you sign in.",
@@ -75,10 +79,21 @@
     "guestHint": "Sign in to edit your profile and manage billing.",
     "actions": {
       "save": "Save",
-      "billing": "Billing (soon)",
+      "billing": "Billing",
       "signIn": "Sign in",
       "signOut": "Sign out"
     }
+  },
+  "billing": {
+    "title": "Add a payment method",
+    "subtitle": "Your card will be saved for future pay-per-use actions. No charge now.",
+    "priceNote": "Price: ₪1 per additional action.",
+    "save": "Save card",
+    "saving": "Saving...",
+    "successTitle": "Card saved",
+    "successBody": "Your card is ready for pay-per-use.",
+    "errorTitle": "Payment error",
+    "missingKey": "Stripe key is not configured."
   },
   "signature": {
     "title": "Signature",

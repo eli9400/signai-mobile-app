@@ -4,12 +4,13 @@ import { Platform, BackHandler, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
-
 import ImageEditor from "../signing/imageFlow/ImageEditor";
 import {
   createInitialEditState,
   type ImageEditState,
 } from "./signImage/signImageState";
+import { useInterstitialAd } from "../hooks/useInterstitialAd";
+import { useUserContext } from "../contexts/UserContext";
 
 type Props = {
   signatureUri: string | null;
@@ -27,6 +28,8 @@ export default function SignImageScreen({
   useCamera = false,
 }: Props) {
   const { t } = useTranslation();
+  const { showAd } = useInterstitialAd();
+  const { consumeAction, canUse, loading: userLoading } = useUserContext();
 
   const autoPickedRef = useRef(false);
 
@@ -40,7 +43,6 @@ export default function SignImageScreen({
     createInitialEditState(),
   );
 
-  // Auto-pick image on mount (or take photo if useCamera)
   useEffect(() => {
     if (Platform.OS !== "android" && Platform.OS !== "ios") return;
     if (initialFileUri) return;
@@ -59,13 +61,11 @@ export default function SignImageScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFileUri, imageUri, isLoading, useCamera]);
 
-  // Load incoming image from "Open with"
   useEffect(() => {
     if (!initialFileUri) return;
     loadImageUri(initialFileUri);
   }, [initialFileUri]);
 
-  // When image loaded: notify home
   useEffect(() => {
     if (!imageUri) return;
     onFileLoaded?.();
@@ -159,7 +159,12 @@ export default function SignImageScreen({
     ]);
   }, [imageUri, onBack, t]);
 
-  // Android hardware back
+  const handleExportComplete = useCallback(async () => {
+    await consumeAction();
+    showAd();
+    onBack();
+  }, [consumeAction, showAd, onBack]);
+
   useEffect(() => {
     if (Platform.OS !== "android") return;
 
@@ -187,6 +192,8 @@ export default function SignImageScreen({
         signatureUri={signatureUri}
         editState={editState}
         setEditState={setEditState}
+        onExportComplete={handleExportComplete}
+        canUseAction={userLoading ? true : canUse}
       />
     </SafeAreaView>
   );

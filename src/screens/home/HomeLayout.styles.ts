@@ -18,4 +18,11 @@ export const layoutStyles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
   },
+  usageHint: {
+    marginTop: 6,
+    color: theme.colors.textSecondary,
+    fontSize: 13,
+    fontWeight: "700",
+    textAlign: "center",
+  },
 });

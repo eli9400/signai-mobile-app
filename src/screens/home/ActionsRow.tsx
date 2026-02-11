@@ -6,6 +6,7 @@ import { ICON_CAMERA, ICON_IMAGE, ICON_PDF } from "./homeIcons";
 
 type Props = {
   canSign: boolean;
+  canUse: boolean;
   onGoSignImage: () => void;
   onGoSignPdf: () => void;
   onGoCamera: () => void;
@@ -62,11 +63,13 @@ function ActionCard({
 
 export default function ActionsRow({
   canSign,
+  canUse,
   onGoSignImage,
   onGoSignPdf,
   onGoCamera,
 }: Props) {
   const { t } = useTranslation();
+  const canUseAction = canSign && canUse;
 
   return (
     <View style={styles.actionsRow}>
@@ -75,8 +78,8 @@ export default function ActionsRow({
         subtitle={t("home.cameraSub")}
         icon={ICON_CAMERA}
         accent="green"
-        disabled={!canSign}
-        onPress={() => canSign && onGoCamera()}
+        disabled={!canUseAction}
+        onPress={() => canUseAction && onGoCamera()}
       />
 
       <ActionCard
@@ -84,8 +87,8 @@ export default function ActionsRow({
         subtitle={t("home.imageSub")}
         icon={ICON_IMAGE}
         accent="purple"
-        disabled={!canSign}
-        onPress={() => canSign && onGoSignImage()}
+        disabled={!canUseAction}
+        onPress={() => canUseAction && onGoSignImage()}
       />
 
       <ActionCard
@@ -93,8 +96,8 @@ export default function ActionsRow({
         subtitle={t("home.pdfSub")}
         icon={ICON_PDF}
         accent="blue"
-        disabled={!canSign}
-        onPress={() => canSign && onGoSignPdf()}
+        disabled={!canUseAction}
+        onPress={() => canUseAction && onGoSignPdf()}
       />
     </View>
   );

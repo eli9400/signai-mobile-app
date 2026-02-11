@@ -1,0 +1,620 @@
+[debug] [2026-02-08T13:17:17.156Z] ----------------------------------------------------------------------
+[debug] [2026-02-08T13:17:17.160Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\eli92\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions --project signai-79a08 --debug
+[debug] [2026-02-08T13:17:17.161Z] CLI Version:   15.1.0
+[debug] [2026-02-08T13:17:17.161Z] Platform:      win32
+[debug] [2026-02-08T13:17:17.161Z] Node Version:  v22.21.0
+[debug] [2026-02-08T13:17:17.162Z] Time:          Sun Feb 08 2026 15:17:17 GMT+0200 (שעון ישראל (חורף))
+[debug] [2026-02-08T13:17:17.162Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-08T13:17:19.183Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-08T13:17:19.186Z] > authorizing via signed-in user (eli92402@gmail.com)
+[debug] [2026-02-08T13:17:19.187Z] [iam] checking project signai-79a08 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-02-08T13:17:19.188Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:19.189Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:19.190Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions [none]
+[debug] [2026-02-08T13:17:19.190Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions x-goog-quota-user=projects/signai-79a08
+[debug] [2026-02-08T13:17:19.190Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-08T13:17:20.288Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions 200
+[debug] [2026-02-08T13:17:20.288Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-08T13:17:20.289Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:20.289Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:20.289Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-02-08T13:17:20.290Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-02-08T13:17:21.350Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-02-08T13:17:21.350Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'signai-79a08'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-02-08T13:17:21.354Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:21.354Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:21.354Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 [none]
+[debug] [2026-02-08T13:17:21.608Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 200
+[debug] [2026-02-08T13:17:21.609Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 {"projectNumber":"819188208664","projectId":"signai-79a08","lifecycleState":"ACTIVE","name":"signai","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-02-03T14:57:01.325157Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-02-08T13:17:21.612Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:21.612Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:21.613Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/signai-79a08/adminSdkConfig [none]
+[debug] [2026-02-08T13:17:22.064Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/signai-79a08/adminSdkConfig 200
+[debug] [2026-02-08T13:17:22.064Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/signai-79a08/adminSdkConfig {"projectId":"signai-79a08","storageBucket":"signai-79a08.firebasestorage.app"}
+[debug] [2026-02-08T13:17:22.065Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:22.065Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:22.065Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs [none]
+[debug] [2026-02-08T13:17:22.585Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs 200
+[debug] [2026-02-08T13:17:22.585Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs {"configs":[{"name":"projects/signai-79a08/configs/stripe"}]}
+[debug] [2026-02-08T13:17:22.586Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:22.586Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:22.586Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables [none]
+[debug] [2026-02-08T13:17:22.851Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables 200
+[debug] [2026-02-08T13:17:22.852Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables {"variables":[{"name":"projects/signai-79a08/configs/stripe/variables/secret","updateTime":"2026-02-08T13:04:27.577893206Z"}]}
+[debug] [2026-02-08T13:17:22.852Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:22.852Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:22.852Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables/secret [none]
+[debug] [2026-02-08T13:17:23.125Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables/secret 200
+[debug] [2026-02-08T13:17:23.125Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables/secret {"name":"projects/signai-79a08/configs/stripe/variables/secret","updateTime":"2026-02-08T13:04:27.577893206Z","text":"sk_live_XXXX"}
+[debug] [2026-02-08T13:17:23.128Z] Validating nodejs source
+[warn] !  functions: Runtime Node.js 20 will be deprecated on 2026-04-30 and will be decommissioned on 2026-10-30, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-02-08T13:17:24.146Z] > [functions] package.json contents: {
+  "name": "functions",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.1.0",
+    "stripe": "^14.0.0"
+  }
+}
+[debug] [2026-02-08T13:17:24.147Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-02-08T13:17:24.148Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-02-08T13:17:24.166Z] Found firebase-functions binary at 'C:\Users\eli92\mobile\signai\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8078
+
+[debug] [2026-02-08T13:17:24.946Z] Got response from /__/functions.yaml {"endpoints":{"createSetupIntent":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createSetupIntent"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2026-02-08T13:17:28.999Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-08T13:17:28.999Z] > authorizing via signed-in user (eli92402@gmail.com)
+[debug] [2026-02-08T13:17:28.999Z] [iam] checking project signai-79a08 for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2026-02-08T13:17:28.999Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:29.000Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:29.000Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions [none]
+[debug] [2026-02-08T13:17:29.000Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions x-goog-quota-user=projects/signai-79a08
+[debug] [2026-02-08T13:17:29.000Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-02-08T13:17:30.053Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions 200
+[debug] [2026-02-08T13:17:30.054Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-02-08T13:17:30.055Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:30.055Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:30.055Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/signai-79a08/instances pageSize=100&pageToken=
+[debug] [2026-02-08T13:17:31.239Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/signai-79a08/instances 200
+[debug] [2026-02-08T13:17:31.239Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/signai-79a08/instances {}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged C:\Users\eli92\mobile\signai\functions (29.66 KB) for uploading 
+[debug] [2026-02-08T13:17:31.283Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:31.283Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:31.284Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/-/functions [none]
+[debug] [2026-02-08T13:17:32.039Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/-/functions 200
+[debug] [2026-02-08T13:17:32.039Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/-/functions {}
+[debug] [2026-02-08T13:17:32.040Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:32.040Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:32.040Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/signai-79a08/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2026-02-08T13:17:33.109Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/signai-79a08/locations/-/functions 200
+[debug] [2026-02-08T13:17:33.110Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/signai-79a08/locations/-/functions {}
+[debug] [2026-02-08T13:17:33.113Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:33.113Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:33.114Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 [none]
+[debug] [2026-02-08T13:17:33.370Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 200
+[debug] [2026-02-08T13:17:33.370Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 {"projectNumber":"819188208664","projectId":"signai-79a08","lifecycleState":"ACTIVE","name":"signai","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-02-03T14:57:01.325157Z"}
+[debug] [2026-02-08T13:17:33.372Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:33.372Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:33.372Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/signai-79a08/billingInfo [none]
+[debug] [2026-02-08T13:17:34.505Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/signai-79a08/billingInfo 200
+[debug] [2026-02-08T13:17:34.505Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/signai-79a08/billingInfo {"name":"projects/signai-79a08/billingInfo","projectId":"signai-79a08","billingAccountName":"billingAccounts/01E86A-B638A7-330076","billingEnabled":true}
+[debug] [2026-02-08T13:17:34.506Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:34.506Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:17:34.507Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2026-02-08T13:17:34.507Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl {}
+[debug] [2026-02-08T13:17:34.783Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl 403
+[debug] [2026-02-08T13:17:34.784Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl {"error":{"code":403,"message":"Write access to project 'signai-79a08' was denied: please check billing account associated and retry","status":"PERMISSION_DENIED"}}
+[info] 
+
+There was an issue deploying your functions. Verify that your project has a Google App Engine instance setup at https://console.cloud.google.com/appengine and try again. If this issue persists, please contact support.
+[warn] !  functions: Upload Error: Request to https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl had HTTP Error: 403, Write access to project 'signai-79a08' was denied: please check billing account associated and retry 
+[error] 
+[error] Error: Request to https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl had HTTP Error: 403, Write access to project 'signai-79a08' was denied: please check billing account associated and retry
+[debug] [2026-02-08T13:17:35.106Z] Error Context: {
+  "body": {
+    "error": {
+      "code": 403,
+      "message": "Write access to project 'signai-79a08' was denied: please check billing account associated and retry",
+      "status": "PERMISSION_DENIED"
+    }
+  },
+  "response": {
+    "statusCode": 403
+  }
+}
+[debug] [2026-02-08T13:37:09.723Z] ----------------------------------------------------------------------
+[debug] [2026-02-08T13:37:09.726Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\eli92\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions --project signai-79a08
+[debug] [2026-02-08T13:37:09.726Z] CLI Version:   15.1.0
+[debug] [2026-02-08T13:37:09.726Z] Platform:      win32
+[debug] [2026-02-08T13:37:09.726Z] Node Version:  v22.21.0
+[debug] [2026-02-08T13:37:09.727Z] Time:          Sun Feb 08 2026 15:37:09 GMT+0200 (שעון ישראל (חורף))
+[debug] [2026-02-08T13:37:09.727Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-08T13:37:12.362Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-08T13:37:12.362Z] > authorizing via signed-in user (eli92402@gmail.com)
+[debug] [2026-02-08T13:37:12.362Z] [iam] checking project signai-79a08 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-02-08T13:37:12.364Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:12.364Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:12.365Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions [none]
+[debug] [2026-02-08T13:37:12.365Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions x-goog-quota-user=projects/signai-79a08
+[debug] [2026-02-08T13:37:12.365Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-08T13:37:13.545Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions 200
+[debug] [2026-02-08T13:37:13.545Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-08T13:37:13.545Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:13.545Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:13.546Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-02-08T13:37:13.546Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-02-08T13:37:14.684Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-02-08T13:37:14.684Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'signai-79a08'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-02-08T13:37:14.687Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:14.687Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:14.687Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 [none]
+[debug] [2026-02-08T13:37:14.965Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 200
+[debug] [2026-02-08T13:37:14.965Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 {"projectNumber":"819188208664","projectId":"signai-79a08","lifecycleState":"ACTIVE","name":"signai","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-02-03T14:57:01.325157Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-02-08T13:37:14.968Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:14.968Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:14.968Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/signai-79a08/adminSdkConfig [none]
+[debug] [2026-02-08T13:37:15.489Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/signai-79a08/adminSdkConfig 200
+[debug] [2026-02-08T13:37:15.490Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/signai-79a08/adminSdkConfig {"projectId":"signai-79a08","storageBucket":"signai-79a08.firebasestorage.app"}
+[debug] [2026-02-08T13:37:15.490Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:15.490Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:15.490Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs [none]
+[debug] [2026-02-08T13:37:15.999Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs 200
+[debug] [2026-02-08T13:37:15.999Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs {"configs":[{"name":"projects/signai-79a08/configs/stripe"}]}
+[debug] [2026-02-08T13:37:16.000Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:16.000Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:16.000Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables [none]
+[debug] [2026-02-08T13:37:16.289Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables 200
+[debug] [2026-02-08T13:37:16.289Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables {"variables":[{"name":"projects/signai-79a08/configs/stripe/variables/secret","updateTime":"2026-02-08T13:04:27.577893206Z"}]}
+[debug] [2026-02-08T13:37:16.290Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:16.290Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:16.290Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables/secret [none]
+[debug] [2026-02-08T13:37:17.054Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables/secret 200
+[debug] [2026-02-08T13:37:17.055Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables/secret {"name":"projects/signai-79a08/configs/stripe/variables/secret","updateTime":"2026-02-08T13:04:27.577893206Z","text":"sk_live_XXXX"}
+[debug] [2026-02-08T13:37:17.056Z] Validating nodejs source
+[warn] !  functions: Runtime Node.js 20 will be deprecated on 2026-04-30 and will be decommissioned on 2026-10-30, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-02-08T13:37:18.399Z] > [functions] package.json contents: {
+  "name": "functions",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.1.0",
+    "stripe": "^14.0.0"
+  }
+}
+[debug] [2026-02-08T13:37:18.400Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-02-08T13:37:18.401Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-02-08T13:37:18.414Z] Found firebase-functions binary at 'C:\Users\eli92\mobile\signai\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8016
+
+[debug] [2026-02-08T13:37:19.419Z] Got response from /__/functions.yaml {"endpoints":{"createSetupIntent":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createSetupIntent"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2026-02-08T13:37:23.473Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-08T13:37:23.473Z] > authorizing via signed-in user (eli92402@gmail.com)
+[debug] [2026-02-08T13:37:23.473Z] [iam] checking project signai-79a08 for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2026-02-08T13:37:23.473Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:23.473Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:23.473Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions [none]
+[debug] [2026-02-08T13:37:23.474Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions x-goog-quota-user=projects/signai-79a08
+[debug] [2026-02-08T13:37:23.474Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-02-08T13:37:24.667Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions 200
+[debug] [2026-02-08T13:37:24.667Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-02-08T13:37:24.667Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:24.667Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:24.668Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/signai-79a08/instances pageSize=100&pageToken=
+[debug] [2026-02-08T13:37:25.951Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/signai-79a08/instances 200
+[debug] [2026-02-08T13:37:25.951Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/signai-79a08/instances {}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged C:\Users\eli92\mobile\signai\functions (29.66 KB) for uploading 
+[debug] [2026-02-08T13:37:25.984Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:25.984Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:25.984Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/-/functions [none]
+[debug] [2026-02-08T13:37:26.798Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/-/functions 200
+[debug] [2026-02-08T13:37:26.798Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/-/functions {}
+[debug] [2026-02-08T13:37:26.799Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:26.799Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:26.799Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/signai-79a08/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2026-02-08T13:37:27.809Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/signai-79a08/locations/-/functions 200
+[debug] [2026-02-08T13:37:27.809Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/signai-79a08/locations/-/functions {}
+[debug] [2026-02-08T13:37:27.813Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:27.813Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:27.813Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 [none]
+[debug] [2026-02-08T13:37:28.049Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 200
+[debug] [2026-02-08T13:37:28.049Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 {"projectNumber":"819188208664","projectId":"signai-79a08","lifecycleState":"ACTIVE","name":"signai","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-02-03T14:57:01.325157Z"}
+[debug] [2026-02-08T13:37:28.050Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:28.050Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:28.050Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/signai-79a08/billingInfo [none]
+[debug] [2026-02-08T13:37:29.014Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/signai-79a08/billingInfo 200
+[debug] [2026-02-08T13:37:29.014Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/signai-79a08/billingInfo {"name":"projects/signai-79a08/billingInfo","projectId":"signai-79a08","billingAccountName":"billingAccounts/01E86A-B638A7-330076","billingEnabled":true}
+[debug] [2026-02-08T13:37:29.015Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:29.015Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:29.016Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2026-02-08T13:37:29.016Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl {}
+[debug] [2026-02-08T13:37:29.582Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2026-02-08T13:37:29.583Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/b758904d-38d6-419e-b54b-fcb9d534579b.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770559649&Signature=KnwwgwsZiYynGyHStGBmHZDDhAY6VENAvZLCgAkAQ85OFNFmNzamUMlyoTr4hNkyb2N7O%2B3YK8lQ7Urt9ff4J5n1wz5r0%2B%2BfDoOR75VJHI4hkxmn1D%2FvST1%2B1ggwRduCSR9eESOM6AWsJE8Db%2FdncMwZFb9XCS0vVZhfU6aysxD4iUjuear8RPE4s34nZrEfWgXybEF0tK%2BQfoAGUnXIzwktUq03d40yg8UNCeBLQ9nbMsitgYJYojBUXha12rTvu0VWFyj1ff9mtGChymud1gmvnNalZ4YhAED7yzWaLwpm1M6PKV1RB%2BtmoLan8nqujdCUJ8qK6%2B6ZmmEmLJINYQ%3D%3D"}
+[debug] [2026-02-08T13:37:29.584Z] >>> [apiv2][query] PUT https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/b758904d-38d6-419e-b54b-fcb9d534579b.zip GoogleAccessId=service-819188208664%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1770559649&Signature=KnwwgwsZiYynGyHStGBmHZDDhAY6VENAvZLCgAkAQ85OFNFmNzamUMlyoTr4hNkyb2N7O%2B3YK8lQ7Urt9ff4J5n1wz5r0%2B%2BfDoOR75VJHI4hkxmn1D%2FvST1%2B1ggwRduCSR9eESOM6AWsJE8Db%2FdncMwZFb9XCS0vVZhfU6aysxD4iUjuear8RPE4s34nZrEfWgXybEF0tK%2BQfoAGUnXIzwktUq03d40yg8UNCeBLQ9nbMsitgYJYojBUXha12rTvu0VWFyj1ff9mtGChymud1gmvnNalZ4YhAED7yzWaLwpm1M6PKV1RB%2BtmoLan8nqujdCUJ8qK6%2B6ZmmEmLJINYQ%3D%3D
+[debug] [2026-02-08T13:37:29.584Z] >>> [apiv2][body] PUT https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/b758904d-38d6-419e-b54b-fcb9d534579b.zip [stream]
+[debug] [2026-02-08T13:37:30.203Z] <<< [apiv2][status] PUT https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/b758904d-38d6-419e-b54b-fcb9d534579b.zip 200
+[debug] [2026-02-08T13:37:30.204Z] <<< [apiv2][body] PUT https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/b758904d-38d6-419e-b54b-fcb9d534579b.zip [omitted]
+[info] +  functions: functions source uploaded successfully 
+[info] i  functions: creating Node.js 20 (1st Gen) function createSetupIntent(us-central1)... 
+[debug] [2026-02-08T13:37:30.208Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:30.208Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:30.208Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions [none]
+[debug] [2026-02-08T13:37:30.208Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions {"name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/b758904d-38d6-419e-b54b-fcb9d534579b.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770559649&Signature=KnwwgwsZiYynGyHStGBmHZDDhAY6VENAvZLCgAkAQ85OFNFmNzamUMlyoTr4hNkyb2N7O%2B3YK8lQ7Urt9ff4J5n1wz5r0%2B%2BfDoOR75VJHI4hkxmn1D%2FvST1%2B1ggwRduCSR9eESOM6AWsJE8Db%2FdncMwZFb9XCS0vVZhfU6aysxD4iUjuear8RPE4s34nZrEfWgXybEF0tK%2BQfoAGUnXIzwktUq03d40yg8UNCeBLQ9nbMsitgYJYojBUXha12rTvu0VWFyj1ff9mtGChymud1gmvnNalZ4YhAED7yzWaLwpm1M6PKV1RB%2BtmoLan8nqujdCUJ8qK6%2B6ZmmEmLJINYQ%3D%3D","entryPoint":"createSetupIntent","runtime":"nodejs20","dockerRegistry":"ARTIFACT_REGISTRY","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"minInstances":null,"maxInstances":null,"ingressSettings":null,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"serviceAccountEmail":null,"availableMemoryMb":null,"timeout":null,"vpcConnector":null,"vpcConnectorEgressSettings":null,"buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}}
+[debug] [2026-02-08T13:37:31.829Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions 400
+[debug] [2026-02-08T13:37:31.829Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions {"error":{"code":400,"message":"Failed to create 1st Gen function projects/signai-79a08/locations/us-central1/functions/createSetupIntent: Default service account '819188208664-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation.","status":"FAILED_PRECONDITION"}}
+[warn] !  functions: failed to create function projects/signai-79a08/locations/us-central1/functions/createSetupIntent 
+[error] Failed to create function projects/signai-79a08/locations/us-central1/functions/createSetupIntent
+[debug] [2026-02-08T13:37:31.835Z] Total Function Deployment time: 1624
+[debug] [2026-02-08T13:37:31.835Z] 1 Functions Deployed
+[debug] [2026-02-08T13:37:31.835Z] 1 Functions Errored
+[debug] [2026-02-08T13:37:31.835Z] 0 Function Deployments Aborted
+[debug] [2026-02-08T13:37:31.835Z] Average Function Deployment time: 1623
+[info] 
+[info] Functions deploy had errors with the following functions:
+	createSetupIntent(us-central1)
+[debug] [2026-02-08T13:37:32.179Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:32.179Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:37:32.180Z] >>> [apiv2][query] GET https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts [none]
+[debug] [2026-02-08T13:37:33.213Z] <<< [apiv2][status] GET https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts 404
+[debug] [2026-02-08T13:37:33.213Z] <<< [apiv2][body] GET https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts {"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}}
+[debug] [2026-02-08T13:37:33.214Z] Failed to check artifact cleanup policy for region us-central1: Request to https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts had HTTP Error: 404, Requested entity was not found. {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}},"response":{"statusCode":404}},"exit":1,"message":"Request to https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts had HTTP Error: 404, Requested entity was not found.","status":404}
+[debug] [2026-02-08T13:37:33.214Z] Functions deploy failed.
+[debug] [2026-02-08T13:37:33.214Z] {
+  "endpoint": {
+    "id": "createSetupIntent",
+    "project": "signai-79a08",
+    "region": "us-central1",
+    "entryPoint": "createSetupIntent",
+    "platform": "gcfv1",
+    "runtime": "nodejs20",
+    "callableTrigger": {},
+    "labels": {
+      "deployment-tool": "cli-firebase"
+    },
+    "serviceAccount": null,
+    "ingressSettings": null,
+    "availableMemoryMb": null,
+    "timeoutSeconds": null,
+    "maxInstances": null,
+    "minInstances": null,
+    "vpc": null,
+    "environmentVariables": {
+      "FIREBASE_CONFIG": "{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}",
+      "GCLOUD_PROJECT": "signai-79a08",
+      "EVENTARC_CLOUD_EVENT_SOURCE": "projects/signai-79a08/locations/us-central1/functions/createSetupIntent"
+    },
+    "codebase": "default",
+    "targetedByOnly": false,
+    "hash": "c8898531c9fcacb66808ef9c6868b5f98480a5b2"
+  },
+  "op": "create",
+  "original": {
+    "name": "FirebaseError",
+    "children": [],
+    "context": {
+      "function": "projects/signai-79a08/locations/us-central1/functions/createSetupIntent"
+    },
+    "exit": 1,
+    "message": "Failed to create function projects/signai-79a08/locations/us-central1/functions/createSetupIntent",
+    "original": {
+      "name": "FirebaseError",
+      "children": [],
+      "context": {
+        "body": {
+          "error": {
+            "code": 400,
+            "message": "Failed to create 1st Gen function projects/signai-79a08/locations/us-central1/functions/createSetupIntent: Default service account '819188208664-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation.",
+            "status": "FAILED_PRECONDITION"
+          }
+        },
+        "response": {
+          "statusCode": 400
+        }
+      },
+      "exit": 1,
+      "message": "Request to https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions had HTTP Error: 400, Failed to create 1st Gen function projects/signai-79a08/locations/us-central1/functions/createSetupIntent: Default service account '819188208664-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation.",
+      "status": 400
+    },
+    "status": 400,
+    "code": 400
+  }
+}
+[debug] [2026-02-08T13:37:33.325Z] Error: Failed to create function createSetupIntent in region us-central1
+    at C:\Users\eli92\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\release\fabricator.js:52:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Fabricator.createV1Function (C:\Users\eli92\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\release\fabricator.js:194:32)
+    at async Fabricator.createEndpoint (C:\Users\eli92\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\release\fabricator.js:134:13)
+    at async handle (C:\Users\eli92\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\release\fabricator.js:89:17)
+[error] 
+[error] Error: There was an error deploying functions
+[debug] [2026-02-08T13:43:13.651Z] ----------------------------------------------------------------------
+[debug] [2026-02-08T13:43:13.655Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\eli92\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions --project signai-79a08 --debug
+[debug] [2026-02-08T13:43:13.656Z] CLI Version:   15.1.0
+[debug] [2026-02-08T13:43:13.656Z] Platform:      win32
+[debug] [2026-02-08T13:43:13.656Z] Node Version:  v22.21.0
+[debug] [2026-02-08T13:43:13.656Z] Time:          Sun Feb 08 2026 15:43:13 GMT+0200 (שעון ישראל (חורף))
+[debug] [2026-02-08T13:43:13.657Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-08T13:43:15.428Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-08T13:43:15.430Z] > authorizing via signed-in user (eli92402@gmail.com)
+[debug] [2026-02-08T13:43:15.430Z] [iam] checking project signai-79a08 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-02-08T13:43:15.432Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:15.432Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:15.433Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions [none]
+[debug] [2026-02-08T13:43:15.433Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions x-goog-quota-user=projects/signai-79a08
+[debug] [2026-02-08T13:43:15.434Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-08T13:43:16.624Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions 200
+[debug] [2026-02-08T13:43:16.624Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-08T13:43:16.625Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:16.625Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:16.625Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-02-08T13:43:16.625Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-02-08T13:43:17.769Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-02-08T13:43:17.769Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/signai-79a08/serviceAccounts/signai-79a08@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'signai-79a08'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-02-08T13:43:17.772Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:17.772Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:17.772Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 [none]
+[debug] [2026-02-08T13:43:18.036Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 200
+[debug] [2026-02-08T13:43:18.036Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 {"projectNumber":"819188208664","projectId":"signai-79a08","lifecycleState":"ACTIVE","name":"signai","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-02-03T14:57:01.325157Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-02-08T13:43:18.039Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:18.039Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:18.039Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/signai-79a08/adminSdkConfig [none]
+[debug] [2026-02-08T13:43:18.651Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/signai-79a08/adminSdkConfig 200
+[debug] [2026-02-08T13:43:18.651Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/signai-79a08/adminSdkConfig {"projectId":"signai-79a08","storageBucket":"signai-79a08.firebasestorage.app"}
+[debug] [2026-02-08T13:43:18.652Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:18.652Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:18.652Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs [none]
+[debug] [2026-02-08T13:43:19.169Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs 200
+[debug] [2026-02-08T13:43:19.169Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs {"configs":[{"name":"projects/signai-79a08/configs/stripe"}]}
+[debug] [2026-02-08T13:43:19.169Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:19.170Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:19.170Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables [none]
+[debug] [2026-02-08T13:43:19.446Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables 200
+[debug] [2026-02-08T13:43:19.447Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables {"variables":[{"name":"projects/signai-79a08/configs/stripe/variables/secret","updateTime":"2026-02-08T13:04:27.577893206Z"}]}
+[debug] [2026-02-08T13:43:19.447Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:19.447Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:19.447Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables/secret [none]
+[debug] [2026-02-08T13:43:19.708Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables/secret 200
+[debug] [2026-02-08T13:43:19.709Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/signai-79a08/configs/stripe/variables/secret {"name":"projects/signai-79a08/configs/stripe/variables/secret","updateTime":"2026-02-08T13:04:27.577893206Z","text":"sk_live_XXXX"}
+[debug] [2026-02-08T13:43:19.710Z] Validating nodejs source
+[warn] !  functions: Runtime Node.js 20 will be deprecated on 2026-04-30 and will be decommissioned on 2026-10-30, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-02-08T13:43:20.746Z] > [functions] package.json contents: {
+  "name": "functions",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.1.0",
+    "stripe": "^14.0.0"
+  }
+}
+[debug] [2026-02-08T13:43:20.746Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-02-08T13:43:20.747Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-02-08T13:43:20.769Z] Found firebase-functions binary at 'C:\Users\eli92\mobile\signai\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8278
+
+[debug] [2026-02-08T13:43:21.532Z] Got response from /__/functions.yaml {"endpoints":{"createSetupIntent":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createSetupIntent"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2026-02-08T13:43:25.596Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-08T13:43:25.596Z] > authorizing via signed-in user (eli92402@gmail.com)
+[debug] [2026-02-08T13:43:25.596Z] [iam] checking project signai-79a08 for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2026-02-08T13:43:25.596Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:25.596Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:25.597Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions [none]
+[debug] [2026-02-08T13:43:25.597Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions x-goog-quota-user=projects/signai-79a08
+[debug] [2026-02-08T13:43:25.597Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-02-08T13:43:25.989Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions 200
+[debug] [2026-02-08T13:43:25.989Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-02-08T13:43:25.990Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:25.990Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:25.990Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/signai-79a08/instances pageSize=100&pageToken=
+[debug] [2026-02-08T13:43:27.244Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/signai-79a08/instances 200
+[debug] [2026-02-08T13:43:27.245Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/signai-79a08/instances {}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged C:\Users\eli92\mobile\signai\functions (29.66 KB) for uploading 
+[debug] [2026-02-08T13:43:27.277Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:27.278Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:27.278Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/-/functions [none]
+[debug] [2026-02-08T13:43:28.123Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/-/functions 200
+[debug] [2026-02-08T13:43:28.123Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/-/functions {}
+[debug] [2026-02-08T13:43:28.124Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:28.124Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:28.124Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/signai-79a08/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2026-02-08T13:43:29.136Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/signai-79a08/locations/-/functions 200
+[debug] [2026-02-08T13:43:29.136Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/signai-79a08/locations/-/functions {}
+[debug] [2026-02-08T13:43:29.139Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:29.140Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:29.140Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 [none]
+[debug] [2026-02-08T13:43:29.384Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 200
+[debug] [2026-02-08T13:43:29.384Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/signai-79a08 {"projectNumber":"819188208664","projectId":"signai-79a08","lifecycleState":"ACTIVE","name":"signai","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-02-03T14:57:01.325157Z"}
+[debug] [2026-02-08T13:43:29.385Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:29.386Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:29.386Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/signai-79a08/billingInfo [none]
+[debug] [2026-02-08T13:43:29.893Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/signai-79a08/billingInfo 200
+[debug] [2026-02-08T13:43:29.893Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/signai-79a08/billingInfo {"name":"projects/signai-79a08/billingInfo","projectId":"signai-79a08","billingAccountName":"billingAccounts/01E86A-B638A7-330076","billingEnabled":true}
+[debug] [2026-02-08T13:43:29.895Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:29.895Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:29.895Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2026-02-08T13:43:29.895Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl {}
+[debug] [2026-02-08T13:43:30.487Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2026-02-08T13:43:30.487Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D"}
+[debug] [2026-02-08T13:43:30.488Z] >>> [apiv2][query] PUT https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip GoogleAccessId=service-819188208664%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D
+[debug] [2026-02-08T13:43:30.488Z] >>> [apiv2][body] PUT https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip [stream]
+[debug] [2026-02-08T13:43:31.116Z] <<< [apiv2][status] PUT https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip 200
+[debug] [2026-02-08T13:43:31.116Z] <<< [apiv2][body] PUT https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip [omitted]
+[info] +  functions: functions source uploaded successfully 
+[info] i  functions: creating Node.js 20 (1st Gen) function createSetupIntent(us-central1)... 
+[debug] [2026-02-08T13:43:31.122Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:31.122Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:31.122Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions [none]
+[debug] [2026-02-08T13:43:31.122Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions {"name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","entryPoint":"createSetupIntent","runtime":"nodejs20","dockerRegistry":"ARTIFACT_REGISTRY","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"minInstances":null,"maxInstances":null,"ingressSettings":null,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"serviceAccountEmail":null,"availableMemoryMb":null,"timeout":null,"vpcConnector":null,"vpcConnectorEgressSettings":null,"buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}}
+[debug] [2026-02-08T13:43:31.810Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions 200
+[debug] [2026-02-08T13:43:31.811Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","updateTime":"2026-02-08T13:43:31.685123774Z"}}
+[debug] [2026-02-08T13:43:31.812Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:31.812Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:31.812Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:43:32.096Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:43:32.097Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","updateTime":"2026-02-08T13:43:31.685123774Z"}}
+[debug] [2026-02-08T13:43:32.603Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:43:32.603Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:32.604Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:32.604Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:43:32.883Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:43:32.884Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z"}}
+[debug] [2026-02-08T13:43:33.893Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:43:33.894Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:33.895Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:33.895Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:43:34.169Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:43:34.170Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z"}}
+[debug] [2026-02-08T13:43:36.181Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:43:36.181Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:36.182Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:36.182Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:43:36.440Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:43:36.440Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z"}}
+[debug] [2026-02-08T13:43:40.448Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:43:40.449Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:40.449Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:40.449Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:43:40.716Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:43:40.717Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z"}}
+[debug] [2026-02-08T13:43:48.726Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:43:48.726Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:48.727Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:48.727Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:43:49.157Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:43:49.157Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4"}}
+[debug] [2026-02-08T13:43:59.172Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:43:59.173Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:59.173Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:43:59.173Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:43:59.599Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:43:59.600Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4"}}
+[debug] [2026-02-08T13:44:09.605Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:44:09.605Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:09.605Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:09.606Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:44:10.073Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:44:10.074Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4"}}
+[debug] [2026-02-08T13:44:20.082Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:44:20.083Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:20.083Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:20.083Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:44:20.509Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:44:20.510Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4"}}
+[debug] [2026-02-08T13:44:30.520Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:44:30.521Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:30.521Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:30.522Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:44:30.938Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:44:30.938Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4"}}
+[debug] [2026-02-08T13:44:40.948Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:44:40.948Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:40.948Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:40.949Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:44:41.366Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:44:41.367Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","sourceToken":"ca8ad6ea-4c94-4d1b-9ec2-da035862f41a","buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4"}}
+[debug] [2026-02-08T13:44:41.367Z] Got source token ca8ad6ea-4c94-4d1b-9ec2-da035862f41a for region us-central1
+[debug] [2026-02-08T13:44:51.382Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:44:51.382Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:51.382Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:44:51.383Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:44:51.843Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:44:51.844Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","sourceToken":"ca8ad6ea-4c94-4d1b-9ec2-da035862f41a","buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4"}}
+[debug] [2026-02-08T13:44:51.844Z] Got source token ca8ad6ea-4c94-4d1b-9ec2-da035862f41a for region us-central1
+[debug] [2026-02-08T13:45:01.853Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:45:01.853Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:45:01.853Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:45:01.854Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:45:02.255Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:45:02.255Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:43:31.685123774Z","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","sourceToken":"ca8ad6ea-4c94-4d1b-9ec2-da035862f41a","buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4"}}
+[debug] [2026-02-08T13:45:02.256Z] Got source token ca8ad6ea-4c94-4d1b-9ec2-da035862f41a for region us-central1
+[debug] [2026-02-08T13:45:12.265Z] [create-default-us-central1-createSetupIntent] Retrying task index 0
+[debug] [2026-02-08T13:45:12.266Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:45:12.266Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:45:12.266Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ [none]
+[debug] [2026-02-08T13:45:12.695Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ 200
+[debug] [2026-02-08T13:45:12.696Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ {"name":"operations/cHJvamVjdHMvc2lnbmFpLTc5YTA4L2xvY2F0aW9ucy91cy1jZW50cmFsMS9vcGVyYXRpb25zL29wZXJhdGlvbi0xNzcwNTU4MjExMzA2LTY0YTUwMzUzZDMyYjEtZTI2YzE5ZGYtZWQxMWRhNjQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"createSetupIntent","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip?GoogleAccessId=service-819188208664@gcf-admin-robot.iam.gserviceaccount.com&Expires=1770560010&Signature=cl0o9o0JeRsJj49Y8DEx4VeuIxhi4ohOiTlwYvnuYpoLmOUgj4o1DJ9E%2BjKsOjovD7SDF6CwSvMvMUo3qhTqrROUelJdyYXQyzlokhOdNT2eIoSuIpTMi7AIkE9YxgS8RjfkkM%2FSZn5s2qnVjHIikFxhPG9Ze9kSbgM4%2FrysTgVLxlBVWIUH3naRCuGZoibF7dyjyBmlLcL%2B%2BBU%2Brvs8Saf23uAzUyqsigS3RxtxL1YcdvZMWIwPfqBVV59hVkLQVDhNFtkcA18WwLto06YPoTPjfa38O8ncF4g5iSE127t17DJqMB3qIfGOatxZG1YE4zFHIrXvd7meVfW91PQiXw%3D%3D","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"versionId":"1","updateTime":"2026-02-08T13:45:04.164414703Z","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","sourceToken":"ca8ad6ea-4c94-4d1b-9ec2-da035862f41a","buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4"},"done":true,"response":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent","httpsTrigger":{"url":"https://us-central1-signai-79a08.cloudfunctions.net/createSetupIntent","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"createSetupIntent","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"signai-79a08@appspot.gserviceaccount.com","updateTime":"2026-02-08T13:43:31.680647360Z","versionId":"1","labels":{"firebase-functions-hash":"c8898531c9fcacb66808ef9c6868b5f98480a5b2","deployment-tool":"cli-firebase","deployment-callable":"true"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-690397826401.us-central1.cloudfunctions.appspot.com/22b98c8c-2aa5-45d8-9509-d51047d2976c.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"signai-79a08\",\"storageBucket\":\"signai-79a08.firebasestorage.app\"}","GCLOUD_PROJECT":"signai-79a08","EVENTARC_CLOUD_EVENT_SOURCE":"projects/signai-79a08/locations/us-central1/functions/createSetupIntent"},"runtime":"nodejs20","ingressSettings":"ALLOW_ALL","buildId":"aeabf8de-092f-4406-af21-03044530a5c4","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/819188208664/locations/us-central1/builds/aeabf8de-092f-4406-af21-03044530a5c4","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/signai-79a08/serviceAccounts/819188208664-compute@developer.gserviceaccount.com","satisfiesPzi":true}}
+[debug] [2026-02-08T13:45:12.697Z] Got source token ca8ad6ea-4c94-4d1b-9ec2-da035862f41a for region us-central1
+[debug] [2026-02-08T13:45:12.698Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:45:12.698Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:45:12.698Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions/createSetupIntent:setIamPolicy [none]
+[debug] [2026-02-08T13:45:12.698Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions/createSetupIntent:setIamPolicy {"policy":{"bindings":[{"role":"roles/cloudfunctions.invoker","members":["allUsers"]}],"etag":"","version":3},"updateMask":"bindings,etag,version"}
+[debug] [2026-02-08T13:45:13.197Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions/createSetupIntent:setIamPolicy 200
+[debug] [2026-02-08T13:45:13.197Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/signai-79a08/locations/us-central1/functions/createSetupIntent:setIamPolicy {"version":1,"etag":"BwZKUDtN1R0=","bindings":[{"role":"roles/cloudfunctions.invoker","members":["allUsers"]}]}
+[info] +  functions[createSetupIntent(us-central1)] Successful create operation. 
+[debug] [2026-02-08T13:45:13.202Z] Total Function Deployment time: 102079
+[debug] [2026-02-08T13:45:13.202Z] 1 Functions Deployed
+[debug] [2026-02-08T13:45:13.202Z] 0 Functions Errored
+[debug] [2026-02-08T13:45:13.202Z] 0 Function Deployments Aborted
+[debug] [2026-02-08T13:45:13.203Z] Average Function Deployment time: 102078
+[debug] [2026-02-08T13:45:13.491Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:45:13.491Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:45:13.491Z] >>> [apiv2][query] GET https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts [none]
+[debug] [2026-02-08T13:45:14.494Z] <<< [apiv2][status] GET https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts 200
+[debug] [2026-02-08T13:45:14.494Z] <<< [apiv2][body] GET https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts {"name":"projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts","format":"DOCKER","description":"This repository is created and used by Cloud Functions for storing function docker images.","labels":{"goog-managed-by":"cloudfunctions"},"createTime":"2026-02-08T13:43:41.547987Z","updateTime":"2026-02-08T13:44:23.305736Z","mode":"STANDARD_REPOSITORY","sizeBytes":"503919248","vulnerabilityScanningConfig":{"lastEnableTime":"2026-02-08T13:43:33.464379267Z","enablementState":"SCANNING_DISABLED","enablementStateReason":"API containerscanning.googleapis.com is not enabled."},"satisfiesPzi":true,"registryUri":"us-central1-docker.pkg.dev/signai-79a08/gcf-artifacts"}
+[warn] !  functions: No cleanup policy detected for repositories in us-central1. This may result in a small monthly bill as container images accumulate over time. 
+[info] i  functions: Configuring cleanup policy for repository in us-central1. Images older than 1 days will be automatically deleted. 
+[debug] [2026-02-08T13:46:34.875Z] Setting up artifact cleanup policy for region us-central1
+[debug] [2026-02-08T13:46:34.875Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:46:34.876Z] Checked if tokens are valid: true, expires at: 1770559462360
+[debug] [2026-02-08T13:46:34.876Z] >>> [apiv2][query] PATCH https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts updateMask=name%2CcleanupPolicies%2CcleanupPolicyDryRun%2Clabels
+[debug] [2026-02-08T13:46:34.876Z] >>> [apiv2][body] PATCH https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts {"name":"projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts","cleanupPolicies":{"firebase-functions-cleanup":{"id":"firebase-functions-cleanup","condition":{"tagState":"ANY","olderThan":"86400s"},"action":"DELETE"}},"cleanupPolicyDryRun":false,"labels":{"goog-managed-by":"cloudfunctions"}}
+[debug] [2026-02-08T13:46:35.868Z] <<< [apiv2][status] PATCH https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts 200
+[debug] [2026-02-08T13:46:35.868Z] <<< [apiv2][body] PATCH https://artifactregistry.googleapis.com/v1/projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts {"name":"projects/signai-79a08/locations/us-central1/repositories/gcf-artifacts","format":"DOCKER","description":"This repository is created and used by Cloud Functions for storing function docker images.","labels":{"goog-managed-by":"cloudfunctions"},"createTime":"2026-02-08T13:43:41.547987Z","updateTime":"2026-02-08T13:46:35.724128Z","mode":"STANDARD_REPOSITORY","cleanupPolicies":{"firebase-functions-cleanup":{"id":"firebase-functions-cleanup","action":"DELETE","condition":{"tagState":"ANY","olderThan":"86400s"}}},"vulnerabilityScanningConfig":{"lastEnableTime":"2026-02-08T13:43:33.464379267Z","enablementState":"SCANNING_DISABLED","enablementStateReason":"API containerscanning.googleapis.com is not enabled."},"satisfiesPzi":true}
+[info] i  functions: Configured cleanup policy for repository in us-central1. 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/signai-79a08/overview

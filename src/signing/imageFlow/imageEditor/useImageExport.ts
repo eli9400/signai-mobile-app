@@ -8,9 +8,15 @@ type Args = {
   canShowImage: boolean;
   imageBoxRef: RefObject<ViewRef | null>;
   shareTitle: string;
+  onExportComplete?: () => void;
 };
 
-export function useImageExport({ canShowImage, imageBoxRef, shareTitle }: Args) {
+export function useImageExport({
+  canShowImage,
+  imageBoxRef,
+  shareTitle,
+  onExportComplete,
+}: Args) {
   const [isExporting, setIsExporting] = useState(false);
 
   const exportImage = useCallback(async () => {
@@ -32,12 +38,15 @@ export function useImageExport({ canShowImage, imageBoxRef, shareTitle }: Args) 
         beforeCaptureDelayMs: 100,
         dialogTitle: shareTitle,
       });
+
+      // Call onExportComplete after successful export
+      onExportComplete?.();
     } catch (e) {
       console.error("Export error:", e);
     } finally {
       setIsExporting(false);
     }
-  }, [canShowImage, imageBoxRef, shareTitle]);
+  }, [canShowImage, imageBoxRef, shareTitle, onExportComplete]);
 
   return { isExporting, exportImage, setIsExporting };
 }
