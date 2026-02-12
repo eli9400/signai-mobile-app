@@ -89,6 +89,11 @@
     "title": "Покупка кредитов",
     "subtitle": "Кредиты дают дополнительные действия сверх недельного лимита.",
     "priceNote": "Каждое дополнительное действие стоит 1 шек.",
+    "premiumSection": "Премиум",
+    "creditsSection": "Кредиты",
+    "premiumTitle": "Премиум на месяц",
+    "premiumSubtitle": "Без рекламы и без ограничений",
+    "premiumActive": "Премиум активен до {{date}}",
     "productOneTitle": "1 кредит",
     "productOneSubtitle": "1 шек. за дополнительное действие",
     "productTenTitle": "Пакет 10 кредитов",
@@ -101,6 +106,7 @@
     "productUnavailable": "Недоступно",
     "successTitle": "Покупка завершена",
     "successBody": "Добавлено {{count}} кредитов.",
+    "premiumSuccessBody": "Премиум успешно активирован.",
     "errorTitle": "Ошибка покупки",
     "signInRequired": "Войдите, чтобы купить кредиты.",
     "errorUnknownProduct": "Неизвестный продукт."
@@ -185,7 +191,7 @@
   "signPdf": {
     "subtitlePages": "{{count}} стр.",
     "editor": {
-      "title": "Страница {{page}}{{total}}"
+      "title": "Страница {{page}}/{{total}}"
     },
     "alerts": {
       "exportActiveTitle": "Экспорт уже идет",

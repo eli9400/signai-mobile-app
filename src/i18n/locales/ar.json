@@ -89,6 +89,11 @@
     "title": "شراء أرصدة",
     "subtitle": "الأرصدة تتيح لك عمليات إضافية بعد الحد الأسبوعي.",
     "priceNote": "كل عملية إضافية تكلف 1 شيكل.",
+    "premiumSection": "اشتراك بريميوم",
+    "creditsSection": "الأرصدة",
+    "premiumTitle": "بريميوم شهري",
+    "premiumSubtitle": "بدون إعلانات وبدون حدود",
+    "premiumActive": "بريميوم فعّال حتى {{date}}",
     "productOneTitle": "رصيد واحد",
     "productOneSubtitle": "1 شيكل لعملية إضافية",
     "productTenTitle": "حزمة 10 أرصدة",
@@ -101,6 +106,7 @@
     "productUnavailable": "غير متاح",
     "successTitle": "تمت عملية الشراء",
     "successBody": "تمت إضافة {{count}} رصيد إلى حسابك.",
+    "premiumSuccessBody": "تم تفعيل بريميوم بنجاح.",
     "errorTitle": "خطأ في الشراء",
     "signInRequired": "يرجى تسجيل الدخول لشراء الرصيد.",
     "errorUnknownProduct": "المنتج غير معروف."
@@ -185,7 +191,7 @@
   "signPdf": {
     "subtitlePages": "{{count}} صفحات",
     "editor": {
-      "title": "الصفحة {{page}}{{total}}"
+      "title": "الصفحة {{page}}/{{total}}"
     },
     "alerts": {
       "exportActiveTitle": "التصدير جارٍ",

@@ -54,6 +54,23 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 12,
   },
+  sectionHeader: {
+    marginTop: 16,
+    marginBottom: 6,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: theme.colors.textPrimary,
+    textAlign: "right",
+  },
+  sectionSubtitle: {
+    marginTop: 4,
+    fontSize: 12,
+    fontWeight: "600",
+    color: theme.colors.textSecondary,
+    textAlign: "right",
+  },
   productsWrap: {
     marginTop: 14,
   },
@@ -93,6 +110,10 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "900",
     color: theme.colors.textPrimary,
+  },
+  premiumBtn: {
+    backgroundColor: "#EEF2FF",
+    borderColor: "#C7D2FE",
   },
   primaryBtn: {
     marginTop: 12,

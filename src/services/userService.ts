@@ -1,6 +1,7 @@
 import {
   doc,
   getDoc,
+  getDocFromServer,
   setDoc,
   updateDoc,
   serverTimestamp,
@@ -35,6 +36,7 @@ export interface UserData {
   // History
   totalUses: number;
   lastUsedAt: Timestamp | null;
+  lastCheckedAt: Timestamp | null;
 
   // Settings
   adsEnabled: boolean;
@@ -51,21 +53,35 @@ const DEFAULT_USER_DATA: Omit<UserData, "email" | "createdAt"> = {
   hasPaymentMethod: false,
   totalUses: 0,
   lastUsedAt: null,
+  lastCheckedAt: null,
   adsEnabled: true,
 };
 
-// Helper: Get today's date as YYYY-MM-DD
-function getTodayString(): string {
-  const today = new Date();
-  return today.toISOString().split("T")[0];
+function formatDateString(date: Date): string {
+  return date.toISOString().split("T")[0];
 }
 
 // Helper: Calculate days between two dates
 function daysBetween(date1Str: string, date2Str: string): number {
   const d1 = new Date(date1Str);
   const d2 = new Date(date2Str);
-  const diffTime = Math.abs(d2.getTime() - d1.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffTime = d2.getTime() - d1.getTime();
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+}
+
+async function getServerDateString(uid: string): Promise<string> {
+  try {
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, { lastCheckedAt: serverTimestamp() });
+    const snap = await getDocFromServer(userRef);
+    const ts = snap.data()?.lastCheckedAt;
+    if (ts && typeof ts.toDate === "function") {
+      return formatDateString(ts.toDate());
+    }
+  } catch {
+    // ignore and fall back to local time
+  }
+  return formatDateString(new Date());
 }
 
 export const UserService = {
@@ -135,10 +151,17 @@ export const UserService = {
     }
 
     // Check if we need to reset weekly counter
-    const today = getTodayString();
+    const today = await getServerDateString(uid);
     const weekStart = userData.weekStartDate ?? null;
     if (weekStart) {
-      const daysSinceWeekStart = daysBetween(weekStart, today);
+      const rawDaysSinceWeekStart = daysBetween(weekStart, today);
+      if (rawDaysSinceWeekStart < 0) {
+        await updateDoc(doc(db, "users", uid), {
+          weekStartDate: today,
+        });
+        userData.weekStartDate = today;
+      }
+      const daysSinceWeekStart = Math.max(0, rawDaysSinceWeekStart);
       if (daysSinceWeekStart >= 7) {
         // Reset weekly counter window
         await updateDoc(doc(db, "users", uid), {
@@ -197,10 +220,17 @@ export const UserService = {
       return true;
     }
 
-    const today = getTodayString();
+    const today = await getServerDateString(uid);
     const weekStart = userData.weekStartDate ?? null;
     if (weekStart) {
-      const daysSinceWeekStart = daysBetween(weekStart, today);
+      const rawDaysSinceWeekStart = daysBetween(weekStart, today);
+      if (rawDaysSinceWeekStart < 0) {
+        await updateDoc(userRef, {
+          weekStartDate: today,
+        });
+        userData.weekStartDate = today;
+      }
+      const daysSinceWeekStart = Math.max(0, rawDaysSinceWeekStart);
       if (daysSinceWeekStart >= 7) {
         userData.usesThisWeek = 0;
         userData.weekStartDate = null;

@@ -89,6 +89,11 @@
     "title": "Buy credits",
     "subtitle": "Credits let you keep working after your weekly limit.",
     "priceNote": "Each extra action costs 1 NIS.",
+    "premiumSection": "Premium",
+    "creditsSection": "Credits",
+    "premiumTitle": "Premium monthly",
+    "premiumSubtitle": "Unlimited actions, no ads",
+    "premiumActive": "Premium active until {{date}}",
     "productOneTitle": "1 credit",
     "productOneSubtitle": "1 NIS for one extra action",
     "productTenTitle": "10 credits pack",
@@ -101,6 +106,7 @@
     "productUnavailable": "Unavailable",
     "successTitle": "Purchase complete",
     "successBody": "Added {{count}} credits to your account.",
+    "premiumSuccessBody": "Premium subscription activated.",
     "errorTitle": "Purchase error",
     "signInRequired": "Please sign in to buy credits.",
     "errorUnknownProduct": "Unknown product."
@@ -185,7 +191,7 @@
   "signPdf": {
     "subtitlePages": "{{count}} pages",
     "editor": {
-      "title": "Page {{page}}{{total}}"
+      "title": "Page {{page}}/{{total}}"
     },
     "alerts": {
       "exportActiveTitle": "Export in progress",

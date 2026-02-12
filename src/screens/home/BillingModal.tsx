@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -37,48 +37,86 @@ const CREDIT_PRODUCTS = [
   },
 ] as const;
 
+const PREMIUM_SUBSCRIPTION = {
+  sku: "premium_monthly",
+  titleKey: "billing.premiumTitle",
+  subtitleKey: "billing.premiumSubtitle",
+  fallbackPrice: "19.99",
+} as const;
+
 export default function BillingModal({ open, onClose, userId }: Props) {
   const { t } = useTranslation();
-  const { refreshUserData } = useUserContext();
+  const { refreshUserData, userData } = useUserContext();
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [buyingSku, setBuyingSku] = useState<string | null>(null);
   const [completingPurchase, setCompletingPurchase] = useState(false);
+  const handledPurchasesRef = useRef<Set<string>>(new Set());
 
   const productIds = useMemo(
     () => CREDIT_PRODUCTS.map((item) => item.sku),
     [],
   );
+  const subscriptionIds = useMemo(() => [PREMIUM_SUBSCRIPTION.sku], []);
+
+  const premiumExpiry = userData?.premiumExpiresAt?.toDate?.() ?? null;
+  const premiumActive =
+    Boolean(premiumExpiry) && premiumExpiry ? premiumExpiry > new Date() : false;
+  const premiumExpiryLabel = premiumExpiry
+    ? premiumExpiry.toLocaleDateString()
+    : "";
 
   const {
     connected,
     products,
+    subscriptions,
     fetchProducts,
     requestPurchase,
     finishTransaction,
   } = useIAP({
     onPurchaseSuccess: async (purchase: Purchase) => {
+      const purchaseId =
+        purchase.id || purchase.purchaseToken || purchase.productId;
+      if (handledPurchasesRef.current.has(purchaseId)) {
+        return;
+      }
+      handledPurchasesRef.current.add(purchaseId);
+
       if (!userId) {
         Alert.alert(t("billing.errorTitle"), t("billing.signInRequired"));
         return;
       }
-      const matched = CREDIT_PRODUCTS.find(
+      const matchedCredit = CREDIT_PRODUCTS.find(
         (item) => item.sku === purchase.productId,
       );
-      if (!matched) {
-        Alert.alert(t("billing.errorTitle"), t("billing.errorUnknownProduct"));
-        return;
-      }
 
       try {
         setCompletingPurchase(true);
-        await UserService.addCredits(userId, matched.credits);
-        await finishTransaction({ purchase, isConsumable: true });
-        await refreshUserData();
-        Alert.alert(
-          t("billing.successTitle"),
-          t("billing.successBody", { count: matched.credits }),
-        );
-        onClose();
+
+        if (matchedCredit) {
+          await UserService.addCredits(userId, matchedCredit.credits);
+          await finishTransaction({ purchase, isConsumable: true });
+          await refreshUserData();
+          Alert.alert(
+            t("billing.successTitle"),
+            t("billing.successBody", { count: matchedCredit.credits }),
+          );
+          onClose();
+          return;
+        }
+
+        if (purchase.productId === PREMIUM_SUBSCRIPTION.sku) {
+          await UserService.upgradeToPremium(userId, 30);
+          await finishTransaction({ purchase, isConsumable: false });
+          await refreshUserData();
+          Alert.alert(
+            t("billing.successTitle"),
+            t("billing.premiumSuccessBody"),
+          );
+          onClose();
+          return;
+        }
+
+        Alert.alert(t("billing.errorTitle"), t("billing.errorUnknownProduct"));
       } catch (e: any) {
         Alert.alert(t("billing.errorTitle"), e?.message ?? "");
       } finally {
@@ -100,7 +138,10 @@ export default function BillingModal({ open, onClose, userId }: Props) {
     if (!open || !connected) return;
     let active = true;
     setLoadingProducts(true);
-    fetchProducts({ skus: productIds, type: "in-app" })
+    Promise.all([
+      fetchProducts({ skus: productIds, type: "in-app" }),
+      fetchProducts({ skus: subscriptionIds, type: "subs" }),
+    ])
       .catch(() => {})
       .finally(() => {
         if (active) setLoadingProducts(false);
@@ -108,7 +149,7 @@ export default function BillingModal({ open, onClose, userId }: Props) {
     return () => {
       active = false;
     };
-  }, [open, connected, fetchProducts, productIds]);
+  }, [open, connected, fetchProducts, productIds, subscriptionIds]);
 
   useEffect(() => {
     if (open) return;
@@ -120,8 +161,11 @@ export default function BillingModal({ open, onClose, userId }: Props) {
   const productsById = useMemo(() => {
     return new Map(products.map((product) => [product.id, product]));
   }, [products]);
+  const subscriptionsById = useMemo(() => {
+    return new Map(subscriptions.map((product) => [product.id, product]));
+  }, [subscriptions]);
 
-  const handleBuy = async (sku: string) => {
+  const handleBuyCredit = async (sku: string) => {
     const product = productsById.get(sku);
     if (!userId) {
       Alert.alert(t("billing.errorTitle"), t("billing.signInRequired"));
@@ -143,6 +187,43 @@ export default function BillingModal({ open, onClose, userId }: Props) {
         request: {
           google: { skus: [sku] },
           apple: { sku },
+        },
+      });
+    } catch (e: any) {
+      setBuyingSku(null);
+      Alert.alert(t("billing.errorTitle"), e?.message ?? "");
+    }
+  };
+
+  const handleBuyPremium = async () => {
+    const product = subscriptionsById.get(PREMIUM_SUBSCRIPTION.sku);
+    if (!userId) {
+      Alert.alert(t("billing.errorTitle"), t("billing.signInRequired"));
+      return;
+    }
+    if (!connected) {
+      Alert.alert(t("billing.errorTitle"), t("billing.storeUnavailable"));
+      return;
+    }
+    if (!product) {
+      Alert.alert(t("billing.errorTitle"), t("billing.productUnavailable"));
+      return;
+    }
+    if (premiumActive) {
+      Alert.alert(
+        t("billing.successTitle"),
+        t("billing.premiumActive", { date: premiumExpiryLabel }),
+      );
+      return;
+    }
+    if (buyingSku || completingPurchase) return;
+    setBuyingSku(PREMIUM_SUBSCRIPTION.sku);
+    try {
+      await requestPurchase({
+        type: "subs",
+        request: {
+          google: { skus: [PREMIUM_SUBSCRIPTION.sku] },
+          apple: { sku: PREMIUM_SUBSCRIPTION.sku },
         },
       });
     } catch (e: any) {
@@ -179,6 +260,53 @@ export default function BillingModal({ open, onClose, userId }: Props) {
             <Text style={styles.warning}>{t("billing.noProducts")}</Text>
           ) : null}
 
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>{t("billing.premiumSection")}</Text>
+            {premiumActive ? (
+              <Text style={styles.sectionSubtitle}>
+                {t("billing.premiumActive", { date: premiumExpiryLabel })}
+              </Text>
+            ) : null}
+          </View>
+
+          <Pressable
+            style={[
+              styles.productBtn,
+              styles.premiumBtn,
+              (!subscriptionsById.get(PREMIUM_SUBSCRIPTION.sku) ||
+                premiumActive) &&
+                styles.btnDisabled,
+            ]}
+            disabled={
+              !subscriptionsById.get(PREMIUM_SUBSCRIPTION.sku) || premiumActive
+            }
+            onPress={handleBuyPremium}
+          >
+            <View style={styles.productRow}>
+              <View style={styles.productInfo}>
+                <Text style={styles.productTitle}>
+                  {t(PREMIUM_SUBSCRIPTION.titleKey)}
+                </Text>
+                <Text style={styles.productSubtitle}>
+                  {t(PREMIUM_SUBSCRIPTION.subtitleKey)}
+                </Text>
+              </View>
+              <Text style={styles.productPrice}>
+                {!subscriptionsById.get(PREMIUM_SUBSCRIPTION.sku)
+                  ? t("billing.productUnavailable")
+                  : buyingSku === PREMIUM_SUBSCRIPTION.sku ||
+                      completingPurchase
+                    ? t("billing.processing")
+                    : subscriptionsById.get(PREMIUM_SUBSCRIPTION.sku)
+                        ?.displayPrice || PREMIUM_SUBSCRIPTION.fallbackPrice}
+              </Text>
+            </View>
+          </Pressable>
+
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>{t("billing.creditsSection")}</Text>
+          </View>
+
           <View style={styles.productsWrap}>
             {CREDIT_PRODUCTS.map((item, index) => {
               const product = productsById.get(item.sku);
@@ -195,7 +323,7 @@ export default function BillingModal({ open, onClose, userId }: Props) {
                     disabled && styles.btnDisabled,
                   ]}
                   disabled={disabled}
-                  onPress={() => handleBuy(item.sku)}
+                  onPress={() => handleBuyCredit(item.sku)}
                 >
                   <View style={styles.productRow}>
                     <View style={styles.productInfo}>
