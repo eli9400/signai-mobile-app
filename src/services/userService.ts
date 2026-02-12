@@ -150,15 +150,22 @@ export const UserService = {
       }
     }
 
-    // Check if user has credits
+    const weeklyRemaining = Math.max(
+      0,
+      userData.weeklyLimit - userData.usesThisWeek,
+    );
+
+    // If user has credits, allow usage but keep weekly count separate
     if (userData.credits > 0) {
-      return { canUse: true, usesLeft: userData.credits };
+      return {
+        canUse: true,
+        usesLeft: weeklyRemaining,
+      };
     }
 
     // Check weekly limit
-    if (userData.usesThisWeek < userData.weeklyLimit) {
-      const remaining = userData.weeklyLimit - userData.usesThisWeek;
-      return { canUse: true, usesLeft: remaining };
+    if (weeklyRemaining > 0) {
+      return { canUse: true, usesLeft: weeklyRemaining };
     }
 
     // No credits and exceeded weekly limit

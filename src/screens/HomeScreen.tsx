@@ -28,14 +28,16 @@ export default function HomeScreen({
   onGoCamera,
 }: HomeScreenProps) {
   const { t } = useTranslation();
-  const { canUse, loading: userLoading, usesLeft } = useUserContext();
+  const { canUse, loading: userLoading, usesLeft, userData } = useUserContext();
   const canSign = Boolean(signatureUri);
   const canUseAction = userLoading ? true : canUse;
-  const usageLabel = userLoading
-    ? null
-    : canUse
-      ? t("home.usesLeft", { count: usesLeft })
-      : t("home.usesLimitReached");
+  const credits = userData?.credits ?? 0;
+  const weeklyLabel =
+    !userLoading && usesLeft > 0 ? t("home.usesLeft", { count: usesLeft }) : null;
+  const creditsLabel =
+    !userLoading && credits > 0 ? t("home.creditsLeft", { count: credits }) : null;
+  const limitLabel =
+    !userLoading && !canUse ? t("home.usesLimitReached") : null;
   const limitAlertShownRef = useRef(false);
 
   useEffect(() => {
@@ -104,8 +106,14 @@ export default function HomeScreen({
           <Text style={layoutStyles.bottomHint}>{t("home.bottomHint")}</Text>
         ) : null}
 
-        {usageLabel ? (
-          <Text style={layoutStyles.usageHint}>{usageLabel}</Text>
+        {weeklyLabel ? (
+          <Text style={layoutStyles.usageHint}>{weeklyLabel}</Text>
+        ) : null}
+        {creditsLabel ? (
+          <Text style={layoutStyles.usageHint}>{creditsLabel}</Text>
+        ) : null}
+        {limitLabel ? (
+          <Text style={layoutStyles.usageHint}>{limitLabel}</Text>
         ) : null}
 
         <View style={layoutStyles.spacerBottom} />
@@ -135,7 +143,6 @@ export default function HomeScreen({
         open={billingOpen}
         onClose={() => setBillingOpen(false)}
         userId={user?.uid ?? null}
-        email={displayEmail}
       />
     </SafeAreaView>
   );

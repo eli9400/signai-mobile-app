@@ -3,7 +3,7 @@
     "name": "QuickSign",
     "slug": "quicksign",
     "scheme": "com.quicksign.app",
-    "version": "1.0.9",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,11 +16,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.quicksign.app",
-      "buildNumber": "8"
+      "buildNumber": "11"
     },
     "android": {
       "package": "com.quicksign.app",
-      "versionCode": 8,
+      "versionCode": 11,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -75,8 +75,7 @@
       "googleAndroidClientId": "819188208664-6gl87n03vdm9qd6quqf45siu4gdo43s0.apps.googleusercontent.com",
       "googleExpoClientId": "819188208664-u6dgli3anpts6656c55f3n7qtoh7kdft.apps.googleusercontent.com",
       "adMobBannerAdUnitId": "ca-app-pub-8341281786825675/8846558222",
-      "adMobInterstitialAdUnitId": "ca-app-pub-8341281786825675/4994948125",
-      "stripePublishableKey": "pk_test_REPLACE_ME"
+      "adMobInterstitialAdUnitId": "ca-app-pub-8341281786825675/4994948125"
     },
     "owner": "eli9400457",
     "plugins": [
@@ -88,13 +87,6 @@
         }
       ],
       "expo-localization",
-      [
-        "@stripe/stripe-react-native",
-        {
-          "merchantIdentifier": "merchant.com.quicksign.app",
-          "enableGooglePay": false
-        }
-      ],
       [
         "react-native-google-mobile-ads",
         {
