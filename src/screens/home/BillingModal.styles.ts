@@ -115,6 +115,23 @@ export const styles = StyleSheet.create({
     backgroundColor: "#EEF2FF",
     borderColor: "#C7D2FE",
   },
+  dangerBtn: {
+    backgroundColor: "#FEE2E2",
+    borderColor: "#FCA5A5",
+    marginTop: 12,
+  },
+  dangerText: {
+    color: "#B91C1C",
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  dangerHint: {
+    marginTop: 8,
+    color: "#B91C1C",
+    fontWeight: "600",
+    fontSize: 12,
+    textAlign: "right",
+  },
   primaryBtn: {
     marginTop: 12,
     backgroundColor: theme.colors.buttonPrimary,

@@ -32,12 +32,29 @@ export default function HomeScreen({
   const canSign = Boolean(signatureUri);
   const canUseAction = userLoading ? true : canUse;
   const credits = userData?.credits ?? 0;
+  const premiumExpiry = userData?.premiumExpiresAt?.toDate?.() ?? null;
+  const premiumActive =
+    userData?.accountType === "premium" &&
+    premiumExpiry &&
+    premiumExpiry > new Date();
+  const premiumLabel =
+    premiumActive && premiumExpiry
+      ? t("home.premiumActive", {
+          date: premiumExpiry.toLocaleDateString(),
+        })
+      : null;
   const weeklyLabel =
-    !userLoading && usesLeft > 0 ? t("home.usesLeft", { count: usesLeft }) : null;
+    !premiumActive && !userLoading && usesLeft > 0
+      ? t("home.usesLeft", { count: usesLeft })
+      : null;
   const creditsLabel =
-    !userLoading && credits > 0 ? t("home.creditsLeft", { count: credits }) : null;
+    !premiumActive && !userLoading && credits > 0
+      ? t("home.creditsLeft", { count: credits })
+      : null;
   const limitLabel =
-    !userLoading && !canUse ? t("home.usesLimitReached") : null;
+    !premiumActive && !userLoading && !canUse
+      ? t("home.usesLimitReached")
+      : null;
   const limitAlertShownRef = useRef(false);
 
   useEffect(() => {
@@ -111,6 +128,9 @@ export default function HomeScreen({
         ) : null}
         {creditsLabel ? (
           <Text style={layoutStyles.usageHint}>{creditsLabel}</Text>
+        ) : null}
+        {premiumLabel ? (
+          <Text style={layoutStyles.usageHint}>{premiumLabel}</Text>
         ) : null}
         {limitLabel ? (
           <Text style={layoutStyles.usageHint}>{limitLabel}</Text>

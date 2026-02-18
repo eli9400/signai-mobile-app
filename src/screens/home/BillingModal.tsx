@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Linking,
   Modal,
   Pressable,
   Text,
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { type Purchase, useIAP } from "react-native-iap";
+import Constants from "expo-constants";
 import { UserService } from "../../services/userService";
 import { useUserContext } from "../../contexts/UserContext";
 import { styles } from "./BillingModal.styles";
@@ -64,6 +66,7 @@ export default function BillingModal({ open, onClose, userId }: Props) {
   const premiumExpiryLabel = premiumExpiry
     ? premiumExpiry.toLocaleDateString()
     : "";
+  const packageName = Constants.expoConfig?.android?.package ?? "";
 
   const {
     connected,
@@ -232,6 +235,20 @@ export default function BillingModal({ open, onClose, userId }: Props) {
     }
   };
 
+  const handleManageSubscription = async () => {
+    if (!packageName) {
+      Alert.alert(t("billing.errorTitle"), t("billing.storeUnavailable"));
+      return;
+    }
+    const url = `https://play.google.com/store/account/subscriptions?package=${packageName}&sku=${PREMIUM_SUBSCRIPTION.sku}`;
+    const canOpen = await Linking.canOpenURL(url);
+    if (!canOpen) {
+      Alert.alert(t("billing.errorTitle"), t("billing.storeUnavailable"));
+      return;
+    }
+    await Linking.openURL(url);
+  };
+
   return (
     <Modal
       visible={open}
@@ -241,9 +258,17 @@ export default function BillingModal({ open, onClose, userId }: Props) {
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.card} onPress={() => {}}>
-          <Text style={styles.title}>{t("billing.title")}</Text>
-          <Text style={styles.subtitle}>{t("billing.subtitle")}</Text>
-          <Text style={styles.priceNote}>{t("billing.priceNote")}</Text>
+          <Text style={styles.title}>
+            {premiumActive ? t("billing.premiumTitle") : t("billing.title")}
+          </Text>
+          <Text style={styles.subtitle}>
+            {premiumActive
+              ? t("billing.premiumSubtitle")
+              : t("billing.subtitle")}
+          </Text>
+          {!premiumActive ? (
+            <Text style={styles.priceNote}>{t("billing.priceNote")}</Text>
+          ) : null}
 
           {!connected ? (
             <Text style={styles.warning}>{t("billing.storeUnavailable")}</Text>
@@ -303,49 +328,69 @@ export default function BillingModal({ open, onClose, userId }: Props) {
             </View>
           </Pressable>
 
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{t("billing.creditsSection")}</Text>
-          </View>
+          {premiumActive ? (
+            <>
+              <Pressable
+                style={[styles.productBtn, styles.dangerBtn]}
+                onPress={handleManageSubscription}
+              >
+                <Text style={styles.dangerText}>
+                  {t("billing.cancelPremium")}
+                </Text>
+              </Pressable>
+              <Text style={styles.dangerHint}>
+                {t("billing.cancelPremiumHint")}
+              </Text>
+            </>
+          ) : (
+            <>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>
+                  {t("billing.creditsSection")}
+                </Text>
+              </View>
 
-          <View style={styles.productsWrap}>
-            {CREDIT_PRODUCTS.map((item, index) => {
-              const product = productsById.get(item.sku);
-              const priceLabel = product?.displayPrice || item.fallbackPrice;
-              const isBusy = buyingSku === item.sku || completingPurchase;
-              const disabled = !connected || isBusy || !product;
+              <View style={styles.productsWrap}>
+                {CREDIT_PRODUCTS.map((item, index) => {
+                  const product = productsById.get(item.sku);
+                  const priceLabel = product?.displayPrice || item.fallbackPrice;
+                  const isBusy = buyingSku === item.sku || completingPurchase;
+                  const disabled = !connected || isBusy || !product;
 
-              return (
-                <Pressable
-                  key={item.sku}
-                  style={[
-                    styles.productBtn,
-                    index > 0 && styles.productBtnSpacing,
-                    disabled && styles.btnDisabled,
-                  ]}
-                  disabled={disabled}
-                  onPress={() => handleBuyCredit(item.sku)}
-                >
-                  <View style={styles.productRow}>
-                    <View style={styles.productInfo}>
-                      <Text style={styles.productTitle}>
-                        {t(item.titleKey)}
-                      </Text>
-                      <Text style={styles.productSubtitle}>
-                        {t(item.subtitleKey)}
-                      </Text>
-                    </View>
-                    <Text style={styles.productPrice}>
-                      {!product
-                        ? t("billing.productUnavailable")
-                        : isBusy
-                          ? t("billing.processing")
-                          : priceLabel}
-                    </Text>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </View>
+                  return (
+                    <Pressable
+                      key={item.sku}
+                      style={[
+                        styles.productBtn,
+                        index > 0 && styles.productBtnSpacing,
+                        disabled && styles.btnDisabled,
+                      ]}
+                      disabled={disabled}
+                      onPress={() => handleBuyCredit(item.sku)}
+                    >
+                      <View style={styles.productRow}>
+                        <View style={styles.productInfo}>
+                          <Text style={styles.productTitle}>
+                            {t(item.titleKey)}
+                          </Text>
+                          <Text style={styles.productSubtitle}>
+                            {t(item.subtitleKey)}
+                          </Text>
+                        </View>
+                        <Text style={styles.productPrice}>
+                          {!product
+                            ? t("billing.productUnavailable")
+                            : isBusy
+                              ? t("billing.processing")
+                              : priceLabel}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </>
+          )}
         </Pressable>
       </Pressable>
     </Modal>

@@ -22,6 +22,7 @@
     "bottomHint": "Чтобы подписывать документы — сначала создайте подпись.",
     "usesLeft": "Осталось {{count}} действий на эту неделю",
     "creditsLeft": "Доступные кредиты: {{count}}",
+    "premiumActive": "Премиум активен до {{date}}",
     "usesLimitReached": "Вы достигли недельного лимита",
     "limitTitle": "Достигнут недельный лимит",
     "limitBody": "Вы можете продолжить через 7 дней или купить кредиты (1 шек. за действие).",
@@ -81,6 +82,7 @@
     "actions": {
       "save": "Сохранить",
       "billing": "Купить кредиты",
+      "cancelPremium": "Отменить Premium",
       "signIn": "Войти",
       "signOut": "Выйти"
     }
@@ -106,6 +108,8 @@
     "productUnavailable": "Недоступно",
     "successTitle": "Покупка завершена",
     "successBody": "Добавлено {{count}} кредитов.",
+    "cancelPremium": "Отменить подписку Premium",
+    "cancelPremiumHint": "Отмена выполняется в Google Play, доступ останется до конца текущего периода.",
     "premiumSuccessBody": "Премиум успешно активирован.",
     "errorTitle": "Ошибка покупки",
     "signInRequired": "Войдите, чтобы купить кредиты.",

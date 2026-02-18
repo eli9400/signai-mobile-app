@@ -22,6 +22,7 @@
     "bottomHint": "To sign documents — create a signature first.",
     "usesLeft": "You have {{count}} actions left this week",
     "creditsLeft": "Credits available: {{count}}",
+    "premiumActive": "Premium active until {{date}}",
     "usesLimitReached": "You reached your weekly limit",
     "limitTitle": "Weekly limit reached",
     "limitBody": "You can continue after 7 days or buy credits (1 NIS per action).",
@@ -81,6 +82,7 @@
     "actions": {
       "save": "Save",
       "billing": "Buy credits",
+      "cancelPremium": "Cancel Premium",
       "signIn": "Sign in",
       "signOut": "Sign out"
     }
@@ -106,6 +108,8 @@
     "productUnavailable": "Unavailable",
     "successTitle": "Purchase complete",
     "successBody": "Added {{count}} credits to your account.",
+    "cancelPremium": "Cancel Premium subscription",
+    "cancelPremiumHint": "Cancellation is handled in Google Play. Access stays active until the current period ends.",
     "premiumSuccessBody": "Premium subscription activated.",
     "errorTitle": "Purchase error",
     "signInRequired": "Please sign in to buy credits.",

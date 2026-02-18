@@ -22,6 +22,7 @@
     "bottomHint": "لتوقيع المستندات — أنشئ توقيعًا أولًا.",
     "usesLeft": "تبقّى لك {{count}} عمليات هذا الأسبوع",
     "creditsLeft": "الأرصدة المتاحة: {{count}}",
+    "premiumActive": "بريميوم فعّال حتى {{date}}",
     "usesLimitReached": "لقد وصلت إلى الحد الأسبوعي",
     "limitTitle": "وصلت إلى الحد الأسبوعي",
     "limitBody": "يمكنك المتابعة بعد 7 أيام أو شراء رصيد (1 شيكل لكل عملية).",
@@ -81,6 +82,7 @@
     "actions": {
       "save": "حفظ",
       "billing": "شراء الرصيد",
+      "cancelPremium": "إلغاء بريميوم",
       "signIn": "تسجيل الدخول",
       "signOut": "تسجيل الخروج"
     }
@@ -106,6 +108,8 @@
     "productUnavailable": "غير متاح",
     "successTitle": "تمت عملية الشراء",
     "successBody": "تمت إضافة {{count}} رصيد إلى حسابك.",
+    "cancelPremium": "إلغاء اشتراك بريميوم",
+    "cancelPremiumHint": "يتم الإلغاء عبر Google Play وسيبقى الاشتراك فعالاً حتى نهاية الفترة.",
     "premiumSuccessBody": "تم تفعيل بريميوم بنجاح.",
     "errorTitle": "خطأ في الشراء",
     "signInRequired": "يرجى تسجيل الدخول لشراء الرصيد.",

@@ -3,6 +3,7 @@ import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { getHomeCurrentLang, HOME_LANG_FLAG } from "./homeLanguage";
 import type { User } from "firebase/auth";
+import { useUserContext } from "../../contexts/UserContext";
 import { styles } from "./ProfileModal.styles";
 
 type Props = {
@@ -35,8 +36,14 @@ export default function ProfileModal({
   onSignOut,
 }: Props) {
   const { t } = useTranslation();
+  const { userData } = useUserContext();
   const currentLang = getHomeCurrentLang();
   const saveDisabled = !user || !nameDraft.trim();
+  const premiumExpiry = userData?.premiumExpiresAt?.toDate?.() ?? null;
+  const premiumActive =
+    userData?.accountType === "premium" &&
+    premiumExpiry &&
+    premiumExpiry > new Date();
 
   return (
     <Modal
@@ -101,14 +108,20 @@ export default function ProfileModal({
 
           {user ? (
             <Pressable
-              style={styles.secondaryBtn}
+              style={premiumActive ? styles.dangerBtn : styles.secondaryBtn}
               onPress={() => {
                 onClose();
                 onOpenBilling();
               }}
             >
-              <Text style={styles.secondaryBtnText}>
-                {t("profile.actions.billing")}
+              <Text
+                style={
+                  premiumActive ? styles.dangerBtnText : styles.secondaryBtnText
+                }
+              >
+                {premiumActive
+                  ? t("profile.actions.cancelPremium")
+                  : t("profile.actions.billing")}
               </Text>
             </Pressable>
           ) : null}

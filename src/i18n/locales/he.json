@@ -22,6 +22,7 @@
     "bottomHint": "כדי להפעיל חתימה על מסמכים — קודם צור חתימה.",
     "usesLeft": "נותרו לך {{count}} פעולות השבוע",
     "creditsLeft": "קרדיטים זמינים: {{count}}",
+    "premiumActive": "פרימיום פעיל עד {{date}}",
     "usesLimitReached": "הגעת למגבלה השבועית",
     "limitTitle": "הגעת למגבלה השבועית",
     "limitBody": "תוכל להמשיך אחרי 7 ימים או לרכוש קרדיטים (1 ש\"ח לכל פעולה).",
@@ -81,6 +82,7 @@
     "actions": {
       "save": "שמור",
       "billing": "רכישת קרדיטים",
+      "cancelPremium": "ביטול מנוי פרימיום",
       "signIn": "התחברות",
       "signOut": "התנתקות"
     }
@@ -106,6 +108,8 @@
     "productUnavailable": "לא זמין",
     "successTitle": "הרכישה הושלמה",
     "successBody": "התווספו לחשבונך {{count}} קרדיטים.",
+    "cancelPremium": "ביטול מנוי פרימיום",
+    "cancelPremiumHint": "הביטול מתבצע דרך Google Play והמנוי יישאר פעיל עד סוף התקופה.",
     "premiumSuccessBody": "המנוי הופעל בהצלחה.",
     "errorTitle": "שגיאת רכישה",
     "signInRequired": "יש להתחבר כדי לרכוש קרדיטים.",
