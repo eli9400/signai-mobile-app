@@ -3,7 +3,7 @@
     "name": "QuickSign",
     "slug": "quicksign",
     "scheme": "com.quicksign.app",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,11 +16,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.quicksign.app",
-      "buildNumber": "13"
+      "buildNumber": "14"
     },
     "android": {
       "package": "com.quicksign.app",
-      "versionCode": 13,
+      "versionCode": 14,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -75,7 +75,9 @@
       "googleAndroidClientId": "819188208664-6gl87n03vdm9qd6quqf45siu4gdo43s0.apps.googleusercontent.com",
       "googleExpoClientId": "819188208664-u6dgli3anpts6656c55f3n7qtoh7kdft.apps.googleusercontent.com",
       "adMobBannerAdUnitId": "ca-app-pub-8341281786825675/8846558222",
-      "adMobInterstitialAdUnitId": "ca-app-pub-8341281786825675/4994948125"
+      "adMobInterstitialAdUnitId": "ca-app-pub-8341281786825675/4994948125",
+      "termsUrl": "https://eli9400.github.io/quicksign-legal/terms-of-service.html",
+      "privacyUrl": "https://eli9400.github.io/quicksign-legal/privacy-policy.html"
     },
     "owner": "eli9400457",
     "plugins": [

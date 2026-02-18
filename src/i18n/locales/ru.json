@@ -64,7 +64,15 @@
       "emailInUse": "Email уже используется",
       "weakPassword": "Слишком слабый пароль",
       "googleNotRegistered": "Этот аккаунт Google еще не зарегистрирован. Сначала зарегистрируйтесь.",
-      "googleAlreadyRegistered": "Этот аккаунт уже существует. Пожалуйста, войдите."
+      "googleAlreadyRegistered": "Этот аккаунт уже существует. Пожалуйста, войдите.",
+      "mustAcceptLegal": "You must accept the Terms and Privacy Policy",
+      "legalUrlMissing": "Legal page URL is not configured"
+    },
+    "legal": {
+      "prefix": "I agree to the",
+      "terms": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy"
     }
   },
   "profile": {

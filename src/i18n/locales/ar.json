@@ -64,7 +64,15 @@
       "emailInUse": "البريد الإلكتروني مستخدم بالفعل",
       "weakPassword": "كلمة المرور ضعيفة جدًا",
       "googleNotRegistered": "حساب Google غير مسجل بعد. يرجى التسجيل أولًا.",
-      "googleAlreadyRegistered": "هذا الحساب موجود بالفعل. يرجى تسجيل الدخول."
+      "googleAlreadyRegistered": "هذا الحساب موجود بالفعل. يرجى تسجيل الدخول.",
+      "mustAcceptLegal": "You must accept the Terms and Privacy Policy",
+      "legalUrlMissing": "Legal page URL is not configured"
+    },
+    "legal": {
+      "prefix": "I agree to the",
+      "terms": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy"
     }
   },
   "profile": {

@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
+  Linking,
   Pressable,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthEmailIcon, AuthGoogleIcon, AuthGuestIcon } from "../../ui/icons";
 import { theme } from "../../ui/theme";
 import { styles } from "./AuthScreen.styles";
 import { type AuthScreenProps } from "./authTypes";
 
 type Tab = "signIn" | "signUp";
+const LEGAL_CONSENT_KEY = "legal_consent_v1";
 
 export default function AuthFormCard({
   onEmailSignIn,
@@ -24,12 +29,37 @@ export default function AuthFormCard({
   error,
 }: AuthScreenProps) {
   const { t } = useTranslation();
+  const extra =
+    Constants.expoConfig?.extra ?? (Constants as any).manifest?.extra ?? {};
+  const termsUrl = typeof extra.termsUrl === "string" ? extra.termsUrl : "";
+  const privacyUrl =
+    typeof extra.privacyUrl === "string" ? extra.privacyUrl : "";
   const [tab, setTab] = useState<Tab>("signIn");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
+  const [legalError, setLegalError] = useState<string | null>(null);
   const [showErrors, setShowErrors] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadConsent = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(LEGAL_CONSENT_KEY);
+        if (mounted && saved === "1") {
+          setAcceptedLegal(true);
+        }
+      } catch {
+        // Ignore storage failures and keep local default.
+      }
+    };
+    void loadConsent();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const clearForm = () => {
     setName("");
@@ -40,6 +70,7 @@ export default function AuthFormCard({
 
   const clearErrors = () => {
     setShowErrors(false);
+    setLegalError(null);
     onClearError?.();
   };
 
@@ -65,15 +96,71 @@ export default function AuthFormCard({
 
   const validationError = validate();
 
+  const enforceLegalConsent = () => {
+    if (acceptedLegal) return true;
+    setLegalError(t("auth.errors.mustAcceptLegal"));
+    return false;
+  };
+
+  const openLegalUrl = async (url: string) => {
+    if (!url) {
+      Alert.alert(t("common.alerts.errorTitle"), t("auth.errors.legalUrlMissing"));
+      return;
+    }
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (!canOpen) {
+        Alert.alert(
+          t("common.alerts.errorTitle"),
+          t("auth.errors.legalUrlMissing"),
+        );
+        return;
+      }
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert(t("common.alerts.errorTitle"), t("auth.errors.legalUrlMissing"));
+    }
+  };
+
   const submit = async () => {
     setShowErrors(true);
     if (validationError) return;
+    if (!enforceLegalConsent()) return;
+    setLegalError(null);
 
     if (tab === "signIn") {
       await onEmailSignIn(email.trim(), password);
     } else {
       await onEmailSignUp(name.trim(), email.trim(), password);
     }
+  };
+
+  const handleGooglePress = async () => {
+    setShowErrors(true);
+    if (!enforceLegalConsent()) return;
+    setLegalError(null);
+    await onGoogleSignIn(tab);
+  };
+
+  const handleGuestPress = () => {
+    setShowErrors(true);
+    if (!enforceLegalConsent()) return;
+    setLegalError(null);
+    onContinueAsGuest();
+  };
+
+  const toggleLegalConsent = () => {
+    setAcceptedLegal((prev) => {
+      const next = !prev;
+      if (next) {
+        void AsyncStorage.setItem(LEGAL_CONSENT_KEY, "1");
+      } else {
+        void AsyncStorage.removeItem(LEGAL_CONSENT_KEY);
+      }
+      return next;
+    });
+    setLegalError(null);
+    onClearError?.();
   };
 
   return (
@@ -162,9 +249,43 @@ export default function AuthFormCard({
           />
         ) : null}
 
-        {((showErrors && validationError) || error) ? (
+        <View style={styles.legalRow}>
+          <Pressable
+            style={[
+              styles.legalCheckbox,
+              acceptedLegal && styles.legalCheckboxChecked,
+            ]}
+            onPress={toggleLegalConsent}
+          >
+            {acceptedLegal ? (
+              <Text style={styles.legalCheckboxMark}>{"\u2713"}</Text>
+            ) : null}
+          </Pressable>
+          <Text style={styles.legalText}>
+            {t("auth.legal.prefix")}{" "}
+            <Text
+              style={styles.legalLink}
+              onPress={() => {
+                void openLegalUrl(termsUrl);
+              }}
+            >
+              {t("auth.legal.terms")}
+            </Text>{" "}
+            {t("auth.legal.and")}{" "}
+            <Text
+              style={styles.legalLink}
+              onPress={() => {
+                void openLegalUrl(privacyUrl);
+              }}
+            >
+              {t("auth.legal.privacy")}
+            </Text>
+          </Text>
+        </View>
+
+        {((showErrors && validationError) || legalError || error) ? (
           <Text style={styles.errorText}>
-            {(showErrors && validationError) || error}
+            {(showErrors && validationError) || legalError || error}
           </Text>
         ) : null}
 
@@ -196,12 +317,14 @@ export default function AuthFormCard({
         <Pressable
           style={[styles.googleBtn, loading && styles.googleBtnDisabled]}
           disabled={loading}
-          onPress={() => onGoogleSignIn("signIn")}
+          onPress={() => {
+            void handleGooglePress();
+          }}
         >
           <AuthGoogleIcon size={28} />
         </Pressable>
 
-        <Pressable style={styles.guestBtn} onPress={onContinueAsGuest}>
+        <Pressable style={styles.guestBtn} onPress={handleGuestPress}>
           <View style={styles.btnRow}>
             <AuthGuestIcon size={18} color={theme.colors.brand} />
             <Text style={styles.guestBtnText}>

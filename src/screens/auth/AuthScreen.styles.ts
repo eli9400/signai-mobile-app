@@ -81,6 +81,42 @@ export const styles = StyleSheet.create({
     color: "#b91c1c",
     fontWeight: "700",
   },
+  legalRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+  },
+  legalCheckbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
+  legalCheckboxChecked: {
+    backgroundColor: theme.colors.brand,
+    borderColor: theme.colors.brand,
+  },
+  legalCheckboxMark: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "900",
+  },
+  legalText: {
+    flex: 1,
+    color: theme.colors.textSecondary,
+    lineHeight: 20,
+    fontWeight: "600",
+  },
+  legalLink: {
+    color: theme.colors.brand,
+    textDecorationLine: "underline",
+    fontWeight: "800",
+  },
   primaryBtn: {
     backgroundColor: theme.colors.buttonPrimary,
     borderRadius: 14,

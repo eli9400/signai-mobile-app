@@ -64,7 +64,15 @@
       "emailInUse": "האימייל כבר בשימוש",
       "weakPassword": "סיסמה חלשה מדי",
       "googleNotRegistered": "החשבון לא רשום עדיין. יש לבצע הרשמה תחילה.",
-      "googleAlreadyRegistered": "החשבון כבר קיים. נא להתחבר במקום זאת."
+      "googleAlreadyRegistered": "החשבון כבר קיים. נא להתחבר במקום זאת.",
+      "mustAcceptLegal": "You must accept the Terms and Privacy Policy",
+      "legalUrlMissing": "Legal page URL is not configured"
+    },
+    "legal": {
+      "prefix": "I agree to the",
+      "terms": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy"
     }
   },
   "profile": {
