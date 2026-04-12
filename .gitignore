@@ -42,3 +42,18 @@ yarn-error.*
 
 # build artifacts
 *.apk
+
+
+# Firebase 
+google-services.json
+GoogleService-Info.plist
+
+# Logs
+*.log
+firebase-debug.log
+
+# Expo extra
+.expo-shared/
+
+# Misc
+coverage/
