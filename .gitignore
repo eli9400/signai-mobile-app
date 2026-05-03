@@ -48,6 +48,10 @@ yarn-error.*
 google-services.json
 GoogleService-Info.plist
 
+# Keep Firebase config files included in EAS build uploads
+!google-services.json
+!GoogleService-Info.plist
+
 # Logs
 *.log
 firebase-debug.log
