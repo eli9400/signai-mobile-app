@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { Point, Rect } from "../geometry";
-import type { SigItem } from "../hooks/useOverlayGestures";
+import type { Rect } from "../geometry";
+import type { SigItem, TextItem } from "../hooks/useOverlayGestures";
 
 export type Size = { w: number; h: number };
 
@@ -22,21 +22,11 @@ export type OverlayStageProps = {
   activeSigId: string | null;
   setActiveSigId: (id: string | null) => void;
 
-  // text 1
-  name1: string;
-  setName1: (s: string) => void;
-  name1Pos: Point;
-  setName1Pos: (p: Point) => void;
-  name1Font: number;
-  setName1Font: (n: number) => void;
-
-  // text 2
-  name2: string;
-  setName2: (s: string) => void;
-  name2Pos: Point;
-  setName2Pos: (p: Point) => void;
-  name2Font: number;
-  setName2Font: (n: number) => void;
+  // multi text blocks
+  textItems: TextItem[];
+  setTextItems: Dispatch<SetStateAction<TextItem[]>>;
+  activeTextId: string | null;
+  setActiveTextId: (id: string | null) => void;
 
   minSigW?: number;
   maxSigW?: number;

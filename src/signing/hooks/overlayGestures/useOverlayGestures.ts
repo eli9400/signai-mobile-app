@@ -16,8 +16,7 @@ export function useOverlayGestures(args: UseOverlayGesturesArgs) {
       onOverlayMove: handlers.onOverlayMove,
       onOverlayEnd: handlers.onOverlayEnd,
       isInteractingSig: handlers.isInteractingSig,
-      isInteractingName1: handlers.isInteractingName1,
-      isInteractingName2: handlers.isInteractingName2,
+      interactingTextId: handlers.interactingTextId,
     }),
     [
       state.active,
@@ -27,8 +26,7 @@ export function useOverlayGestures(args: UseOverlayGesturesArgs) {
       handlers.onOverlayMove,
       handlers.onOverlayEnd,
       handlers.isInteractingSig,
-      handlers.isInteractingName1,
-      handlers.isInteractingName2,
+      handlers.interactingTextId,
     ],
   );
 }

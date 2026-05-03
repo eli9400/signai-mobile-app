@@ -11,7 +11,7 @@ import ImageEditorExportView from "./imageEditor/ImageEditorExportView";
 import ImageEditorHeader from "./imageEditor/ImageEditorHeader";
 import ImageEditorStage from "./imageEditor/ImageEditorStage";
 import { styles } from "./imageEditor/ImageEditor.styles";
-import { type ImageEditorProps, type TextTarget } from "./imageEditor/types";
+import { type ImageEditorProps } from "./imageEditor/types";
 import { useAddText } from "./imageEditor/useAddText";
 import { useImageExport } from "./imageEditor/useImageExport";
 import { useStagePanZoom } from "./imageEditor/useStagePanZoom";
@@ -40,12 +40,6 @@ export default function ImageEditor({
     useStagePanZoom(isOverlayInteractingRef);
 
   const canShowImage = Boolean(imageUri && imageSize);
-  const nextTextTarget: TextTarget = !editState.name1.trim()
-    ? "name1"
-    : !editState.name2.trim()
-      ? "name2"
-      : null;
-
   const imageBox = useMemo(() => {
     if (!imageSize) return null;
     return calcImageBox(
@@ -92,7 +86,7 @@ export default function ImageEditor({
     openAddText,
     cancelAddText,
     confirmAddText,
-  } = useAddText({ nextTextTarget, setEditState });
+  } = useAddText({ setEditState });
 
   const handleStageLayout = (e: any) => {
     const w = e.nativeEvent.layout.width;
@@ -155,12 +149,8 @@ export default function ImageEditor({
           />
 
           <OverlayActionButtons
-            primaryLabel={
-              nextTextTarget
-                ? t("imageEditor.actions.addText")
-                : t("imageEditor.actions.textsLimitReached")
-            }
-            primaryDisabled={!nextTextTarget}
+            primaryLabel={t("imageEditor.actions.addText")}
+            primaryDisabled={false}
             onPrimaryPress={openAddText}
             secondaryLabel={t("imageEditor.actions.addSignature")}
             secondaryDisabled={!signatureUri}

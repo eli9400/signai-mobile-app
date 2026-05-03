@@ -33,6 +33,7 @@ export default function AppInner() {
     authError,
     handleEmailSignIn,
     handleEmailSignUp,
+    handleForgotPassword,
     handleGoogleSignIn,
     handleSignOut,
     handleUpdateProfile,
@@ -88,6 +89,7 @@ export default function AppInner() {
       <AuthScreen
         onEmailSignIn={handleEmailSignIn}
         onEmailSignUp={handleEmailSignUp}
+        onForgotPassword={handleForgotPassword}
         onGoogleSignIn={handleGoogleSignIn}
         onClearError={clearAuthError}
         onContinueAsGuest={() => setIsGuest(true)}

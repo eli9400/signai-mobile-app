@@ -1,7 +1,7 @@
 import { Asset } from "expo-asset";
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import { type PageEditState, type NormPoint } from "./signPdfTypes";
+import { type PageEditState, type NormPoint, type NormTextItem } from "./signPdfTypes";
 import {
   base64ToUint8,
   clamp01,
@@ -108,13 +108,29 @@ export async function exportStampedPdf({
           size: fontSize,
           font,
           color: textColor,
+          lineHeight: fontSize * 1.15,
+          maxWidth: Math.max(24, pw - x),
         });
       };
 
-      if (edit.name1?.trim())
-        drawName(edit.name1, edit.name1Pos, edit.name1FontN);
-      if (edit.name2?.trim())
-        drawName(edit.name2, edit.name2Pos, edit.name2FontN);
+      const normTextItems: NormTextItem[] = Array.isArray(edit.textItems)
+        ? edit.textItems
+        : [];
+
+      if (normTextItems.length > 0) {
+        for (const textItem of normTextItems) {
+          if (!textItem?.text?.trim()) continue;
+          drawName(textItem.text, textItem.pos, textItem.fontN);
+        }
+      } else {
+        // Backward compatibility with legacy two-text schema.
+        if (edit.name1?.trim() && edit.name1Pos) {
+          drawName(edit.name1, edit.name1Pos, edit.name1FontN ?? 0.03);
+        }
+        if (edit.name2?.trim() && edit.name2Pos) {
+          drawName(edit.name2, edit.name2Pos, edit.name2FontN ?? 0.03);
+        }
+      }
     }
 
     done += 1;

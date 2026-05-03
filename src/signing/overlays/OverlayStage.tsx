@@ -23,18 +23,10 @@ export default function OverlayStage({
 
   minSigW,
   maxSigW,
-
-  name1,
-  name1Pos,
-  setName1Pos,
-  name1Font,
-  setName1Font,
-
-  name2,
-  name2Pos,
-  setName2Pos,
-  name2Font,
-  setName2Font,
+  textItems,
+  setTextItems,
+  activeTextId,
+  setActiveTextId,
 
   minFont,
   maxFont,
@@ -75,16 +67,10 @@ export default function OverlayStage({
 
     minSigW,
     maxSigW,
-
-    name1Pos,
-    setName1Pos,
-    name1Font,
-    setName1Font,
-
-    name2Pos,
-    setName2Pos,
-    name2Font,
-    setName2Font,
+    textItems,
+    setTextItems,
+    activeTextId,
+    setActiveTextId,
 
     minFont,
     maxFont,
@@ -127,12 +113,8 @@ export default function OverlayStage({
       />
 
       <OverlayTextLayer
-        name1={name1}
-        name1Pos={name1Pos}
-        name1Font={name1Font}
-        name2={name2}
-        name2Pos={name2Pos}
-        name2Font={name2Font}
+        textItems={textItems}
+        activeTextId={activeTextId}
         isDisabled={isDisabled}
         abs={abs}
         gestures={gestures}

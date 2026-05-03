@@ -3,11 +3,11 @@ import type { Point, Rect } from "../../geometry";
 
 type Size = { w: number; h: number };
 export type SigItem = { id: string; pos: Point; size: Size };
+export type TextItem = { id: string; text: string; pos: Point; font: number };
 
 export type ActiveTarget =
   | { kind: "sig"; id: string }
-  | "name1"
-  | "name2"
+  | { kind: "text"; id: string }
   | null;
 
 export type UseOverlayGesturesArgs = {
@@ -20,14 +20,10 @@ export type UseOverlayGesturesArgs = {
   setActiveSigId: (id: string | null) => void;
   minSigW?: number;
   maxSigW?: number;
-  name1Pos: Point;
-  setName1Pos: (p: Point) => void;
-  name1Font: number;
-  setName1Font: (n: number) => void;
-  name2Pos: Point;
-  setName2Pos: (p: Point) => void;
-  name2Font: number;
-  setName2Font: (n: number) => void;
+  textItems: TextItem[];
+  setTextItems: Dispatch<SetStateAction<TextItem[]>>;
+  activeTextId: string | null;
+  setActiveTextId: (id: string | null) => void;
   minFont?: number;
   maxFont?: number;
   textClampPadding?: number;

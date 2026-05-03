@@ -1,15 +1,20 @@
 import { clamp, clampPosInsideBox, clampPosLoose, dist, type Point } from "../../geometry";
 import type { ActiveTarget, UseOverlayGesturesArgs } from "./types";
 import type { OverlayGestureState } from "./state";
-import { createTargetOps, isSigTarget, resolvePinchTarget, findSig } from "./targets";
+import {
+  createTargetOps,
+  findSig,
+  isSigTarget,
+  isTextTarget,
+  resolvePinchTarget,
+} from "./targets";
 import { DEFAULT_MAX_FONT, DEFAULT_MAX_SIG_W, DEFAULT_MIN_FONT, DEFAULT_MIN_SIG_W } from "./types";
 export type OverlayHandlers = {
   onOverlayGrant: (target: ActiveTarget) => (evt: any) => void;
   onOverlayMove: (evt: any) => void;
   onOverlayEnd: () => void;
   isInteractingSig: boolean;
-  isInteractingName1: boolean;
-  isInteractingName2: boolean;
+  interactingTextId: string | null;
 };
 export function useOverlayGestureHandlers(
   args: UseOverlayGesturesArgs,
@@ -22,16 +27,12 @@ export function useOverlayGestureHandlers(
     setSigItems,
     activeSigId,
     setActiveSigId,
+    textItems,
+    setTextItems,
+    activeTextId,
+    setActiveTextId,
     minSigW = DEFAULT_MIN_SIG_W,
     maxSigW = DEFAULT_MAX_SIG_W,
-    name1Pos,
-    setName1Pos,
-    name1Font,
-    setName1Font,
-    name2Pos,
-    setName2Pos,
-    name2Font,
-    setName2Font,
     minFont = DEFAULT_MIN_FONT,
     maxFont = DEFAULT_MAX_FONT,
     isPinchEnabled = true,
@@ -55,19 +56,14 @@ export function useOverlayGestureHandlers(
   const ops = createTargetOps({
     sigItems,
     setSigItems,
-    name1Pos,
-    setName1Pos,
-    name1Font,
-    setName1Font,
-    name2Pos,
-    setName2Pos,
-    name2Font,
-    setName2Font,
+    textItems,
+    setTextItems,
   });
 
   const onOverlayGrant = (target: ActiveTarget) => (evt: any) => {
     if (isDisabled) return;
     if (isSigTarget(target)) setActiveSigId(target.id);
+    if (isTextTarget(target)) setActiveTextId(target.id);
     setActive(target);
     activeRef.current = target;
     onInteractionStart?.();
@@ -111,6 +107,7 @@ export function useOverlayGestureHandlers(
         dragRef.current.target,
         activeRef.current,
         activeSigId,
+        activeTextId,
       );
       if (!target) return;
 
@@ -151,7 +148,7 @@ export function useOverlayGestureHandlers(
         return;
       }
 
-      if (target === "name1" || target === "name2") {
+      if (isTextTarget(target)) {
         const nextFont = clamp(pinchRef.current.startFont * scale, minFont, maxFont);
         ops.setTargetFont(target, nextFont);
         return;
@@ -190,6 +187,7 @@ export function useOverlayGestureHandlers(
     setDragState({ isDragging: false, target: null });
     setPinchState({ isPinching: false, target: null });
     setActive(null);
+    setActiveTextId(null);
     activeRef.current = null;
     onInteractionEnd?.();
   };
@@ -198,20 +196,21 @@ export function useOverlayGestureHandlers(
     (dragState.isDragging && isSigTarget(dragState.target)) ||
     (pinchState.isPinching && isSigTarget(pinchState.target));
 
-  const isInteractingName1 =
-    (dragState.isDragging && dragState.target === "name1") ||
-    (pinchState.isPinching && pinchState.target === "name1");
-
-  const isInteractingName2 =
-    (dragState.isDragging && dragState.target === "name2") ||
-    (pinchState.isPinching && pinchState.target === "name2");
+  const dragTextId =
+    dragState.isDragging && isTextTarget(dragState.target)
+      ? dragState.target.id
+      : null;
+  const pinchTextId =
+    pinchState.isPinching && isTextTarget(pinchState.target)
+      ? pinchState.target.id
+      : null;
+  const interactingTextId = dragTextId ?? pinchTextId;
 
   return {
     onOverlayGrant,
     onOverlayMove,
     onOverlayEnd,
     isInteractingSig,
-    isInteractingName1,
-    isInteractingName2,
+    interactingTextId,
   };
 }

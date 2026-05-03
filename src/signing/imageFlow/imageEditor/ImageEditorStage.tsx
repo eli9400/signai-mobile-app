@@ -57,6 +57,7 @@ export default function ImageEditorStage({
   loadingText,
 }: Props) {
   const safeSigItems = Array.isArray(editState.sigItems) ? editState.sigItems : [];
+  const safeTextItems = Array.isArray(editState.textItems) ? editState.textItems : [];
 
   return (
     <View style={styles.stageWrap} onLayout={onStageLayout}>
@@ -135,29 +136,25 @@ export default function ImageEditorStage({
                     setEditState((prev) => ({ ...prev, activeSigId: id }))
                   }
                   sigEnabled={editState.sigEnabled}
-                  name1={editState.name1}
-                  setName1={(name1) =>
-                    setEditState((prev) => ({ ...prev, name1 }))
-                  }
-                  name1Pos={editState.name1Pos}
-                  setName1Pos={(name1Pos) =>
-                    setEditState((prev) => ({ ...prev, name1Pos }))
-                  }
-                  name1Font={editState.name1Font}
-                  setName1Font={(name1Font) =>
-                    setEditState((prev) => ({ ...prev, name1Font }))
-                  }
-                  name2={editState.name2}
-                  setName2={(name2) =>
-                    setEditState((prev) => ({ ...prev, name2 }))
-                  }
-                  name2Pos={editState.name2Pos}
-                  setName2Pos={(name2Pos) =>
-                    setEditState((prev) => ({ ...prev, name2Pos }))
-                  }
-                  name2Font={editState.name2Font}
-                  setName2Font={(name2Font) =>
-                    setEditState((prev) => ({ ...prev, name2Font }))
+                  textItems={safeTextItems}
+                  setTextItems={(itemsOrUpdater) => {
+                    setEditState((prev) => {
+                      const currentItems = Array.isArray(prev.textItems)
+                        ? prev.textItems
+                        : [];
+
+                      const newItems =
+                        typeof itemsOrUpdater === "function"
+                          ? itemsOrUpdater(currentItems)
+                          : itemsOrUpdater;
+
+                      const safeItems = Array.isArray(newItems) ? newItems : [];
+                      return { ...prev, textItems: safeItems };
+                    });
+                  }}
+                  activeTextId={editState.activeTextId}
+                  setActiveTextId={(id) =>
+                    setEditState((prev) => ({ ...prev, activeTextId: id }))
                   }
                   pageScale={pageScale}
                   isDisabled={false}

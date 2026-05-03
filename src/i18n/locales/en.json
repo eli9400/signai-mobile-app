@@ -51,10 +51,19 @@
       "continueAsGuest": "Continue as guest"
     },
     "legal": {
-      "prefix": "I agree to the",
+      "prefix": "I have read and accept the",
       "terms": "Terms of Service",
-      "and": "and",
-      "privacy": "Privacy Policy"
+      "and": "and the",
+      "privacy": "Privacy Policy",
+      "requiredTitle": "Terms approval required",
+      "requiredHint": "Before signing in or signing up, check the terms approval box.",
+      "acceptedHint": "Terms approval checked. You can continue."
+    },
+    "resetPassword": {
+      "linkLabel": "Forgot password?",
+      "requiredTitle": "Reset password",
+      "sentTitle": "Reset request submitted",
+      "sentBody": "If {{email}} is linked to an email/password account, a reset link will be sent. Also check Spam and Promotions."
     },
     "or": "or",
     "errors": {
@@ -63,8 +72,9 @@
       "missingPassword": "Password is required",
       "passwordTooShort": "Password must be at least 6 characters",
       "passwordsDontMatch": "Passwords do not match",
-      "mustAcceptLegal": "You must accept the Terms and Privacy Policy",
-      "legalUrlMissing": "Legal page URL is not configured",
+      "resetPasswordEmailRequired": "Enter your email so we can send a reset link.",
+      "mustAcceptLegal": "To continue, check the box and accept the Terms of Service and Privacy Policy.",
+      "legalUrlMissing": "Terms/Privacy page URL is not configured",
       "firebaseNotConfigured": "Firebase is not configured yet",
       "invalidEmail": "Invalid email address",
       "invalidCredentials": "Invalid email or password",

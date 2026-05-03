@@ -11,6 +11,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithCredential,
+  sendPasswordResetEmail,
   signOut,
   updateProfile,
   type User,
@@ -33,7 +34,7 @@ const REDIRECT_URI = AuthSession.makeRedirectUri({
 });
 
 export function useAuthState() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isAuthed, setIsAuthed] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -58,6 +59,13 @@ export function useAuthState() {
     });
     return () => unsub();
   }, []);
+
+  useEffect(() => {
+    const nextLanguageCode = (i18n.resolvedLanguage || i18n.language || "en")
+      .toLowerCase()
+      .split("-")[0];
+    auth.languageCode = nextLanguageCode;
+  }, [i18n.language, i18n.resolvedLanguage]);
 
   const mapAuthError = useCallback(
     (e: any) => {
@@ -112,6 +120,23 @@ export function useAuthState() {
         }
       } catch (e: any) {
         setAuthError(mapAuthError(e));
+      } finally {
+        setAuthLoading(false);
+      }
+    },
+    [mapAuthError],
+  );
+
+  const handleForgotPassword = useCallback(
+    async (email: string) => {
+      setAuthError(null);
+      setAuthLoading(true);
+      try {
+        await sendPasswordResetEmail(auth, email);
+        return true;
+      } catch (e: any) {
+        setAuthError(mapAuthError(e));
+        return false;
       } finally {
         setAuthLoading(false);
       }
@@ -198,6 +223,7 @@ export function useAuthState() {
     authError,
     handleEmailSignIn,
     handleEmailSignUp,
+    handleForgotPassword,
     handleGoogleSignIn,
     handleSignOut,
     handleUpdateProfile,

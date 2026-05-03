@@ -23,12 +23,28 @@ export default function AuthFormCard({
   onEmailSignIn,
   onEmailSignUp,
   onGoogleSignIn,
+  onForgotPassword,
   onContinueAsGuest,
   onClearError,
   loading = false,
   error,
 }: AuthScreenProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
+  const langCode = (i18n.resolvedLanguage || i18n.language || "en")
+    .toLowerCase()
+    .split("-")[0];
+  const resetFlowHint =
+    langCode === "he"
+      ? "אם נרשמת עם Google, יש להתחבר עם כפתור Google ולא דרך איפוס סיסמה."
+      : langCode === "ar"
+        ? "إذا تم تسجيل الحساب عبر Google، استخدم زر Google لتسجيل الدخول بدل إعادة تعيين كلمة المرور."
+        : langCode === "ru"
+          ? "Если аккаунт создан через Google, войдите через кнопку Google, а не через сброс пароля."
+          : "If you signed up with Google, use the Google button instead of password reset.";
+  const passwordDirectionStyle = isRtl
+    ? { textAlign: "right" as const, writingDirection: "rtl" as const }
+    : { textAlign: "left" as const, writingDirection: "ltr" as const };
   const extra =
     Constants.expoConfig?.extra ?? (Constants as any).manifest?.extra ?? {};
   const termsUrl = typeof extra.termsUrl === "string" ? extra.termsUrl : "";
@@ -98,7 +114,9 @@ export default function AuthFormCard({
 
   const enforceLegalConsent = () => {
     if (acceptedLegal) return true;
-    setLegalError(t("auth.errors.mustAcceptLegal"));
+    const message = t("auth.errors.mustAcceptLegal");
+    setLegalError(message);
+    Alert.alert(t("auth.legal.requiredTitle"), message);
     return false;
   };
 
@@ -147,6 +165,25 @@ export default function AuthFormCard({
     if (!enforceLegalConsent()) return;
     setLegalError(null);
     onContinueAsGuest();
+  };
+
+  const handleForgotPasswordPress = async () => {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail) {
+      Alert.alert(
+        t("auth.resetPassword.requiredTitle"),
+        t("auth.errors.resetPasswordEmailRequired"),
+      );
+      return;
+    }
+
+    const sent = await onForgotPassword(normalizedEmail);
+    if (!sent) return;
+
+    Alert.alert(
+      t("auth.resetPassword.sentTitle"),
+      `${t("auth.resetPassword.sentBody", { email: normalizedEmail })}\n\n${resetFlowHint}`,
+    );
   };
 
   const toggleLegalConsent = () => {
@@ -232,8 +269,32 @@ export default function AuthFormCard({
           onBlur={() => setShowErrors(true)}
           placeholder={t("auth.fields.password")}
           secureTextEntry
-          style={styles.input}
+          style={[styles.input, styles.passwordInput, passwordDirectionStyle]}
         />
+
+        {tab === "signIn" ? (
+          <>
+            <Pressable
+              style={styles.forgotPasswordBtn}
+              disabled={loading}
+              onPress={() => {
+                void handleForgotPasswordPress();
+              }}
+            >
+              <Text style={styles.forgotPasswordText}>
+                {t("auth.resetPassword.linkLabel")}
+              </Text>
+            </Pressable>
+            <Text
+              style={[
+                styles.forgotPasswordHint,
+                isRtl && styles.forgotPasswordHintRtl,
+              ]}
+            >
+              {resetFlowHint}
+            </Text>
+          </>
+        ) : null}
 
         {tab === "signUp" ? (
           <TextInput
@@ -245,7 +306,7 @@ export default function AuthFormCard({
             onBlur={() => setShowErrors(true)}
             placeholder={t("auth.fields.confirmPassword")}
             secureTextEntry
-            style={styles.input}
+            style={[styles.input, styles.passwordInput, passwordDirectionStyle]}
           />
         ) : null}
 
@@ -254,8 +315,13 @@ export default function AuthFormCard({
             style={[
               styles.legalCheckbox,
               acceptedLegal && styles.legalCheckboxChecked,
+              legalError && styles.legalCheckboxError,
             ]}
             onPress={toggleLegalConsent}
+            hitSlop={8}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: acceptedLegal }}
+            accessibilityLabel={t("auth.errors.mustAcceptLegal")}
           >
             {acceptedLegal ? (
               <Text style={styles.legalCheckboxMark}>{"\u2713"}</Text>
@@ -282,6 +348,17 @@ export default function AuthFormCard({
             </Text>
           </Text>
         </View>
+        <Text
+          style={[
+            styles.legalHint,
+            !acceptedLegal && styles.legalHintWarning,
+            acceptedLegal && styles.legalHintAccepted,
+          ]}
+        >
+          {acceptedLegal
+            ? t("auth.legal.acceptedHint")
+            : t("auth.legal.requiredHint")}
+        </Text>
 
         {((showErrors && validationError) || legalError || error) ? (
           <Text style={styles.errorText}>

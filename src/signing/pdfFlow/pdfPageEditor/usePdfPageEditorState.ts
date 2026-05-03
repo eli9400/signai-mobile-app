@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type {
   NormPoint,
   NormSize,
+  NormTextItem,
   PageEditState,
 } from "../../../screens/signPdf/signPdfTypes";
-import type { SigItem } from "../../hooks/useOverlayGestures";
+import type { SigItem, TextItem } from "../../hooks/useOverlayGestures";
 import {
   clamp01,
   fromNormPoint,
@@ -20,27 +21,19 @@ type Args = {
   imageRectSize: StageSize;
 };
 
-type TextTarget = "name1" | "name2" | null;
+const FALLBACK_TEXT_FONT_N = 0.03;
 
 export function usePdfPageEditorState({ initialEdit, imageRectSize }: Args) {
-  const [name1, setName1] = useState(initialEdit?.name1 ?? "");
-  const [name2, setName2] = useState(initialEdit?.name2 ?? "");
-
-  const [name1Pos, setName1Pos] = useState({ x: 20, y: 140 });
-  const [name2Pos, setName2Pos] = useState({ x: 20, y: 210 });
-
-  const [name1Font, setName1Font] = useState(28);
-  const [name2Font, setName2Font] = useState(28);
+  const [textItems, setTextItems] = useState<TextItem[]>([]);
+  const [activeTextId, setActiveTextId] = useState<string | null>(
+    initialEdit?.activeTextId ?? null,
+  );
 
   const [sigItems, setSigItems] = useState<SigItem[]>([]);
   const [activeSigId, setActiveSigId] = useState<string | null>(null);
   const [sigEnabled, setSigEnabled] = useState(
     initialEdit?.sigEnabled ?? false,
   );
-
-  const nextTextTarget = useMemo<TextTarget>(() => {
-    return !name1.trim() ? "name1" : !name2.trim() ? "name2" : null;
-  }, [name1, name2]);
 
   useEffect(() => {
     if (!initialEdit) return;
@@ -50,19 +43,6 @@ export function usePdfPageEditorState({ initialEdit, imageRectSize }: Args) {
 
     const toPxPoint = (p: NormPoint) => fromNormPoint(p, size);
     const toPxSize = (s: NormSize) => fromNormSize(s, size);
-
-    setName1(initialEdit.name1 ?? "");
-    setName2(initialEdit.name2 ?? "");
-
-    setName1Pos(toPxPoint(initialEdit.name1Pos ?? { x: 0.03, y: 0.16 }));
-    setName2Pos(toPxPoint(initialEdit.name2Pos ?? { x: 0.03, y: 0.24 }));
-
-    setName1Font(
-      Math.max(8, Math.round(clamp01(initialEdit.name1FontN ?? 0.03) * size.w)),
-    );
-    setName2Font(
-      Math.max(8, Math.round(clamp01(initialEdit.name2FontN ?? 0.03) * size.w)),
-    );
 
     setSigEnabled(Boolean(initialEdit.sigEnabled));
 
@@ -74,6 +54,46 @@ export function usePdfPageEditorState({ initialEdit, imageRectSize }: Args) {
 
     setSigItems(pxSigItems);
     setActiveSigId(initialEdit.activeSigId ?? null);
+
+    let sourceNormTexts: NormTextItem[] = Array.isArray(initialEdit.textItems)
+      ? initialEdit.textItems
+      : [];
+
+    if (sourceNormTexts.length === 0) {
+      const legacyTexts: NormTextItem[] = [];
+      if (initialEdit.name1?.trim() && initialEdit.name1Pos) {
+        legacyTexts.push({
+          id: "legacy_text_1",
+          text: initialEdit.name1,
+          pos: initialEdit.name1Pos,
+          fontN: initialEdit.name1FontN ?? FALLBACK_TEXT_FONT_N,
+        });
+      }
+      if (initialEdit.name2?.trim() && initialEdit.name2Pos) {
+        legacyTexts.push({
+          id: "legacy_text_2",
+          text: initialEdit.name2,
+          pos: initialEdit.name2Pos,
+          fontN: initialEdit.name2FontN ?? FALLBACK_TEXT_FONT_N,
+        });
+      }
+      sourceNormTexts = legacyTexts;
+    }
+
+    const pxTextItems: TextItem[] = sourceNormTexts
+      .filter((item) => Boolean(item?.text?.trim()))
+      .map((item, idx) => ({
+        id: item.id || `txt_${idx}`,
+        text: item.text,
+        pos: toPxPoint(item.pos),
+        font: Math.max(
+          8,
+          Math.round(clamp01(item.fontN ?? FALLBACK_TEXT_FONT_N) * size.w),
+        ),
+      }));
+
+    setTextItems(pxTextItems);
+    setActiveTextId(initialEdit.activeTextId ?? null);
   }, [initialEdit, imageRectSize?.w, imageRectSize?.h]);
 
   const buildEditState = (
@@ -82,6 +102,7 @@ export function usePdfPageEditorState({ initialEdit, imageRectSize }: Args) {
   ): PageEditState => {
     const toNormP = (p: { x: number; y: number }) => toNormPoint(p, size);
     const toNormS = (s: { w: number; h: number }) => toNormSize(s, size);
+    const safeTextItems = Array.isArray(textItems) ? textItems : [];
 
     return {
       pageNumber,
@@ -92,35 +113,32 @@ export function usePdfPageEditorState({ initialEdit, imageRectSize }: Args) {
         size: toNormS(s.size),
       })),
       activeSigId: activeSigId ?? null,
-      name1: name1 ?? "",
-      name1Pos: toNormP(name1Pos),
-      name1FontN: clamp01((name1Font ?? 28) / (size.w || 1)),
-      name2: name2 ?? "",
-      name2Pos: toNormP(name2Pos),
-      name2FontN: clamp01((name2Font ?? 28) / (size.w || 1)),
+      textItems: safeTextItems
+        .filter((item) => Boolean(item?.text?.trim()))
+        .map((item) => ({
+          id: item.id,
+          text: item.text,
+          pos: toNormP(item.pos),
+          fontN: clamp01((item.font ?? 28) / (size.w || 1)),
+        })),
+      activeTextId:
+        safeTextItems.some((item) => item.id === activeTextId)
+          ? activeTextId
+          : null,
     };
   };
 
   return {
-    name1,
-    setName1,
-    name2,
-    setName2,
-    name1Pos,
-    setName1Pos,
-    name2Pos,
-    setName2Pos,
-    name1Font,
-    setName1Font,
-    name2Font,
-    setName2Font,
+    textItems,
+    setTextItems,
+    activeTextId,
+    setActiveTextId,
     sigItems,
     setSigItems,
     activeSigId,
     setActiveSigId,
     sigEnabled,
     setSigEnabled,
-    nextTextTarget,
     buildEditState,
   };
 }

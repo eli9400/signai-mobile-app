@@ -57,6 +57,7 @@
       "missingPassword": "Укажите пароль",
       "passwordTooShort": "Пароль должен быть не короче 6 символов",
       "passwordsDontMatch": "Пароли не совпадают",
+      "resetPasswordEmailRequired": "Введите email, чтобы отправить ссылку для сброса пароля.",
       "firebaseNotConfigured": "Firebase еще не настроен",
       "invalidEmail": "Неверный email",
       "invalidCredentials": "Неверный email или пароль",
@@ -65,14 +66,23 @@
       "weakPassword": "Слишком слабый пароль",
       "googleNotRegistered": "Этот аккаунт Google еще не зарегистрирован. Сначала зарегистрируйтесь.",
       "googleAlreadyRegistered": "Этот аккаунт уже существует. Пожалуйста, войдите.",
-      "mustAcceptLegal": "You must accept the Terms and Privacy Policy",
-      "legalUrlMissing": "Legal page URL is not configured"
+      "mustAcceptLegal": "Чтобы продолжить, нужно отметить согласие с Условиями использования и Политикой конфиденциальности.",
+      "legalUrlMissing": "Ссылка на условия/политику не настроена"
     },
     "legal": {
-      "prefix": "I agree to the",
-      "terms": "Terms of Service",
-      "and": "and",
-      "privacy": "Privacy Policy"
+      "prefix": "Я принимаю",
+      "terms": "Условия использования",
+      "and": "и",
+      "privacy": "Политику конфиденциальности",
+      "requiredTitle": "Нужно согласие с условиями",
+      "requiredHint": "Перед входом или регистрацией отметьте чекбокс согласия.",
+      "acceptedHint": "Согласие отмечено. Можно продолжить."
+    },
+    "resetPassword": {
+      "linkLabel": "Забыли пароль?",
+      "requiredTitle": "Сброс пароля",
+      "sentTitle": "Запрос на сброс отправлен",
+      "sentBody": "Если {{email}} привязан к аккаунту с входом по email/паролю, ссылка для сброса будет отправлена. Проверьте также Спам и Промоакции."
     }
   },
   "profile": {

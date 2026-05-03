@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { I18nManager, StyleSheet } from "react-native";
 import { theme } from "../../ui/theme";
 
 export const styles = StyleSheet.create({
@@ -77,45 +77,94 @@ export const styles = StyleSheet.create({
     backgroundColor: "#fff",
     fontWeight: "700",
   },
+  passwordInput: {
+    textAlign: I18nManager.isRTL ? "right" : "left",
+    writingDirection: I18nManager.isRTL ? "rtl" : "ltr",
+  },
+  forgotPasswordBtn: {
+    alignSelf: I18nManager.isRTL ? "flex-end" : "flex-start",
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+    marginTop: -4,
+  },
+  forgotPasswordText: {
+    color: theme.colors.brand,
+    fontWeight: "800",
+    textDecorationLine: "underline",
+  },
+  forgotPasswordHint: {
+    marginTop: -2,
+    marginBottom: 2,
+    color: theme.colors.textSecondary,
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "600",
+    textAlign: "left",
+  },
+  forgotPasswordHintRtl: {
+    textAlign: "right",
+  },
   errorText: {
     color: "#b91c1c",
     fontWeight: "700",
   },
   legalRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(37, 99, 235, 0.18)",
+    backgroundColor: "rgba(37, 99, 235, 0.06)",
   },
   legalCheckbox: {
-    width: 20,
-    height: 20,
+    width: 21,
+    height: 21,
     borderRadius: 6,
-    borderWidth: 1,
-    borderColor: theme.colors.cardBorder,
+    borderWidth: 1.5,
+    borderColor: "#94a3b8",
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 2,
+    marginTop: 0,
   },
   legalCheckboxChecked: {
     backgroundColor: theme.colors.brand,
     borderColor: theme.colors.brand,
   },
+  legalCheckboxError: {
+    borderColor: "#dc2626",
+  },
   legalCheckboxMark: {
     color: "#fff",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "900",
   },
   legalText: {
     flex: 1,
     color: theme.colors.textSecondary,
-    lineHeight: 20,
+    lineHeight: 11,
     fontWeight: "600",
+    fontSize: 7,
   },
   legalLink: {
     color: theme.colors.brand,
     textDecorationLine: "underline",
     fontWeight: "800",
+  },
+  legalHint: {
+    marginTop: -2,
+    marginBottom: 2,
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  legalHintWarning: {
+    color: "#9a3412",
+  },
+  legalHintAccepted: {
+    color: "#166534",
   },
   primaryBtn: {
     backgroundColor: theme.colors.buttonPrimary,

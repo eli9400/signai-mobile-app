@@ -57,6 +57,7 @@
       "missingPassword": "كلمة المرور مطلوبة",
       "passwordTooShort": "كلمة المرور يجب ألا تقل عن 6 أحرف",
       "passwordsDontMatch": "كلمتا المرور غير متطابقتين",
+      "resetPasswordEmailRequired": "أدخل البريد الإلكتروني لإرسال رابط إعادة تعيين كلمة المرور.",
       "firebaseNotConfigured": "Firebase غير مُعَد بعد",
       "invalidEmail": "بريد إلكتروني غير صالح",
       "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
@@ -65,14 +66,23 @@
       "weakPassword": "كلمة المرور ضعيفة جدًا",
       "googleNotRegistered": "حساب Google غير مسجل بعد. يرجى التسجيل أولًا.",
       "googleAlreadyRegistered": "هذا الحساب موجود بالفعل. يرجى تسجيل الدخول.",
-      "mustAcceptLegal": "You must accept the Terms and Privacy Policy",
-      "legalUrlMissing": "Legal page URL is not configured"
+      "mustAcceptLegal": "للمتابعة، يجب تحديد مربع الموافقة على الشروط وسياسة الخصوصية.",
+      "legalUrlMissing": "رابط صفحة الشروط/الخصوصية غير مضبوط"
     },
     "legal": {
-      "prefix": "I agree to the",
-      "terms": "Terms of Service",
-      "and": "and",
-      "privacy": "Privacy Policy"
+      "prefix": "أوافق على",
+      "terms": "شروط الاستخدام",
+      "and": "و",
+      "privacy": "سياسة الخصوصية",
+      "requiredTitle": "مطلوب تأكيد الشروط",
+      "requiredHint": "قبل تسجيل الدخول أو إنشاء الحساب يجب تحديد مربع الموافقة.",
+      "acceptedHint": "تم تأكيد الموافقة على الشروط. يمكنك المتابعة."
+    },
+    "resetPassword": {
+      "linkLabel": "نسيت كلمة المرور؟",
+      "requiredTitle": "إعادة تعيين كلمة المرور",
+      "sentTitle": "تم إرسال طلب إعادة التعيين",
+      "sentBody": "إذا كان {{email}} مرتبطًا بحساب بريد/كلمة مرور، فسيتم إرسال رابط إعادة التعيين. يُرجى التحقق أيضًا من البريد العشوائي والعروض الترويجية."
     }
   },
   "profile": {

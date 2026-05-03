@@ -68,35 +68,24 @@ export default function ImageEditorExportView({
                   />
                 ))}
 
-              {editState.name1.trim() ? (
-                <Text
-                  style={{
-                    position: "absolute",
-                    left: editState.name1Pos.x * scaleX,
-                    top: editState.name1Pos.y * scaleY,
-                    fontSize: editState.name1Font * scaleX,
-                    fontWeight: "800",
-                    color: "#000",
-                  }}
-                >
-                  {editState.name1}
-                </Text>
-              ) : null}
-
-              {editState.name2.trim() ? (
-                <Text
-                  style={{
-                    position: "absolute",
-                    left: editState.name2Pos.x * scaleX,
-                    top: editState.name2Pos.y * scaleY,
-                    fontSize: editState.name2Font * scaleX,
-                    fontWeight: "800",
-                    color: "#000",
-                  }}
-                >
-                  {editState.name2}
-                </Text>
-              ) : null}
+              {(Array.isArray(editState.textItems) ? editState.textItems : []).map(
+                (txt) =>
+                  txt?.text?.trim() ? (
+                    <Text
+                      key={txt.id}
+                      style={{
+                        position: "absolute",
+                        left: txt.pos.x * scaleX,
+                        top: txt.pos.y * scaleY,
+                        fontSize: txt.font * scaleX,
+                        fontWeight: "800",
+                        color: "#000",
+                      }}
+                    >
+                      {txt.text}
+                    </Text>
+                  ) : null,
+              )}
             </>
           );
         })()}

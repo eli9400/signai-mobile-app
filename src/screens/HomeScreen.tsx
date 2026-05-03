@@ -2,18 +2,35 @@ import React, { useEffect, useRef, useState } from "react";
 import { Alert, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 import ActionsRow from "./home/ActionsRow";
 import HomeHeader from "./home/HomeHeader";
 import HomeHero from "./home/HomeHero";
 import HomeLanguageModal from "./home/HomeLanguageModal";
 import ProfileModal from "./home/ProfileModal";
 import SignatureCard from "./home/SignatureCard";
-import BillingModal from "./home/BillingModal";
 import BannerAd from "../components/BannerAd";
 import { useUserContext } from "../contexts/UserContext";
 import { layoutStyles } from "./home/HomeLayout.styles";
 import { ICON_GUEST_AVATAR } from "./home/homeIcons";
 import { type HomeScreenProps } from "./home/homeTypes";
+
+type BillingModalProps = {
+  open: boolean;
+  onClose: () => void;
+  userId: string | null;
+};
+
+let BillingModalImpl: React.ComponentType<BillingModalProps> | null = null;
+
+function getBillingModalComponent() {
+  if (BillingModalImpl) {
+    return BillingModalImpl;
+  }
+  BillingModalImpl = require("./home/BillingModal")
+    .default as React.ComponentType<BillingModalProps>;
+  return BillingModalImpl;
+}
 
 export default function HomeScreen({
   user,
@@ -28,6 +45,9 @@ export default function HomeScreen({
   onGoCamera,
 }: HomeScreenProps) {
   const { t } = useTranslation();
+  const isExpoGo =
+    Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+  const BillingModal = isExpoGo ? null : getBillingModalComponent();
   const { canUse, loading: userLoading, usesLeft, userData } = useUserContext();
   const canSign = Boolean(signatureUri);
   const canUseAction = userLoading ? true : canUse;
@@ -154,16 +174,27 @@ export default function HomeScreen({
         setNameDraft={setNameDraft}
         onUpdateProfile={onUpdateProfile}
         onOpenLanguage={() => setLangOpen(true)}
-        onOpenBilling={() => setBillingOpen(true)}
+        onOpenBilling={() => {
+          if (isExpoGo) {
+            Alert.alert(
+              t("billing.errorTitle"),
+              "In-app purchases are unavailable in Expo Go. Use a development build.",
+            );
+            return;
+          }
+          setBillingOpen(true);
+        }}
         onGoAuth={onGoAuth}
         onSignOut={onSignOut}
       />
 
-      <BillingModal
-        open={billingOpen}
-        onClose={() => setBillingOpen(false)}
-        userId={user?.uid ?? null}
-      />
+      {BillingModal ? (
+        <BillingModal
+          open={billingOpen}
+          onClose={() => setBillingOpen(false)}
+          userId={user?.uid ?? null}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }

@@ -16,5 +16,3 @@ export type ImageEditorProps = {
   onExportComplete?: () => void;
   canUseAction?: boolean;
 };
-
-export type TextTarget = "name1" | "name2" | null;

@@ -1,32 +1,25 @@
 import { useCallback, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
+import type { TextItem } from "../../hooks/useOverlayGestures";
 
 type Args = {
-  nextTextTarget: "name1" | "name2" | null;
-  setName1: (v: string) => void;
-  setName1Pos: (p: { x: number; y: number }) => void;
-  setName1Font: (n: number) => void;
-  setName2: (v: string) => void;
-  setName2Pos: (p: { x: number; y: number }) => void;
-  setName2Font: (n: number) => void;
+  textItems: TextItem[];
+  setTextItems: Dispatch<SetStateAction<TextItem[]>>;
+  setActiveTextId: (id: string | null) => void;
 };
 
 export function usePdfPageAddText({
-  nextTextTarget,
-  setName1,
-  setName1Pos,
-  setName1Font,
-  setName2,
-  setName2Pos,
-  setName2Font,
+  textItems,
+  setTextItems,
+  setActiveTextId,
 }: Args) {
   const [addTextOpen, setAddTextOpen] = useState(false);
   const [addTextValue, setAddTextValue] = useState("");
 
   const openAddText = useCallback(() => {
-    if (!nextTextTarget) return;
     setAddTextValue("");
     setAddTextOpen(true);
-  }, [nextTextTarget]);
+  }, []);
 
   const cancelAddText = useCallback(() => {
     setAddTextOpen(false);
@@ -34,32 +27,27 @@ export function usePdfPageAddText({
 
   const confirmAddText = useCallback(() => {
     const txt = (addTextValue ?? "").trim();
-    if (!txt || !nextTextTarget) {
+    if (!txt) {
       setAddTextOpen(false);
       return;
     }
 
-    if (nextTextTarget === "name1") {
-      setName1(txt);
-      setName1Pos({ x: 24, y: 160 });
-      setName1Font(30);
-    } else {
-      setName2(txt);
-      setName2Pos({ x: 24, y: 240 });
-      setName2Font(30);
-    }
+    const safeItems = Array.isArray(textItems) ? textItems : [];
+    const id = `txt_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    const nextItem: TextItem = {
+      id,
+      text: txt,
+      pos: { x: 24, y: 120 + (safeItems.length % 8) * 64 },
+      font: 30,
+    };
 
+    setTextItems((prev) => {
+      const prevSafe = Array.isArray(prev) ? prev : [];
+      return [...prevSafe, nextItem];
+    });
+    setActiveTextId(id);
     setAddTextOpen(false);
-  }, [
-    addTextValue,
-    nextTextTarget,
-    setName1,
-    setName1Font,
-    setName1Pos,
-    setName2,
-    setName2Font,
-    setName2Pos,
-  ]);
+  }, [addTextValue, setActiveTextId, setTextItems, textItems]);
 
   return {
     addTextOpen,

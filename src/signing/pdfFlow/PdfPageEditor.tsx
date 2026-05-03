@@ -47,25 +47,16 @@ export default function PdfPageEditor({
   }, [pageNumber, pdfBase64, resetZoom]);
 
   const {
-    name1,
-    setName1,
-    name2,
-    setName2,
-    name1Pos,
-    setName1Pos,
-    name2Pos,
-    setName2Pos,
-    name1Font,
-    setName1Font,
-    name2Font,
-    setName2Font,
+    textItems,
+    setTextItems,
+    activeTextId,
+    setActiveTextId,
     sigItems,
     setSigItems,
     activeSigId,
     setActiveSigId,
     sigEnabled,
     setSigEnabled,
-    nextTextTarget,
     buildEditState,
   } = usePdfPageEditorState({
     initialEdit,
@@ -83,13 +74,9 @@ export default function PdfPageEditor({
     cancelAddText,
     confirmAddText,
   } = usePdfPageAddText({
-    nextTextTarget,
-    setName1,
-    setName1Pos,
-    setName1Font,
-    setName2,
-    setName2Pos,
-    setName2Font,
+    textItems,
+    setTextItems,
+    setActiveTextId,
   });
   const addSignature = useCallback(() => {
     if (!signatureUri) return;
@@ -123,18 +110,10 @@ export default function PdfPageEditor({
           setSigItems,
           activeSigId,
           setActiveSigId,
-          name1,
-          setName1,
-          name1Pos,
-          setName1Pos,
-          name1Font,
-          setName1Font,
-          name2,
-          setName2,
-          name2Pos,
-          setName2Pos,
-          name2Font,
-          setName2Font,
+          textItems,
+          setTextItems,
+          activeTextId,
+          setActiveTextId,
           sigEnabled,
         }}
         pageScale={pageScale}
@@ -155,12 +134,8 @@ export default function PdfPageEditor({
       />
 
       <OverlayActionButtons
-        primaryLabel={
-          nextTextTarget
-            ? t("signPdf.pageEditor.actions.addText")
-            : t("signPdf.pageEditor.actions.textsLimitReached")
-        }
-        primaryDisabled={!nextTextTarget}
+        primaryLabel={t("signPdf.pageEditor.actions.addText")}
+        primaryDisabled={false}
         onPrimaryPress={openAddText}
         secondaryLabel={
           signatureUri
