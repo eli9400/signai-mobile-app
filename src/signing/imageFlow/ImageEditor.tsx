@@ -50,10 +50,15 @@ export default function ImageEditor({
     );
   }, [imageSize, containerSize.w, containerSize.h]);
 
-  const { isExporting, exportImage } = useImageExport({
+  const { isExporting, exportKind, exportImage } = useImageExport({
     canShowImage,
     imageBoxRef,
-    shareTitle: t("imageEditor.export.shareTitle"),
+    pngShareTitle: t("imageEditor.export.shareTitle"),
+    pdfShareTitle: t("imageEditor.export.pdfShareTitle"),
+    chooseTitle: t("imageEditor.export.chooseTitle"),
+    exportPngLabel: t("imageEditor.actions.exportPng"),
+    exportPdfLabel: t("imageEditor.actions.exportPdf"),
+    cancelLabel: t("common.actions.cancel"),
     onExportComplete,
   });
   const canExport = canShowImage && !isExporting && canUseAction;
@@ -140,6 +145,7 @@ export default function ImageEditor({
 
           <ImageEditorExportView
             visible={isExporting}
+            exportKind={exportKind}
             imageUri={imageUri}
             imageSize={imageSize}
             imageBox={imageBox}
@@ -161,7 +167,11 @@ export default function ImageEditor({
 
       <ImageEditorExportLoading
         open={isExporting}
-        title={t("imageEditor.export.exporting")}
+        title={
+          exportKind === "pdf"
+            ? t("imageEditor.export.exportingPdf")
+            : t("imageEditor.export.exporting")
+        }
         hint={t("imageEditor.export.pleaseWait")}
       />
 

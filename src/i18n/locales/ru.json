@@ -191,6 +191,8 @@
     "title": "Редактирование изображения",
     "actions": {
       "export": "Экспорт",
+      "exportPng": "Экспорт PNG",
+      "exportPdf": "Экспорт PDF",
       "addText": "Добавить текст",
       "textsLimitReached": "Уже есть 2 текста",
       "addSignature": "Добавить подпись"
@@ -200,8 +202,11 @@
     },
     "loadingImage": "Загрузка изображения...",
     "export": {
+      "chooseTitle": "Выберите формат экспорта",
       "shareTitle": "Поделиться подписанным изображением",
+      "pdfShareTitle": "Поделиться изображением как PDF",
       "exporting": "Экспорт изображения...",
+      "exportingPdf": "Экспорт PDF...",
       "pleaseWait": "Пожалуйста, подождите"
     },
     "modal": {

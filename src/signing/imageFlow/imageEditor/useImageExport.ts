@@ -1,52 +1,98 @@
 import { useCallback, useState, type ElementRef, type RefObject } from "react";
-import type { View } from "react-native";
+import { Alert, type View } from "react-native";
+import { exportAndSharePdf } from "../../export/exportAndSharePdf";
 import { exportAndSharePng } from "../../export/exportAndSharePng";
 
 type ViewRef = ElementRef<typeof View>;
+type ExportKind = "png" | "pdf";
 
 type Args = {
   canShowImage: boolean;
   imageBoxRef: RefObject<ViewRef | null>;
-  shareTitle: string;
-  onExportComplete?: () => void;
+  pngShareTitle: string;
+  pdfShareTitle: string;
+  chooseTitle: string;
+  exportPngLabel: string;
+  exportPdfLabel: string;
+  cancelLabel: string;
+  onExportComplete?: () => void | Promise<void>;
 };
 
 export function useImageExport({
   canShowImage,
   imageBoxRef,
-  shareTitle,
+  pngShareTitle,
+  pdfShareTitle,
+  chooseTitle,
+  exportPngLabel,
+  exportPdfLabel,
+  cancelLabel,
   onExportComplete,
 }: Args) {
-  const [isExporting, setIsExporting] = useState(false);
+  const [exportKind, setExportKind] = useState<ExportKind | null>(null);
+  const isExporting = exportKind !== null;
 
-  const exportImage = useCallback(async () => {
+  const runExport = useCallback(async (kind: ExportKind) => {
     if (!canShowImage) return;
 
     try {
-      setIsExporting(true);
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      setExportKind(kind);
+      await new Promise((resolve) => setTimeout(resolve, 120));
 
       if (!imageBoxRef.current) {
-        setIsExporting(false);
         return;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      if (kind === "pdf") {
+        await exportAndSharePdf({
+          viewRef: imageBoxRef,
+          beforeCaptureDelayMs: 0,
+          dialogTitle: pdfShareTitle,
+          pdfName: "signed-image.pdf",
+        });
+      } else {
+        await exportAndSharePng({
+          viewRef: imageBoxRef,
+          beforeCaptureDelayMs: 40,
+          dialogTitle: pngShareTitle,
+        });
+      }
 
-      await exportAndSharePng({
-        viewRef: imageBoxRef,
-        beforeCaptureDelayMs: 100,
-        dialogTitle: shareTitle,
-      });
-
-      // Call onExportComplete after successful export
-      onExportComplete?.();
+      await onExportComplete?.();
     } catch (e) {
       console.error("Export error:", e);
     } finally {
-      setIsExporting(false);
+      setExportKind(null);
     }
-  }, [canShowImage, imageBoxRef, shareTitle, onExportComplete]);
+  }, [
+    canShowImage,
+    imageBoxRef,
+    pngShareTitle,
+    pdfShareTitle,
+    onExportComplete,
+  ]);
 
-  return { isExporting, exportImage, setIsExporting };
+  const exportPng = useCallback(() => runExport("png"), [runExport]);
+  const exportPdf = useCallback(() => runExport("pdf"), [runExport]);
+
+  const exportImage = useCallback(() => {
+    if (!canShowImage || isExporting) return;
+
+    Alert.alert(chooseTitle, undefined, [
+      { text: exportPdfLabel, onPress: exportPdf },
+      { text: exportPngLabel, onPress: exportPng },
+      { text: cancelLabel, style: "cancel" },
+    ]);
+  }, [
+    canShowImage,
+    isExporting,
+    chooseTitle,
+    exportPdfLabel,
+    exportPngLabel,
+    cancelLabel,
+    exportPdf,
+    exportPng,
+  ]);
+
+  return { isExporting, exportKind, exportImage, exportPng, exportPdf };
 }

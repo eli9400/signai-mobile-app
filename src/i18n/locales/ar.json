@@ -191,6 +191,8 @@
     "title": "تحرير الصورة",
     "actions": {
       "export": "تصدير",
+      "exportPng": "تصدير PNG",
+      "exportPdf": "تصدير PDF",
       "addText": "إضافة نص",
       "textsLimitReached": "لديك بالفعل نصّان",
       "addSignature": "إضافة توقيع"
@@ -200,8 +202,11 @@
     },
     "loadingImage": "جارٍ تحميل الصورة...",
     "export": {
+      "chooseTitle": "اختر صيغة التصدير",
       "shareTitle": "مشاركة صورة موقّعة",
+      "pdfShareTitle": "مشاركة الصورة كملف PDF",
       "exporting": "جارٍ تصدير الصورة...",
+      "exportingPdf": "جارٍ تصدير PDF...",
       "pleaseWait": "يرجى الانتظار"
     },
     "modal": {

@@ -143,6 +143,36 @@ export function ExportPdfPillButton({
   );
 }
 
+export function ExportPillButton({
+  onPress,
+  disabled,
+  label,
+  size = 22,
+  color = "#6d28d9",
+  style,
+  hitSlop = 10,
+  accessibilityLabel,
+}: PillBtnProps) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      hitSlop={hitSlop}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? label}
+      style={({ pressed }) => [
+        styles.pillBtn,
+        pressed && !disabled ? styles.pillPressed : null,
+        disabled ? styles.disabled : null,
+        style,
+      ]}
+    >
+      <Ionicons name="share-outline" size={size} color={color} />
+      <Text style={[styles.pillText, { color }]}>{label}</Text>
+    </Pressable>
+  );
+}
+
 export function ExportPngPillButton({
   onPress,
   disabled,

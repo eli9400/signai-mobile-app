@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View } from "react-native";
-import { BackIconButton, ExportPngPillButton } from "../../../ui/icons";
+import { BackIconButton, ExportPillButton } from "../../../ui/icons";
 import { styles } from "./ImageEditor.styles";
 
 type Props = {
@@ -27,7 +27,7 @@ export default function ImageEditorHeader({
         <Text style={styles.title}>{title}</Text>
       </View>
       {showExport ? (
-        <ExportPngPillButton
+        <ExportPillButton
           onPress={onExport}
           disabled={exportDisabled}
           label={exportLabel}

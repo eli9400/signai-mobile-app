@@ -191,6 +191,8 @@
     "title": "עריכת תמונה",
     "actions": {
       "export": "ייצא",
+      "exportPng": "ייצא PNG",
+      "exportPdf": "ייצא PDF",
       "addText": "הוסף טקסט",
       "textsLimitReached": "כבר יש 2 טקסטים",
       "addSignature": "הוסף חתימה"
@@ -200,8 +202,11 @@
     },
     "loadingImage": "טוען תמונה…",
     "export": {
+      "chooseTitle": "בחר פורמט לייצוא",
       "shareTitle": "שתף תמונה חתומה",
+      "pdfShareTitle": "שתף PDF מתמונה",
       "exporting": "מייצא תמונה...",
+      "exportingPdf": "מייצא PDF...",
       "pleaseWait": "אנא המתן"
     },
     "modal": {

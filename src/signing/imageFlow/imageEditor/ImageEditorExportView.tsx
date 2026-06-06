@@ -9,6 +9,7 @@ type ViewRef = React.ElementRef<typeof View>;
 
 type Props = {
   visible: boolean;
+  exportKind: "png" | "pdf" | null;
   imageUri: string;
   imageSize: ImageSize | null;
   imageBox: Rect | null;
@@ -19,6 +20,7 @@ type Props = {
 
 export default function ImageEditorExportView({
   visible,
+  exportKind,
   imageUri,
   imageSize,
   imageBox,
@@ -28,6 +30,8 @@ export default function ImageEditorExportView({
 }: Props) {
   if (!visible || !imageSize) return null;
 
+  const exportSize = getExportSize(imageSize, exportKind);
+
   return (
     <View style={styles.hiddenExportContainer}>
       <View
@@ -36,8 +40,8 @@ export default function ImageEditorExportView({
         style={[
           styles.exportView,
           {
-            width: imageSize.w,
-            height: imageSize.h,
+            width: exportSize.w,
+            height: exportSize.h,
           } as ViewStyle,
         ]}
       >
@@ -46,8 +50,8 @@ export default function ImageEditorExportView({
         {(() => {
           if (!imageBox) return null;
 
-          const scaleX = imageSize.w / imageBox.w;
-          const scaleY = imageSize.h / imageBox.h;
+          const scaleX = exportSize.w / imageBox.w;
+          const scaleY = exportSize.h / imageBox.h;
 
           return (
             <>
@@ -92,4 +96,21 @@ export default function ImageEditorExportView({
       </View>
     </View>
   );
+}
+
+function getExportSize(
+  imageSize: ImageSize,
+  exportKind: "png" | "pdf" | null,
+) {
+  if (exportKind !== "pdf") return imageSize;
+
+  const maxLongEdge = 1800;
+  const longEdge = Math.max(imageSize.w, imageSize.h);
+  if (longEdge <= maxLongEdge) return imageSize;
+
+  const scale = maxLongEdge / longEdge;
+  return {
+    w: Math.round(imageSize.w * scale),
+    h: Math.round(imageSize.h * scale),
+  };
 }

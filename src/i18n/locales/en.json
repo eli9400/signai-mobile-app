@@ -191,6 +191,8 @@
     "title": "Edit Image",
     "actions": {
       "export": "Export",
+      "exportPng": "Export PNG",
+      "exportPdf": "Export PDF",
       "addText": "Add text",
       "textsLimitReached": "You already have 2 texts",
       "addSignature": "Add signature"
@@ -200,8 +202,11 @@
     },
     "loadingImage": "Loading image…",
     "export": {
+      "chooseTitle": "Choose export format",
       "shareTitle": "Share signed image",
+      "pdfShareTitle": "Share image as PDF",
       "exporting": "Exporting image...",
+      "exportingPdf": "Exporting PDF...",
       "pleaseWait": "Please wait"
     },
     "modal": {
