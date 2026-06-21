@@ -3,7 +3,7 @@
     "name": "QuickSign",
     "slug": "quicksign",
     "scheme": "com.quicksign.app",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,11 +16,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.quicksign.app",
-      "buildNumber": "15"
+      "buildNumber": "16"
     },
     "android": {
       "package": "com.quicksign.app",
-      "versionCode": 15,
+      "versionCode": 16,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
