@@ -69,11 +69,14 @@ export const styles = StyleSheet.create({
     position: "absolute",
     left: -10000,
     top: -10000,
-    opacity: 0,
+    pointerEvents: "none",
   },
   exportView: {
     backgroundColor: "#ffffff",
     position: "relative",
+  },
+  exportImage: {
+    backgroundColor: "#ffffff",
   },
   actions: {
     paddingHorizontal: 14,

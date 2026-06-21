@@ -10,7 +10,8 @@ type Args = {
   beforeCaptureDelayMs?: number;
   dialogTitle?: string;
   pdfName?: string;
-  jpegQuality?: number;
+  captureWidth?: number;
+  captureHeight?: number;
   onConversionStart?: () => void;
   onConversionProgress?: (status: string) => void;
 };
@@ -20,7 +21,8 @@ export async function exportAndSharePdf({
   beforeCaptureDelayMs = 60,
   dialogTitle = i18n.t("signPdf.actions.sharePdf"),
   pdfName = "signed-document.pdf",
-  jpegQuality = 0.88,
+  captureWidth,
+  captureHeight,
   onConversionStart,
   onConversionProgress,
 }: Args) {
@@ -36,22 +38,33 @@ export async function exportAndSharePdf({
 
   onConversionProgress?.(i18n.t("signPdf.export.status.captureImage"));
 
+  const imageFormat = "png";
   const imageBase64 = await captureRef(viewRef, {
-    format: "jpg",
-    quality: jpegQuality,
+    format: imageFormat,
+    quality: 1,
     result: "base64",
+    ...(captureWidth && captureHeight
+      ? { width: captureWidth, height: captureHeight }
+      : null),
   });
 
   onConversionProgress?.(i18n.t("signPdf.export.status.computeSize"));
   onConversionStart?.();
 
-  const pdfBase64 = await createSingleImagePdfBase64(imageBase64);
+  const pdfBase64 = await createSingleImagePdfBase64(imageBase64, imageFormat);
   return savePdfAndShare(pdfBase64, pdfName, dialogTitle);
 }
 
-export async function createSingleImagePdfBase64(imageBase64: string) {
+export async function createSingleImagePdfBase64(
+  imageBase64: string,
+  imageFormat: "png" | "jpg" = "png",
+) {
   const pdfDoc = await PDFDocument.create();
-  const image = await pdfDoc.embedJpg(base64ToUint8(imageBase64));
+  const imageBytes = base64ToUint8(imageBase64);
+  const image =
+    imageFormat === "png"
+      ? await pdfDoc.embedPng(imageBytes)
+      : await pdfDoc.embedJpg(imageBytes);
   const page = pdfDoc.addPage([image.width, image.height]);
 
   page.drawImage(image, {

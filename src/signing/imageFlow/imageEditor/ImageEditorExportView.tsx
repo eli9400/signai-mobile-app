@@ -1,5 +1,5 @@
-import React from "react";
-import { Image, Text, View, type ViewStyle } from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Image, PixelRatio, Text, View, type ViewStyle } from "react-native";
 import { styles } from "./ImageEditor.styles";
 import type { ImageEditState } from "../../../screens/signImage/signImageState";
 import type { ImageSize } from "./types";
@@ -16,6 +16,7 @@ type Props = {
   signatureUri: string | null;
   editState: ImageEditState;
   imageBoxRef: React.RefObject<ViewRef | null>;
+  onReady?: () => void;
 };
 
 export default function ImageEditorExportView({
@@ -27,10 +28,56 @@ export default function ImageEditorExportView({
   signatureUri,
   editState,
   imageBoxRef,
+  onReady,
 }: Props) {
-  if (!visible || !imageSize) return null;
+  const signatureCount =
+    editState.sigEnabled && signatureUri && Array.isArray(editState.sigItems)
+      ? editState.sigItems.length
+      : 0;
+  const expectedImageLoads = 1 + signatureCount;
+  const [loadedImageCount, setLoadedImageCount] = useState(0);
+  const readySentRef = useRef(false);
+  const exportPixelSize = useMemo(
+    () => (imageSize ? getImageExportPixelSize(imageSize, exportKind) : null),
+    [exportKind, imageSize],
+  );
+  const exportViewSize = useMemo(() => {
+    if (!exportPixelSize) return null;
 
-  const exportSize = getExportSize(imageSize, exportKind);
+    const pixelRatio = PixelRatio.get();
+    return {
+      w: exportPixelSize.w / pixelRatio,
+      h: exportPixelSize.h / pixelRatio,
+    };
+  }, [exportPixelSize]);
+
+  useEffect(() => {
+    readySentRef.current = false;
+    setLoadedImageCount(0);
+  }, [exportKind, imageUri, signatureUri, signatureCount]);
+
+  useEffect(() => {
+    if (!visible || !exportViewSize || !onReady) return;
+    if (readySentRef.current) return;
+    if (loadedImageCount < expectedImageLoads) return;
+
+    readySentRef.current = true;
+    const timer = setTimeout(onReady, 80);
+    return () => clearTimeout(timer);
+  }, [
+    expectedImageLoads,
+    exportViewSize,
+    loadedImageCount,
+    onReady,
+    visible,
+  ]);
+
+  if (!visible || !imageSize) return null;
+  if (!exportViewSize) return null;
+
+  const handleImageLoaded = () => {
+    setLoadedImageCount((count) => Math.min(count + 1, expectedImageLoads));
+  };
 
   return (
     <View style={styles.hiddenExportContainer}>
@@ -40,18 +87,23 @@ export default function ImageEditorExportView({
         style={[
           styles.exportView,
           {
-            width: exportSize.w,
-            height: exportSize.h,
+            width: exportViewSize.w,
+            height: exportViewSize.h,
           } as ViewStyle,
         ]}
       >
-        <Image source={{ uri: imageUri }} style={styles.image} resizeMode="contain" />
+        <Image
+          source={{ uri: imageUri }}
+          style={[styles.image, styles.exportImage]}
+          resizeMode="contain"
+          onLoadEnd={handleImageLoaded}
+        />
 
         {(() => {
           if (!imageBox) return null;
 
-          const scaleX = exportSize.w / imageBox.w;
-          const scaleY = exportSize.h / imageBox.h;
+          const scaleX = exportViewSize.w / imageBox.w;
+          const scaleY = exportViewSize.h / imageBox.h;
 
           return (
             <>
@@ -61,6 +113,7 @@ export default function ImageEditorExportView({
                   <Image
                     key={sig.id}
                     source={{ uri: signatureUri }}
+                    onLoadEnd={handleImageLoaded}
                     style={{
                       position: "absolute",
                       left: sig.pos.x * scaleX,
@@ -98,13 +151,13 @@ export default function ImageEditorExportView({
   );
 }
 
-function getExportSize(
+export function getImageExportPixelSize(
   imageSize: ImageSize,
   exportKind: "png" | "pdf" | null,
 ) {
   if (exportKind !== "pdf") return imageSize;
 
-  const maxLongEdge = 1800;
+  const maxLongEdge = 3000;
   const longEdge = Math.max(imageSize.w, imageSize.h);
   if (longEdge <= maxLongEdge) return imageSize;
 

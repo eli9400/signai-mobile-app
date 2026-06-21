@@ -3,7 +3,7 @@
     "name": "QuickSign",
     "slug": "quicksign",
     "scheme": "com.quicksign.app",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,17 +16,17 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.quicksign.app",
-      "buildNumber": "16"
+      "buildNumber": "17"
     },
     "android": {
       "package": "com.quicksign.app",
-      "versionCode": 16,
+      "versionCode": 17,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "edgeToEdgeEnabled": true,
+      "edgeToEdgeEnabled": false,
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "READ_EXTERNAL_STORAGE",
@@ -81,6 +81,7 @@
     },
     "owner": "eli9400457",
     "plugins": [
+      "./plugins/with-android15-window-compat",
       [
         "expo-share-intent",
         {

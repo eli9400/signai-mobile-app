@@ -7,12 +7,16 @@ type Args = {
   viewRef: any; // ref to a View (collapsable={false})
   beforeCaptureDelayMs?: number;
   dialogTitle?: string;
+  captureWidth?: number;
+  captureHeight?: number;
 };
 
 export async function exportAndSharePng({
   viewRef,
   beforeCaptureDelayMs = 60,
   dialogTitle = i18n.t("imageEditor.export.shareTitle"),
+  captureWidth,
+  captureHeight,
 }: Args) {
   const sharingAvailable = await Sharing.isAvailableAsync();
   if (!sharingAvailable) {
@@ -28,6 +32,9 @@ export async function exportAndSharePng({
     format: "png",
     quality: 1,
     result: "tmpfile",
+    ...(captureWidth && captureHeight
+      ? { width: captureWidth, height: captureHeight }
+      : null),
   });
 
   await Sharing.shareAsync(uri, {

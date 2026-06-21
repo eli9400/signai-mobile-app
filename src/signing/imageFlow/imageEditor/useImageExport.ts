@@ -15,6 +15,10 @@ type Args = {
   exportPngLabel: string;
   exportPdfLabel: string;
   cancelLabel: string;
+  waitForExportViewReady?: (kind: ExportKind) => Promise<void>;
+  getExportCaptureSize?: (
+    kind: ExportKind,
+  ) => { w: number; h: number } | null;
   onExportComplete?: () => void | Promise<void>;
 };
 
@@ -27,6 +31,8 @@ export function useImageExport({
   exportPngLabel,
   exportPdfLabel,
   cancelLabel,
+  waitForExportViewReady,
+  getExportCaptureSize,
   onExportComplete,
 }: Args) {
   const [exportKind, setExportKind] = useState<ExportKind | null>(null);
@@ -37,24 +43,30 @@ export function useImageExport({
 
     try {
       setExportKind(kind);
-      await new Promise((resolve) => setTimeout(resolve, 120));
+      await waitForExportViewReady?.(kind);
 
       if (!imageBoxRef.current) {
         return;
       }
 
+      const captureSize = getExportCaptureSize?.(kind);
+
       if (kind === "pdf") {
         await exportAndSharePdf({
           viewRef: imageBoxRef,
-          beforeCaptureDelayMs: 0,
+          beforeCaptureDelayMs: 40,
           dialogTitle: pdfShareTitle,
           pdfName: "signed-image.pdf",
+          captureWidth: captureSize?.w,
+          captureHeight: captureSize?.h,
         });
       } else {
         await exportAndSharePng({
           viewRef: imageBoxRef,
           beforeCaptureDelayMs: 40,
           dialogTitle: pngShareTitle,
+          captureWidth: captureSize?.w,
+          captureHeight: captureSize?.h,
         });
       }
 
@@ -69,6 +81,8 @@ export function useImageExport({
     imageBoxRef,
     pngShareTitle,
     pdfShareTitle,
+    waitForExportViewReady,
+    getExportCaptureSize,
     onExportComplete,
   ]);
 

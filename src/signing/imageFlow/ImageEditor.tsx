@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { calcImageBox } from "../geometry";
@@ -7,7 +7,9 @@ import OverlayActionButtons from "../components/OverlayActionButtons";
 import ImageEditorAddTextModal from "./imageEditor/ImageEditorAddTextModal";
 import ImageEditorEmptyState from "./imageEditor/ImageEditorEmptyState";
 import ImageEditorExportLoading from "./imageEditor/ImageEditorExportLoading";
-import ImageEditorExportView from "./imageEditor/ImageEditorExportView";
+import ImageEditorExportView, {
+  getImageExportPixelSize,
+} from "./imageEditor/ImageEditorExportView";
 import ImageEditorHeader from "./imageEditor/ImageEditorHeader";
 import ImageEditorStage from "./imageEditor/ImageEditorStage";
 import { styles } from "./imageEditor/ImageEditor.styles";
@@ -35,6 +37,10 @@ export default function ImageEditor({
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
   const imageBoxRef = useRef<ViewRef | null>(null);
   const isOverlayInteractingRef = useRef(false);
+  const exportReadyResolverRef = useRef<(() => void) | null>(null);
+  const exportReadyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const { pageScale, pageTx, pageTy, onStageStart, onStageMove, onStageEnd } =
     useStagePanZoom(isOverlayInteractingRef);
@@ -50,6 +56,43 @@ export default function ImageEditor({
     );
   }, [imageSize, containerSize.w, containerSize.h]);
 
+  const resolveExportReady = useCallback(() => {
+    if (exportReadyTimeoutRef.current) {
+      clearTimeout(exportReadyTimeoutRef.current);
+      exportReadyTimeoutRef.current = null;
+    }
+
+    exportReadyResolverRef.current?.();
+    exportReadyResolverRef.current = null;
+  }, []);
+
+  const waitForExportViewReady = useCallback(
+    (kind: "png" | "pdf") =>
+      new Promise<void>((resolve) => {
+        exportReadyResolverRef.current = resolve;
+        exportReadyTimeoutRef.current = setTimeout(
+          resolveExportReady,
+          kind === "pdf" ? 1200 : 700,
+        );
+      }),
+    [resolveExportReady],
+  );
+
+  const getExportCaptureSize = useCallback(
+    (kind: "png" | "pdf") =>
+      imageSize ? getImageExportPixelSize(imageSize, kind) : null,
+    [imageSize],
+  );
+
+  useEffect(
+    () => () => {
+      if (exportReadyTimeoutRef.current) {
+        clearTimeout(exportReadyTimeoutRef.current);
+      }
+    },
+    [],
+  );
+
   const { isExporting, exportKind, exportImage } = useImageExport({
     canShowImage,
     imageBoxRef,
@@ -59,6 +102,8 @@ export default function ImageEditor({
     exportPngLabel: t("imageEditor.actions.exportPng"),
     exportPdfLabel: t("imageEditor.actions.exportPdf"),
     cancelLabel: t("common.actions.cancel"),
+    waitForExportViewReady,
+    getExportCaptureSize,
     onExportComplete,
   });
   const canExport = canShowImage && !isExporting && canUseAction;
@@ -152,6 +197,7 @@ export default function ImageEditor({
             signatureUri={signatureUri}
             editState={editState}
             imageBoxRef={imageBoxRef}
+            onReady={resolveExportReady}
           />
 
           <OverlayActionButtons
