@@ -67,8 +67,10 @@ export const styles = StyleSheet.create({
   },
   hiddenExportContainer: {
     position: "absolute",
-    left: -10000,
-    top: -10000,
+    left: 0,
+    top: 0,
+    zIndex: 1,
+    backgroundColor: "#ffffff",
     pointerEvents: "none",
   },
   exportView: {

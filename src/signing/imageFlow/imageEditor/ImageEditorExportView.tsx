@@ -96,6 +96,7 @@ export default function ImageEditorExportView({
           source={{ uri: imageUri }}
           style={[styles.image, styles.exportImage]}
           resizeMode="contain"
+          fadeDuration={0}
           onLoadEnd={handleImageLoaded}
         />
 
@@ -114,6 +115,7 @@ export default function ImageEditorExportView({
                     key={sig.id}
                     source={{ uri: signatureUri }}
                     onLoadEnd={handleImageLoaded}
+                    fadeDuration={0}
                     style={{
                       position: "absolute",
                       left: sig.pos.x * scaleX,
